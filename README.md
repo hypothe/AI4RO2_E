@@ -31,6 +31,7 @@ If you want to be able tu run it from everywhere on your system add it to your u
 $ echo 'export PATH="<path/to/Metric-FF>:${PATH}"' >> ~/.bash_profile
 $ source ~/.bash_profile
 ```
+In which 'path/to/Metric-FF' is the absolute path to the Metric-FF folder in your system.
 The syntax to run the engine (assuming to have added **ff** to the path) is
 ```
 $ ff -o <path/to/domain> -f <path/to/problem>
