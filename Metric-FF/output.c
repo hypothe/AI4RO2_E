@@ -1494,8 +1494,10 @@ void print_plan( void )
     printf("\n     ");
     
     /*printf("State %4d: \n", i);*/
-    print_State(chosen_states[i]);
-    printf("\n\n-----------------\n\n");
+    /*if (chosen_states[i]!=NULL){
+    	print_State(chosen_states[i]);
+    	printf("\n\n-----------------\n\n");
+   }*/
     
   }
 
