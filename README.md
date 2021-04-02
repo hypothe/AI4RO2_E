@@ -26,12 +26,12 @@ which will create the executable **ff**
 ## Running Metric-FF
 
 The command **ff** needs to be run from within th *Metric-FF* folder.
-If you want to be able tu run it from everywhere on your system add it to your user path like this
+If you want to be able tu run it from everywhere on your system add it to your user path like this, supposing to have this folder installed in your system HOME directory
 ```
-$ echo 'export PATH="<path/to/Metric-FF>:${PATH}"' >> ~/.bash_profile
+$ echo 'export PATH="${HOME}/AI4RO2_E/Metric-FF:${PATH}"' >> ~/.bash_profile
 $ source ~/.bash_profile
 ```
-In which 'path/to/Metric-FF' is the absolute path to the Metric-FF folder in your system.
+(Change the "${HOME}" accordingly to where you put clone repo)
 The syntax to run the engine (assuming to have added **ff** to the path) is
 ```
 $ ff -o <path/to/domain> -f <path/to/problem>
