@@ -1435,8 +1435,21 @@ void print_op_name( int index )
   }
 
 }
-
-
+/* ***MINE*** */
+int requested_fluent(int index){
+    /*
+        printf("\nconfronting %s to %s\n", grelevant_fluents_name[index], gcmd_line.fl_prfx_name);
+        printf("RETURNED %p vs %p\n", strstr(grelevant_fluents_name[index], gcmd_line.fl_prfx_name),
+    */
+    return  (gcmd_line.disp_fl == TRUE)  &&
+            (   (gcmd_line.fl_prfx_name[0] == '-')  || /* any fluent */
+                (   (grelevant_fluents_lnf[index] == NULL)  &&
+                    (strstr(grelevant_fluents_name[index], gcmd_line.fl_prfx_name)  == grelevant_fluents_name[index])
+                )/* */
+                /* the fluent name contains the desired string, positioned at the start of the name */
+            );
+}
+/* ***    *** */
 
 void print_State( State S )
 
@@ -1448,16 +1461,22 @@ void print_State( State S )
     printf("\n");
     print_ft_name( S.F[i] );
   }
+  
+  
   for ( i = 0; i < gnum_relevant_fluents; i++ ) {
-    printf("\n");
-    print_fl_name( i );
-    printf(": ");
-    if ( S.f_D[i] ) {
-      printf("%.2f", S.f_V[i]);
-    } else {
-      printf("UNDEF");
-    }
-  }
+    /* ***MINE*** */
+    if (requested_fluent(i)){
+    /* ***    *** */
+        printf("\n");
+        print_fl_name( i );
+        printf(": ");
+        if ( S.f_D[i] ) {
+          printf("%.2f", S.f_V[i]);
+        } else {
+          printf("UNDEF");
+        }
+      }
+   }
 
 }
 
@@ -1493,12 +1512,11 @@ void print_plan( void )
     print_op_name( gplan_ops[i] );
     printf("\n     ");
     
-    /*printf("State %4d: \n", i);*/
-    /*if (chosen_states[i]!=NULL){
-    	print_State(chosen_states[i]);
-    	printf("\n\n-----------------\n\n");
-   }*/
-    
+    if (chosen_states!=NULL){
+        printf("State %4d: \n", i);
+        print_State(chosen_states[i]);
+        printf("\n\n-----------------\n\n");
+    }
   }
 
 }

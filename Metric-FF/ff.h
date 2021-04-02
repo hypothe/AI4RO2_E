@@ -379,11 +379,17 @@ struct _command_line {
   char path[MAX_LENGTH];
   char ops_file_name[MAX_LENGTH];
   char fct_file_name[MAX_LENGTH];
+
+  /* ***MINE*** */
+  char fl_prfx_name[MAX_LENGTH];
+
   int display_info;
   int debug;
 
   Bool optimize;
   Bool ehc;
+  /* ***MINE*** */
+  Bool disp_fl;
 
   int g_weight;
   int h_weight;
@@ -1989,4 +1995,4 @@ extern Bool gconditional_effects;
 
 
 
-#endif __FF_H
+#endif /* __FF_H */

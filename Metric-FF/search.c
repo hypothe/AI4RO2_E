@@ -738,9 +738,9 @@ void extract_plan_fragment( State *S )
     start->next_step = hash_plan_state( states[j], gnum_plan_ops + 1 );
     start = start->next_step;
     copy_source_to_dest( &(gplan_states[gnum_plan_ops+1]), states[j] );
-    /**** MINE **/
-    print_State(gplan_states[gnum_plan_ops+1]);
-    /**/
+    /* ***MINE*** */
+    copy_source_to_dest( &(chosen_states[gnum_plan_ops]), states[j] );
+    /* ***    *** */
     gplan_ops[gnum_plan_ops++] = ops[j];
   }
 
@@ -1006,9 +1006,6 @@ void add_to_bfs_space( State *S, int op, BfsNode *father )
       if ( i->next->int_fn >= int_fn ) break;
     }
   }
-  /**** MINE **
-  print_State(*S);
-  **/
 
   new = new_BfsNode();
   copy_source_to_dest( &(new->S), S );
@@ -1085,9 +1082,7 @@ void extract_plan( BfsNode *last )
     }
     
     /** MINE **/
-    /**print_State(i->S);*/
     copy_source_to_dest(&(_states[num_ops]) , &(i->S));
-    /**print_State(_states[num_ops]);*/
     /** **/
     ops[num_ops++] = i->op;
    

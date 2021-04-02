@@ -84,6 +84,13 @@ void print_ft_name( int index );
 void print_op_name( int index );
 void print_fl_name( int index );
 void print_LnfExpNode( LnfExpNode *n );
+/* ***MINE*** */
+/* Returns >0 is the fluent name pointed to
+    index contains the entry specified with
+    flag 's', if any */
+int requested_fluent(int index);
+/* ***    *** */
+
 void print_State( State S );
 
 

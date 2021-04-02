@@ -923,7 +923,9 @@ void ff_usage( void )
 	 gcmd_line.h_weight);
 
   printf("-O          switch on optimization expression (default is plan length)\n\n");
-
+  /* ***MINE*** */
+  printf("-s          define fluents to track, by specifying it's name prefix (put - to display all fluents)\n\n");
+  /* ***    *** */
   if ( 0 ) {
     printf("-i <num>    run-time information level( preset: 1 )\n");
     printf("      0     only times\n");
@@ -986,12 +988,15 @@ Bool process_command_line( int argc, char *argv[] )
 {
 
   char option;
+  int str_p = 0;
 
   gcmd_line.display_info = 1;
   gcmd_line.debug = 0;
 
   gcmd_line.ehc = TRUE;
   gcmd_line.optimize = FALSE;
+  /* ***MIN*** */
+  gcmd_line.disp_fl = FALSE;
 
   /* default: greedy best first search.
    */
@@ -1001,6 +1006,8 @@ Bool process_command_line( int argc, char *argv[] )
   memset(gcmd_line.ops_file_name, 0, MAX_LENGTH);
   memset(gcmd_line.fct_file_name, 0, MAX_LENGTH);
   memset(gcmd_line.path, 0, MAX_LENGTH);
+  /* ***MINE*** */
+  memset(gcmd_line.fl_prfx_name, 0, MAX_LENGTH);
 
   while ( --argc && ++argv ) {
     if ( *argv[0] != '-' || strlen(*argv) != 2 ) {
@@ -1014,7 +1021,8 @@ Bool process_command_line( int argc, char *argv[] )
     case 'O':
       gcmd_line.optimize = TRUE;
       gcmd_line.ehc = FALSE;
-      break;      
+      break; 
+      
     default:
       if ( --argc && ++argv ) {
 	switch ( option ) {
@@ -1039,6 +1047,16 @@ Bool process_command_line( int argc, char *argv[] )
 	case 'h':
 	  sscanf( *argv, "%d", &gcmd_line.h_weight );
 	  break;
+    /* ***MINE*** */
+    case 's':
+        gcmd_line.disp_fl = TRUE;
+        /*strncpy( gcmd_line.fl_prfx_name, *argv, MAX_LENGTH );*/
+        for (str_p = 0; str_p < strlen(*argv); str_p++){
+            gcmd_line.fl_prfx_name[str_p] = toupper((*argv)[str_p]);
+        }
+        
+        break;
+   /* ***    *** */  
 	default:
 	  printf( "\nff: unknown option: %c entered\n\n", option );
 	  return FALSE;
@@ -1058,4 +1076,3 @@ Bool process_command_line( int argc, char *argv[] )
   return TRUE;
 
 }
-
