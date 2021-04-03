@@ -54,3 +54,9 @@ For example, to see all the fluents regarding the internal clock of the waiter w
 .../AI4RO2_E/domains/$ ff -o numeric_domain.pddl -f numeric_problem.pddl -O -s TIME-WAITER
 ```
 
+## TODO
+
+- Add an option for ff command line that toggles the display of actions
+- find a possible implementation for 2 waiters synchronization
+- Try to install ENHSP and see how it behaves on the docker
+
