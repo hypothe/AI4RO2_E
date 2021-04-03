@@ -1,0 +1,280 @@
+
+ff: parsing domain file
+domain 'AI4RO2_E' defined
+ ... done.
+ff: parsing problem file
+problem 'AI4RO2_E_PROBLEM' defined
+ ... done.
+
+
+
+no optimization required. skipping criterion.
+
+
+no metric specified. plan length assumed.
+
+checking for cyclic := effects --- OK.
+
+ff: search configuration is  best-first on 1*g(s) + 5*h(s) where
+    metric is  plan length
+
+advancing to distance:   11
+                         10
+                          9
+                          8
+                          7
+                          6
+                          5
+                          4
+                          3
+                          2
+                          1
+                          0
+
+ff: found legal plan as follows
+
+step    0: MOVE-NO-TRAY BAR TABLE3 W
+     State    0: 
+
+(NOT-ORDER-READY DRINKA)
+(NOT-ORDER-READY DRINKB)
+(NOT-CLEAN TABLE3)
+(NOT-CLEAN TABLE4)
+(HAND-FREE W)
+(AT-WAITER W TABLE3)
+[RF0](TIME-DRINK-READY_DRINKB): -1.00
+[RF1](TIME-DRINK-READY_DRINKA): -1.00
+[RF2](TIME-WAITER_W): 1.50
+[RF3](TIME-BARISTA): 0.00
+
+-----------------
+
+   1: CLEAN-TABLE TABLE3 W
+     State    1: 
+
+(NOT-ORDER-READY DRINKA)
+(NOT-ORDER-READY DRINKB)
+(NOT-CLEAN TABLE4)
+(HAND-FREE W)
+(AT-WAITER W TABLE3)
+(CLEAN TABLE3)
+[RF0](TIME-DRINK-READY_DRINKB): -1.00
+[RF1](TIME-DRINK-READY_DRINKA): -1.00
+[RF2](TIME-WAITER_W): 5.50
+[RF3](TIME-BARISTA): 0.00
+
+-----------------
+
+   2: MOVE-NO-TRAY TABLE3 BAR W
+     State    2: 
+
+(NOT-ORDER-READY DRINKA)
+(NOT-ORDER-READY DRINKB)
+(NOT-CLEAN TABLE4)
+(HAND-FREE W)
+(CLEAN TABLE3)
+(AT-WAITER W BAR)
+[RF0](TIME-DRINK-READY_DRINKB): -1.00
+[RF1](TIME-DRINK-READY_DRINKA): -1.00
+[RF2](TIME-WAITER_W): 7.00
+[RF3](TIME-BARISTA): 0.00
+
+-----------------
+
+   3: PREPARE DRINKB
+     State    3: 
+
+(NOT-ORDER-READY DRINKA)
+(NOT-CLEAN TABLE4)
+(HAND-FREE W)
+(CLEAN TABLE3)
+(AT-WAITER W BAR)
+(ORDER-READY DRINKB)
+[RF0](TIME-DRINK-READY_DRINKB): 3.00
+[RF1](TIME-DRINK-READY_DRINKA): -1.00
+[RF2](TIME-WAITER_W): 7.00
+[RF3](TIME-BARISTA): 3.00
+
+-----------------
+
+   4: PICK-UP-DRINK BAR W DRINKB
+     State    4: 
+
+(NOT-ORDER-READY DRINKA)
+(NOT-CLEAN TABLE4)
+(CLEAN TABLE3)
+(AT-WAITER W BAR)
+(NOT-ORDER-READY DRINKB)
+(ORDER-CARRIED DRINKB W)
+[RF0](TIME-DRINK-READY_DRINKB): 3.00
+[RF1](TIME-DRINK-READY_DRINKA): -1.00
+[RF2](TIME-WAITER_W): 7.00
+[RF3](TIME-BARISTA): 3.00
+
+-----------------
+
+   5: MOVE-NO-TRAY BAR TABLE2 W
+     State    5: 
+
+(NOT-ORDER-READY DRINKA)
+(NOT-CLEAN TABLE4)
+(CLEAN TABLE3)
+(NOT-ORDER-READY DRINKB)
+(ORDER-CARRIED DRINKB W)
+(AT-WAITER W TABLE2)
+[RF0](TIME-DRINK-READY_DRINKB): 3.00
+[RF1](TIME-DRINK-READY_DRINKA): -1.00
+[RF2](TIME-WAITER_W): 8.00
+[RF3](TIME-BARISTA): 3.00
+
+-----------------
+
+   6: PUT-DOWN-DRINK TABLE2 W DRINKB
+     State    6: 
+
+(NOT-ORDER-READY DRINKA)
+(NOT-CLEAN TABLE4)
+(CLEAN TABLE3)
+(NOT-ORDER-READY DRINKB)
+(AT-WAITER W TABLE2)
+(ORDER-DELIVERED DRINKB)
+(HAND-FREE W)
+[RF0](TIME-DRINK-READY_DRINKB): 3.00
+[RF1](TIME-DRINK-READY_DRINKA): -1.00
+[RF2](TIME-WAITER_W): 8.00
+[RF3](TIME-BARISTA): 3.00
+
+-----------------
+
+   7: PREPARE DRINKA
+     State    7: 
+
+(NOT-CLEAN TABLE4)
+(CLEAN TABLE3)
+(NOT-ORDER-READY DRINKB)
+(AT-WAITER W TABLE2)
+(ORDER-DELIVERED DRINKB)
+(HAND-FREE W)
+(ORDER-READY DRINKA)
+[RF0](TIME-DRINK-READY_DRINKB): 3.00
+[RF1](TIME-DRINK-READY_DRINKA): 8.00
+[RF2](TIME-WAITER_W): 8.00
+[RF3](TIME-BARISTA): 8.00
+
+-----------------
+
+   8: MOVE-NO-TRAY TABLE2 BAR W
+     State    8: 
+
+(NOT-CLEAN TABLE4)
+(CLEAN TABLE3)
+(NOT-ORDER-READY DRINKB)
+(ORDER-DELIVERED DRINKB)
+(HAND-FREE W)
+(ORDER-READY DRINKA)
+(AT-WAITER W BAR)
+[RF0](TIME-DRINK-READY_DRINKB): 3.00
+[RF1](TIME-DRINK-READY_DRINKA): 8.00
+[RF2](TIME-WAITER_W): 9.00
+[RF3](TIME-BARISTA): 8.00
+
+-----------------
+
+   9: PICK-UP-DRINK BAR W DRINKA
+     State    9: 
+
+(NOT-CLEAN TABLE4)
+(CLEAN TABLE3)
+(NOT-ORDER-READY DRINKB)
+(ORDER-DELIVERED DRINKB)
+(AT-WAITER W BAR)
+(NOT-ORDER-READY DRINKA)
+(ORDER-CARRIED DRINKA W)
+[RF0](TIME-DRINK-READY_DRINKB): 3.00
+[RF1](TIME-DRINK-READY_DRINKA): 8.00
+[RF2](TIME-WAITER_W): 9.00
+[RF3](TIME-BARISTA): 8.00
+
+-----------------
+
+  10: MOVE-NO-TRAY BAR TABLE2 W
+     State   10: 
+
+(NOT-CLEAN TABLE4)
+(CLEAN TABLE3)
+(NOT-ORDER-READY DRINKB)
+(ORDER-DELIVERED DRINKB)
+(NOT-ORDER-READY DRINKA)
+(ORDER-CARRIED DRINKA W)
+(AT-WAITER W TABLE2)
+[RF0](TIME-DRINK-READY_DRINKB): 3.00
+[RF1](TIME-DRINK-READY_DRINKA): 8.00
+[RF2](TIME-WAITER_W): 10.00
+[RF3](TIME-BARISTA): 8.00
+
+-----------------
+
+  11: PUT-DOWN-DRINK TABLE2 W DRINKA
+     State   11: 
+
+(NOT-CLEAN TABLE4)
+(CLEAN TABLE3)
+(NOT-ORDER-READY DRINKB)
+(ORDER-DELIVERED DRINKB)
+(NOT-ORDER-READY DRINKA)
+(AT-WAITER W TABLE2)
+(ORDER-DELIVERED DRINKA)
+(HAND-FREE W)
+[RF0](TIME-DRINK-READY_DRINKB): 3.00
+[RF1](TIME-DRINK-READY_DRINKA): 8.00
+[RF2](TIME-WAITER_W): 10.00
+[RF3](TIME-BARISTA): 8.00
+
+-----------------
+
+  12: MOVE-NO-TRAY TABLE2 TABLE4 W
+     State   12: 
+
+(NOT-CLEAN TABLE4)
+(CLEAN TABLE3)
+(NOT-ORDER-READY DRINKB)
+(ORDER-DELIVERED DRINKB)
+(NOT-ORDER-READY DRINKA)
+(ORDER-DELIVERED DRINKA)
+(HAND-FREE W)
+(AT-WAITER W TABLE4)
+[RF0](TIME-DRINK-READY_DRINKB): 3.00
+[RF1](TIME-DRINK-READY_DRINKA): 8.00
+[RF2](TIME-WAITER_W): 10.50
+[RF3](TIME-BARISTA): 8.00
+
+-----------------
+
+  13: CLEAN-TABLE TABLE4 W
+     State   13: 
+
+(CLEAN TABLE3)
+(NOT-ORDER-READY DRINKB)
+(ORDER-DELIVERED DRINKB)
+(NOT-ORDER-READY DRINKA)
+(ORDER-DELIVERED DRINKA)
+(HAND-FREE W)
+(AT-WAITER W TABLE4)
+(CLEAN TABLE4)
+[RF0](TIME-DRINK-READY_DRINKB): 3.00
+[RF1](TIME-DRINK-READY_DRINKA): 8.00
+[RF2](TIME-WAITER_W): 12.50
+[RF3](TIME-BARISTA): 8.00
+
+-----------------
+
+
+
+time spent:    0.00 seconds instantiating 71 easy, 0 hard action templates
+               0.00 seconds reachability analysis, yielding 30 facts and 28 actions
+               0.00 seconds creating final representation with 18 relevant facts, 9 relevant fluents
+               0.00 seconds computing LNF
+               0.00 seconds building connectivity graph
+               0.00 seconds searching, evaluating 92 states, to a max depth of 0
+               0.00 seconds total time
+

@@ -1,7 +1,7 @@
 (define (problem ai4ro2_E_problem)   
     (:domain ai4ro2_E)
     (:objects bar table1 table2 table3 table4 - place 
-        drinkA drinkB - drink
+        drinkA drinkB drinkC drinkD - drink
         w - waiter 
 	)
     
@@ -11,16 +11,17 @@
 		(at-waiter w bar)
 		
 		(empty table1)
-		(= (fl-time-empty table1) 0)
-		(empty table3)
-		(= (fl-time-empty table3) 0)
+		(empty table2)
 		(empty table4)
-		(= (fl-time-empty table4) 0)
 		
 		(tray-empty)
 		
 		(= (fl-hot drinkA) 1)
 		(= (fl-hot drinkB) 0)
+		
+		(= (fl-hot drinkC) 1)
+		(= (fl-hot drinkD) 0)
+		
 		(= (time-barista) 0)
 		(= (time-waiter w) 0)
 		
@@ -28,6 +29,9 @@
 		
 		(= (time-drink-ready drinkA) -1)
 		(= (time-drink-ready drinkB) -1)
+		(= (time-drink-ready drinkC) -1)
+		(= (time-drink-ready drinkD) -1)
+		
 		
 		(= (distance bar table1) 2) 	(= (distance table1 bar) 2)
 		(= (distance bar table2) 2) 	(= (distance table2 bar) 2)
@@ -47,18 +51,17 @@
 		(= (fl-table-size table3) 2)
 		(= (fl-table-size table4) 1)
 		
-        (ordered drinkA table2)
-        (ordered drinkB table2)
-        (=(fl-customers table1) 0)
-        (=(fl-customers table2) 2)
-        (=(fl-customers table3) 0)
-        (=(fl-customers table4) 0)
-        
-        (equals drinkA drinkA)(equals drinkB drinkB)
+        (ordered drinkA table3)
+        (ordered drinkB table3)
+        (ordered drinkC table3)
+        (ordered drinkD table3)
     )
         
-	(:goal (and (order-delivered drinkA) (order-delivered drinkB) 
-			(clean table1) (clean table2)(clean table3) (clean table4))
-	)
+	(:goal (and (order-delivered drinkA)(order-delivered drinkB)
+	            (order-delivered drinkC) (order-delivered drinkD) 
+	            (not (tray-taken))
+			    (clean table1))
+    )
+			    
     (:metric minimize (time-waiter w))
 )

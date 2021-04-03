@@ -1463,6 +1463,7 @@ void print_State( State S )
   }
   
   
+  
   for ( i = 0; i < gnum_relevant_fluents; i++ ) {
     /* ***MINE*** */
     if (requested_fluent(i)){

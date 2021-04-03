@@ -16,40 +16,46 @@
 		(order-ready ?d - drink)
 		(order-delivered ?d - drink)
 		(order-carried ?d - drink ?w - waiter)
+		(order-prepared ?d - drink)
 		
 		;(hot ?d - drink)
 		;(free-barista)
 		
 		(is-bar ?t - place)
 		(empty ?t - place)
+		
+		(equals ?d1 - drink ?d2 - drink)
 	)
 	(:functions 
 		(distance ?t1 - place ?t2 - place)
 		(fl-table-size ?t1 - place)
 		(fl-hot ?d - drink)
-		;(fl-tray-taken ?w - waiter)
 		(time-barista)
 		(time-waiter ?w - waiter)
 		(time-drink-ready ?d - drink)
+		(fl-customers ?t - place)
+	    (fl-last-delivered ?t - place)
+		(fl-time-empty ?t - place)
 	)
 	
     (:action wait-waiter    
         :parameters  (?w - waiter)
         ;:precondition 	()
-        :effect (increase (time-waiter ?w) 1)
+        :effect (increase (time-waiter ?w) 0.5)
 	)
-	(:action wait-barista    
-        ;:parameters  ()
-        ;:precondition 	()
-        :effect (increase (time-barista) 1)
-	)
+	;(:action wait-barista    
+    ;    ;:parameters  ()
+    ;    ;:precondition 	()
+    ;    :effect (increase (time-barista) 1)
+	;)
 	(:action prepare
 		:parameters (?d - drink)
-		:precondition (not (order-ready ?d))
+		:precondition (not (order-prepared ?d))
         :effect (and
 					(increase (time-barista) (+  3   (* 2 (fl-hot ?d ))  ) )
 					(assign (time-drink-ready ?d) (+ (+  3   (* 2 (fl-hot ?d ))  )(time-barista)))
 					(order-ready ?d)
+					(order-prepared ?d)
 				)
 	)       
 
@@ -87,13 +93,17 @@
 						)
         :effect (and  (not (order-carried ?d ?w))
 						(order-delivered ?d)
-						(hand-free ?w))
+						(hand-free ?w)
+				        (decrease (fl-customers ?t) 1)
+				        (assign (fl-last-delivered ?t) (time-waiter ?w))
+				)
 	)
 	(:action clean-table   
         :parameters		(?t - place ?w - waiter)
         :precondition	(and (empty ?t)(not (clean ?t))
 						(at-waiter ?w ?t) (hand-free ?w)
 						(not (tray-taken-waiter w))
+						(>= (time-waiter ?w)(fl-time-empty ?t))
 						)
         :effect (and  (increase (time-waiter ?w) (* 2 (fl-table-size ?t)))
 						(clean ?t)
@@ -102,6 +112,7 @@
 	(:action pick-2-tray   
         :parameters		(?t - place ?w - waiter ?d1 - drink ?d2 - drink)
         :precondition	(and (is-bar ?t)(at-waiter ?w ?t)
+                            (not (equals ?d1 ?d2))
 							(hand-free w)(not (tray-taken))(tray-empty)
 							(>= (time-waiter ?w)(time-drink-ready ?d1))
 							(>= (time-waiter ?w)(time-drink-ready ?d2))
@@ -136,6 +147,8 @@
         :effect (and  (not (order-carried ?d3 ?w))
 						(order-delivered ?d3)
 						(not (has3 ?w)) (has2 ?w)
+						(decrease (fl-customers ?t) 1)
+				        (assign (fl-last-delivered ?t) (time-waiter ?w))
 				)
 	)
 	
@@ -149,6 +162,8 @@
         :effect (and  (not (order-carried ?d2 ?w))
 						(order-delivered ?d2)
 						(not (has2 ?w)) (has1 ?w)
+						(decrease (fl-customers ?t) 1)
+				        (assign (fl-last-delivered ?t) (time-waiter ?w))
 				)
 	)
 	(:action put-down-1-drink   
@@ -162,6 +177,8 @@
 						(order-delivered ?d1)
 						(not (has1 ?w))
 						(tray-empty)
+						(decrease (fl-customers ?t) 1)
+				        (assign (fl-last-delivered ?t) (time-waiter ?w))
 				)
 	)
 	(:action drop-tray   
@@ -174,5 +191,13 @@
 						(hand-free w)
 				)
 	)
+	(:action set-table-empty   
+        :parameters		(?t - place)
+        :precondition	(= (fl-customers ?t) 0)
+        :effect (and  (assign (fl-time-empty ?t) (+ (fl-last-delivered ?t) 4))
+                        (empty ?t)
+				)
+	)
+	
 )
        
