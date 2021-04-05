@@ -1,6 +1,9 @@
 (define (domain ai4ro2_E)
     (:requirements :adl :typing :fluents)
-    (:types place drink waiter)
+    (:types 
+			place drink waiter - object
+			Bar - place
+	)
     (:predicates 
 		(at-waiter ?w - waiter ?t  - place)
         (tray-taken)
@@ -16,7 +19,7 @@
 		(order-carried ?d - drink ?w - waiter)
 		(order-prepared ?d - drink)
 		
-		(is-bar ?t - place)
+		;(is-Bar ?t - place)
 		(empty ?t - place)
 		
 		(equals ?d1 - drink ?d2 - drink)
@@ -33,11 +36,11 @@
 		(fl-time-empty ?t - place)
 	)
 	
-    (:action wait-waiter    
-        :parameters  (?w - waiter)
-        ;:precondition 	()
-        :effect (increase (time-waiter ?w) 0.5)
-	)
+    ;(:action wait-waiter    
+    ;    :parameters  (?w - waiter)
+    ;    ;:precondition 	()
+    ;    :effect (increase (time-waiter ?w) 0.5)
+	;)
 	;(:action wait-barista    
     ;    ;:parameters  ()
     ;    ;:precondition 	()
@@ -69,8 +72,10 @@
 				)
 	)
 	(:action pick-up-drink    
-        :parameters  (?t - place ?w - waiter ?d - drink)
-        :precondition 	(and (is-bar ?t)(not (tray-carried ?w))(at-waiter ?w ?t)
+        :parameters  (?t - Bar ?w - waiter ?d - drink)
+        :precondition 	(and 
+						;(is-Bar ?t)
+						(not (tray-carried ?w))(at-waiter ?w ?t)
 						(order-ready ?d)
 						(hand-free ?w)
 						(>= (time-waiter ?w)(time-drink-ready ?d))
@@ -95,8 +100,9 @@
 	)
 	
 	(:action pick-2-tray   
-        :parameters		(?t - place ?w - waiter ?d1 - drink ?d2 - drink)
-        :precondition	(and (is-bar ?t)(at-waiter ?w ?t)
+        :parameters		(?t - Bar ?w - waiter ?d1 - drink ?d2 - drink)
+        :precondition	(and ;(is-Bar ?t)
+							(at-waiter ?w ?t)
                             (not (equals ?d1 ?d2))
 							(hand-free ?w)(not (tray-taken))(tray-empty)
 							(order-ready ?d1)(order-ready ?d2)
@@ -111,8 +117,10 @@
 				)
 	)
 	(:action pick-3-tray   
-        :parameters		(?t - place ?w - waiter ?d3 - drink)
-        :precondition	(and (has2 ?w)(is-bar ?t)(at-waiter ?w ?t)
+        :parameters		(?t - Bar ?w - waiter ?d3 - drink)
+        :precondition	(and (has2 ?w)
+							;(is-Bar ?t)
+							(at-waiter ?w ?t)
 							(>= (time-waiter ?w)(time-drink-ready ?d3))
 							(order-ready ?d3)
 						)
@@ -167,8 +175,9 @@
 				)
 	)
 	(:action drop-tray   
-        :parameters		(?t - place ?w - waiter)
-        :precondition	(and (tray-carried ?w)(is-bar ?t)
+        :parameters		(?t - Bar ?w - waiter)
+        :precondition	(and (tray-carried ?w)
+								;(is-Bar ?t)
 								(tray-empty)(at-waiter ?w ?t)
 						)
         :effect (and  (not (tray-carried ?w))

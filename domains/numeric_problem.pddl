@@ -1,13 +1,14 @@
 (define (problem ai4ro2_E_problem)   
     (:domain ai4ro2_E)
     (:objects 
-		bar table1 table2 table3 table4 - place 
+		bar - Bar
+		table1 table2 table3 table4 - place 
         drinkA drinkB - drink
         w1 - waiter 
 	)
     
     (:init
-		(is-bar bar)
+		;(is-bar bar)
 		(hand-free w1)
 		(at-waiter w1 bar)
 		
@@ -26,7 +27,7 @@
 		
 		(tray-empty)
 		
-		(= (fl-hot drinkA) 0)
+		(= (fl-hot drinkA) 1)
 		(= (fl-hot drinkB) 0)
 		(= (time-barista) 0)
 		(= (time-waiter w1) 0)
