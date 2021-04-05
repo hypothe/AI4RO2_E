@@ -1,6 +1,7 @@
 # AI4RO2_E
 Repo for group E project related to the 1st AI4RO2 assignment
 
+
 ## Content
 
 ```
@@ -14,7 +15,18 @@ AI4RO2_E/
 		<domain and problem files>
 ```
 
-## Compiling Metric-FF
+### Domains
+
+Multiple domains are presented, from the original one up to the one having bothe the cooling and drink consumption
+extensions (as specified in the name).
+
+### Problems
+
+The 4 problem files presented are those expressed in the assignment requirements.
+
+## Metric-FF
+
+### Compiling Metric-FF
 
 From within the *Metric-FF* folder simply invoke the make command
 ```
@@ -23,7 +35,7 @@ $ make
 ```
 which will create the executable **ff**
 
-## Running Metric-FF
+### Running Metric-FF
 
 The command **ff** needs to be run from within th *Metric-FF* folder.
 If you want to be able tu run it from everywhere on your system add it to your user path like this, supposing to have this folder installed in your system HOME directory
@@ -42,7 +54,7 @@ Specifically, in our case can be used in this fashion
 ```
 Where the '-O' flag is necessary to instruct ff to use a metric explicitly defined inside the problem file (otherwise it would simply use the plan length).
 
-## New option: Print Fluents value
+### New option: Print Fluents value
 
 After 18 years it's now possibile to print fluents values at each traversed state!
 The command line option "-s" has been added among those accepted by the code; by specifying a string after it
@@ -54,9 +66,16 @@ For example, to see all the fluents regarding the internal clock of the waiter w
 .../AI4RO2_E/domains/$ ff -o numeric_domain.pddl -f numeric_problem.pddl -O -s TIME-WAITER
 ```
 
+## ENHSP
+
+The domains and problems are suitable to be tested with the ENHSP planning engine, which can be found 
+[here](https://gitlab.com/enricos83/ENHSP-Public/-/tree/enhsp-20).
+That planners has been tested on Ubuntu 18.04 without issues, with no guarantees for 20.04.
+
 ## TODO
 
-- Add an option for ff command line that toggles the display of actions
-- find a possible implementation for 2 waiters synchronization
-- Try to install ENHSP and see how it behaves on the docker
-
+-   Add an option for ff command line that toggles the display of actions
+-   Find a possible implementation for 2 waiters synchronization
+-   Translate the domains into APE syntax for ENHSP, reintroducing explicit time
+-   Try variations of the current numeric verion (eg. from drop-down-3-drink to drop-drink-tray with the 
+    number of drinks hold stored as a fluent) to see how performances are impacted
