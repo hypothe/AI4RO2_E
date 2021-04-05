@@ -1,37 +1,41 @@
 (define (problem ai4ro2_E_problem)   
     (:domain ai4ro2_E)
-    (:objects bar table1 table2 table3 table4 - place 
+    (:objects 
+		bar table1 table2 table3 table4 - place 
         drinkA drinkB drinkC drinkD - drink
-        w - waiter 
+        w1 - waiter 
 	)
     
     (:init
 		(is-bar bar)
-		(hand-free w)
-		(at-waiter w bar)
+		(hand-free w1)
+		(at-waiter w1 bar)
 		
-		(empty table1)
-		(empty table2)
-		(empty table4)
+		(= (fl-time-empty table1) 0)
+		(= (fl-last-delivered table1) -4)
+		
+		(= (fl-time-empty table2) 0)
+		(= (fl-last-delivered table2) -4)
+		
+		(= (fl-time-empty table3) -1)
+		(= (fl-last-delivered table3) -1)
+		
+		(= (fl-time-empty table4) 0)
+		(= (fl-last-delivered table4) -4)
 		
 		(tray-empty)
 		
-		(= (fl-hot drinkA) 1)
+		(= (fl-hot drinkA) 0)
 		(= (fl-hot drinkB) 0)
-		
 		(= (fl-hot drinkC) 1)
-		(= (fl-hot drinkD) 0)
-		
+		(= (fl-hot drinkD) 1)
 		(= (time-barista) 0)
-		(= (time-waiter w) 0)
-		
-		;(= (fl-tray-taken w) 0)
+		(= (time-waiter w1) 0)
 		
 		(= (time-drink-ready drinkA) -1)
 		(= (time-drink-ready drinkB) -1)
 		(= (time-drink-ready drinkC) -1)
 		(= (time-drink-ready drinkD) -1)
-		
 		
 		(= (distance bar table1) 2) 	(= (distance table1 bar) 2)
 		(= (distance bar table2) 2) 	(= (distance table2 bar) 2)
@@ -55,13 +59,22 @@
         (ordered drinkB table3)
         (ordered drinkC table3)
         (ordered drinkD table3)
+		
+        (=(fl-customers table1) 0)
+        (=(fl-customers table2) 0)
+        (=(fl-customers table3) 4)
+        (=(fl-customers table4) 0)
+        
+        (equals drinkA drinkA)(equals drinkB drinkB)
+        (equals drinkC drinkC)(equals drinkD drinkD)
     )
         
-	(:goal (and (order-delivered drinkA)(order-delivered drinkB)
-	            (order-delivered drinkC) (order-delivered drinkD) 
-	            (not (tray-taken))
-			    (clean table1))
-    )
-			    
-    (:metric minimize (time-waiter w))
+	(:goal (and (order-delivered drinkA) (order-delivered drinkB) 
+				(order-delivered drinkC) (order-delivered drinkD) 
+				(clean table1)(clean table2)(clean table3)(clean table4)
+				;(at-waiter w1 bar)
+				;(not(tray-taken))
+			)
+	)
+    (:metric minimize (time-waiter w1))
 )
