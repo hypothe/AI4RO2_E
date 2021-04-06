@@ -27,7 +27,7 @@
 		
 		(tray-empty)
 		
-		(= (fl-hot drinkA) 1)
+		(= (fl-hot drinkA) 0)
 		(= (fl-hot drinkB) 0)
 		(= (time-barista) 0)
 		(= (time-waiter w1) 0)

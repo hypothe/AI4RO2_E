@@ -1,18 +1,19 @@
 (define (problem ai4ro2_E_problem)   
     (:domain ai4ro2_E)
     (:objects 
-		bar table1 table2 table3 table4 - place 
+		table1 table2 table3 table4 - place
+		bar - Bar
         drinkA drinkB drinkC drinkD - drink
         drinkE drinkF drinkG drinkH - drink
         w1 - waiter 
 	)
     
     (:init
-		(is-bar bar)
+		;(is-bar bar)
 		(hand-free w1)
 		(at-waiter w1 bar)
 		
-		(= (fl-time-empty table1) 0)
+		(= (fl-time-empty table1) -1)
 		(= (fl-last-delivered table1) -4)
 		
 		(= (fl-time-empty table2) 0)
@@ -21,7 +22,7 @@
 		(= (fl-time-empty table3) -1)
 		(= (fl-last-delivered table3) -1)
 		
-		(= (fl-time-empty table4) 0)
+		(= (fl-time-empty table4) -1)
 		(= (fl-last-delivered table4) -4)
 		
 		(tray-empty)
@@ -42,6 +43,10 @@
 		(= (time-drink-ready drinkB) -1)
 		(= (time-drink-ready drinkC) -1)
 		(= (time-drink-ready drinkD) -1)
+		(= (time-drink-ready drinkE) -1)
+		(= (time-drink-ready drinkF) -1)
+		(= (time-drink-ready drinkG) -1)
+		(= (time-drink-ready drinkH) -1)
 		
 		(= (distance bar table1) 2) 	(= (distance table1 bar) 2)
 		(= (distance bar table2) 2) 	(= (distance table2 bar) 2)
@@ -65,6 +70,10 @@
         (ordered drinkB table1)
         (ordered drinkC table4)
         (ordered drinkD table4)
+        (ordered drinkE table3)
+        (ordered drinkF table3)
+        (ordered drinkG table3)
+        (ordered drinkH table3)
 		
         (=(fl-customers table1) 2)
         (=(fl-customers table2) 0)
@@ -73,6 +82,8 @@
         
         (equals drinkA drinkA)(equals drinkB drinkB)
         (equals drinkC drinkC)(equals drinkD drinkD)
+        (equals drinkE drinkE)(equals drinkF drinkF)
+        (equals drinkG drinkG)(equals drinkH drinkH)
     )
         
 	(:goal (and (order-delivered drinkA) (order-delivered drinkB) 
