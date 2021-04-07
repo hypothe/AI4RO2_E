@@ -69,13 +69,12 @@ For example, to see all the fluents regarding the internal clock of the waiter w
 ## ENHSP
 
 The domains and problems are suitable to be tested with the ENHSP planning engine, which can be found 
-[here](https://gitlab.com/enricos83/ENHSP-Public/-/tree/enhsp-20).
-That planners has been tested on Ubuntu 18.04 without issues, with no guarantees for 20.04.
+[here](https://gitlab.com/enricos83/ENHSP-Public/-/tree/enhsp-19).
+That planners has been tested on Ubuntu 18.04 and 20.04.
+Notice that, while enhsp-20 version exists, it resulted in having almost half the performances of -19 version for the presented domain, as shown in the tables reported in the "considerations.md" file.
 
 ## TODO
 
 -   Add an option for ff command line that toggles the display of actions
 -   Find a possible implementation for 2 waiters synchronization
--   Translate the domains into APE syntax for ENHSP, reintroducing explicit time
--   Try variations of the current numeric verion (eg. from drop-down-3-drink to drop-drink-tray with the 
-    number of drinks hold stored as a fluent) to see how performances are impacted
+- Try APE version on enhsp-20
