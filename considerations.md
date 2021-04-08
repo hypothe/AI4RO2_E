@@ -42,7 +42,7 @@ This result should be tested on larger problems
 |States Evaluated|   52739   |   52739   |   52607   |
 
 **Stress test comparison, PDDL2.1 formulation vs. PDDL+, satisfiability of problem 4**
-|        /       | Numeric (2.1) |   APE (+) |
+|        /       | APE (+)       |   Numeric |
 |   ---          | ---           |  ---      |
 |Planning Time   |   10668       |   1350170 |
 |Heuristic Time  |   10009       |   1321470 |
