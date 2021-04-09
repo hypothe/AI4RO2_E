@@ -75,6 +75,6 @@ Notice that, while enhsp-20 version exists, it resulted in having almost half th
 
 ## TODO
 
+- Python script to easily generate a problem file given some human readable specs
+- A lot of the efficiency depends on the gw value... is it possible to find a correlation between some problem variables and its "close-to-optimal" value? ... Some ML agent perhaps? Multi linear interpolation perhaps?
 -   Add an option for ff command line that toggles the display of actions
--   Find a possible implementation for 2 waiters synchronization
-- Try APE version on enhsp-20

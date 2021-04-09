@@ -65,3 +65,39 @@ It appears PDDL+ syntax can be resolved way faster (130x), although producing re
 
 Therefore small values of gw (not far from 1) guarantee to find a solution in an amount of time compatible with the real world application of the system (roughly ten seconds between the order being made and it being started). It should be however taken into account that this can resort in a plan being highly unoptimized (almost 30 time units higher than the ideal one), with better sat solutions requiring way more initial computational overhead (at the moment, to gain 20 time units in the plan duration 70+ seconds more of pre-computation are needed).
 Work should be done on the model in order to push the first solutions toward better quality ones (eg. making actions such as taking a tray more appealing).
+
+## ENHSP FULL DOMAIN - all extensions implemented
+
+**Effect of g_weight on PDDL+ (APE), satisfiability of problem 1 (with all extensions)**
+delta = 1.0 (analogous results for the more appropriate delta_val 0.5, delta-max 0.5)
+|     -gw        |   1       |   2       |  5        | 10      | 20      |
+|   ---          | ---       |    ---    |   ---     |  ---    |  ---    |
+|Planning Time   |    5758   |    5674   |    4721   |  4609   |  3688   |
+|Heuristic Time  |    5109   |    5019   |    4042   |  3978   |  3103   |
+|Search Time     |    5368   |    5284   |    4307   |  4200   |  3288   |
+|Expanded Nodes  |    2684   |    1781   |    2657   |  1846   |  1335   |
+|States Evaluated|    5966   |    4914   |    5292   |  4302   |  2900   |
+|Metric          |    21.0   |    29.0   |    21.0   |  20.0   |  15.0   |
+
+
+**Effect of g_weight on PDDL+ (APE), satisfiability of problem 2 (with all extensions)**
+delta_val 0.5, delta-max 0.5
+|     -gw        |   1       | 10      | 15      | 20      |
+|   ---          | ---       |  ---    |  ---    |  ---    |
+|Planning Time   |   88495   |  13948  |  14922  |  15203  |
+|Heuristic Time  |   86594   |  13045  |  14021  |  14267  |
+|Search Time     |   88036   |  13505  |  14482  |  14713  |
+|Expanded Nodes  |    9760   |   3195  |   3987  |   4142  |
+|States Evaluated|   43141   |   7711  |   8638  |   8619  |
+|Metric          |    41.0   |  34.0   |   31.0  |   33.0  |
+
+**Effect of g_weight on PDDL+ (APE), satisfiability of problem 3 (with all extensions)**
+delta_val 0.5, delta-max 0.5
+|     -gw        |   1    | 10      | 15      | 20      |
+|   ---          | ---    |  ---    |  ---    |  ---    |
+|Planning Time   |   //   |  13948  |  14922  |  15203  |
+|Heuristic Time  |   //   |  13045  |  14021  |  14267  |
+|Search Time     |   //   |  13505  |  14482  |  14713  |
+|Expanded Nodes  |   //   |   3195  |   3987  |   4142  |
+|States Evaluated|   //   |   7711  |   8638  |   8619  |
+|Metric          |   //   |  34.0   |   31.0  |   33.0  |
