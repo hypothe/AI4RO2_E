@@ -93,11 +93,11 @@ delta_val 0.5, delta-max 0.5
 
 **Effect of g_weight on PDDL+ (APE), satisfiability of problem 3 (with all extensions)**
 delta_val 0.5, delta-max 0.5
-|     -gw        |   1    | 10      | 15      | 20      |
-|   ---          | ---    |  ---    |  ---    |  ---    |
-|Planning Time   |   //   |  13948  |  14922  |  15203  |
-|Heuristic Time  |   //   |  13045  |  14021  |  14267  |
-|Search Time     |   //   |  13505  |  14482  |  14713  |
-|Expanded Nodes  |   //   |   3195  |   3987  |   4142  |
-|States Evaluated|   //   |   7711  |   8638  |   8619  |
-|Metric          |   //   |  34.0   |   31.0  |   33.0  |
+|     -gw        |   1    | 10   |   
+|   ---          | ---    |  --- |   
+|Planning Time   |   //   |  //  | 
+|Heuristic Time  |   //   |  //  |
+|Search Time     |   //   |  //  |
+|Expanded Nodes  |   //   |  //  |
+|States Evaluated|   //   |  //  |
+|Metric          |   //   |  //  |
