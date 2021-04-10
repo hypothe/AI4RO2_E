@@ -75,6 +75,7 @@ Notice that, while enhsp-20 version exists, it resulted in having almost half th
 
 ## TODO
 
+- Why is problem APE3_full so much harder to deal with compared with AP2_full? Is it the fact that all 4 drinks are hot, or is it because they are spread between tables? Investigate.
 - Test APE_full domain substituting pick-N, drop-N with fluents
 - Python script to easily generate a problem file given some human readable specs
 - A lot of the efficiency depends on the gw value... is it possible to find a correlation between some problem variables and its "close-to-optimal" value? ... Some ML agent perhaps? Multi linear interpolation perhaps?
