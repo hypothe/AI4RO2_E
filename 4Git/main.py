@@ -6,14 +6,20 @@
 # Import dependencies
 import PySimpleGUI as sg
 
+#Set global variables
+GUI_Input = False
+
 def gui():
 
     #GUI theme
     sg.theme('Topanga')  # Add some color to the window
 
     # Table GUI
-    #images_col = [[sg.Image(".\GUI_image.png")]]
-    layout_input= [
+    images_col = [[sg.Image(".\GUI_image.png")]]
+    layout_input = [
+        [sg.Text('Restaurant status:')],
+        [sg.Text('Active waiters', size=(15, 1)), sg.InputText()],
+        [sg.Text('')],
         [sg.Text('Please enter the number of customers per table and the required hot drinks:')],
         [sg.Text('Table 1:', size=(15, 1)), sg.InputText(),sg.Text('Hod drinks:', size=(8, 1)), sg.InputText()],
         [sg.Text('Table 2:', size=(15, 1)), sg.InputText(),sg.Text('Hod drinks:', size=(8, 1)), sg.InputText()],
@@ -23,20 +29,19 @@ def gui():
     ]
 
     # ----- Full layout -----
-    #layout = [[sg.Column(images_col, element_justification='c'), sg.VSeperator(),
-     #          sg.Column(layout_input, element_justification='c')]]
+    layout = [[sg.Column(images_col, element_justification='c'), sg.VSeperator(),
+               sg.Column(layout_input, element_justification='l')]]
 
-
-    window = sg.Window('AI for Robotics II', layout_input)
+    window = sg.Window('AI for Robotics II', layout)
     event, values = window.read()
     window.close()
-    #print(event, values[0], values[1], values[2], values[3])
-    drink4table = [int(values[0]), int(values[2]), int(values[4]), int(values[6])]
+    print(values)
+    #Extract input from GUI
+    waiters = int(values[2])
+    drink4table = [int(values[3]), int(values[5]), int(values[7]), int(values[9])]
+    hot4table = [int(values[4]), int(values[6]), int(values[8]), int(values[10])]
 
-    #print(event, values[0], values[1], values[2], values[3])
-    hot4table = [int(values[1]), int(values[3]), int(values[5]), int(values[7])]
-
-    return(drink4table, hot4table)
+    return(waiters, drink4table, hot4table)
 
 
 def headgoal_edit(wait_num, drink_num):
@@ -191,6 +196,14 @@ def init_edit(wait_num, d4t, h4t):
 
     return(init_txt)
 
+def metric_edit():
+
+    "Read the metric txt file"
+    metric_name = ".\Domain_Metric.txt"
+    metric_file = open(metric_name, "r")
+    metric_txt = metric_file.read()
+    return(metric_txt)
+
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     """ This function asks the user to insert the number of
@@ -198,27 +211,26 @@ if __name__ == '__main__':
         hot drinks for each of them and it automatically generates
         the problem file for the pddl planning engine
     """
+    #Input selector
+    if GUI_Input:
+        #Graphic user interface
+        [waiter_number, drink4table, hot4table] = gui()
+    else:
+        waiter_number = 2
+        drink4table = [4, 0, 0, 0]
+        hot4table = [2, 0, 0, 0]
 
-    #Graphic user interface
-
-
-    waiter_number = 2
-    [drink4table, hot4table] = gui()
-
+    print(waiter_number)
     print(drink4table)
     print(hot4table)
 
     [header_new, goal_new] = headgoal_edit(waiter_number, sum(drink4table))
     init_new = init_edit(waiter_number, drink4table, hot4table)
+    metric_txt = metric_edit()
 
     #print(header_new)
     #print(goal_new)
     #print(init_new)
-
-    "Read the metric txt file"
-    metric_name = ".\Domain_Metric.txt"
-    metric_file = open(metric_name, "r")
-    metric_txt = metric_file.read()
 
     #Sum the text and create the new pddl problem
     Pddl_problem = header_new + '\n' + init_new + '\n' + goal_new + '\n' + metric_txt
