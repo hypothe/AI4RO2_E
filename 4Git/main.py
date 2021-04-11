@@ -5,9 +5,30 @@
 
 # Import dependencies
 import PySimpleGUI as sg
+import os
+
 
 #Set global variables
-GUI_Input = False
+
+GUI_Input = True                # (Bool) Activate the GUI for the setting of the problem conditions
+RUN = True                      # (Bool) Active if you want to run the code after having generated it
+problem_name = "Custom.pddl"    # (str) Problem name, extension needed
+
+# Input variables if no gui active
+waiter_number_global = 2            # (int) Number of waiters
+drink4table_global = [4, 0, 0, 0]   # list of (int) Drinks ordered for each table
+hot4table_global = [2, 0, 0, 0]     # list of (int) Hot drinks for table
+
+# Input variables for running the planning engine automatically
+Plan_Engine = 'ff'      # (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
+Pddl_domain = 'numeric_domain_APE.pddl'        # (str) Name of pddl domain file
+Optimizer = True        # (Bool) Set to active for optimization process
+g_values = [1, 3, 5]    # list of (int) g values to be run (active only if Optimizer == True)
+h_values = [1, 3, 5]    # list of (int) h values to be run (active only if Optimizer == True)
+opt_alg = ['dff', 'fgf']    # list of (str) optimization algorithm to be tested (active only if Optimizer == True)
+
+#Paramenters
+cwd = os.getcwd()
 
 def gui():
 
@@ -15,7 +36,7 @@ def gui():
     sg.theme('Topanga')  # Add some color to the window
 
     # Table GUI
-    images_col = [[sg.Image(".\GUI_image.png")]]
+    images_col = [[sg.Image(cwd+"\GUI_image.png")]]
     layout_input = [
         [sg.Text('Restaurant status:')],
         [sg.Text('Active waiters', size=(15, 1)), sg.InputText()],
@@ -49,10 +70,10 @@ def headgoal_edit(wait_num, drink_num):
         required information received from the GUI"""
 
     "Open the header and the goal txt file"
-    header_name = ".\Domain_Header.txt"
-    goal_name = ".\Domain_Goal.txt"
-    header_file = open(header_name, "r")
-    goal_file = open(goal_name, "r")
+    header_name = "Domain_Header.txt"
+    goal_name = "Domain_Goal.txt"
+    header_file = open(cwd + "\\" + header_name, "r")
+    goal_file = open(cwd + "\\" + goal_name, "r")
     header_txt = header_file.read()
     goal_txt = goal_file.read()
 
@@ -93,8 +114,8 @@ def init_edit(wait_num, d4t, h4t):
         """
 
     "Open the header and the goal txt file"
-    init_name = ".\Domain_Init.txt"
-    init_file = open(init_name, "r")
+    init_name = "Domain_Init.txt"
+    init_file = open(cwd + "\\" + init_name, "r")
     init_txt = init_file.read()
 
     "Number of drinks and waiters required"
@@ -193,16 +214,24 @@ def init_edit(wait_num, d4t, h4t):
         #hot drinks
     init_txt = init_txt.replace(';HOT_FLAG', hot_drink_string)
 
-
     return(init_txt)
 
 def metric_edit():
 
     "Read the metric txt file"
-    metric_name = ".\Domain_Metric.txt"
-    metric_file = open(metric_name, "r")
+    metric_name = "Domain_Metric.txt"
+    metric_file = open(cwd + "\\" + metric_name, "r")
     metric_txt = metric_file.read()
     return(metric_txt)
+
+def run(Plan_Eng, Pddl_domain, Pddl_problem, Optimizer, g_val, h_val, opt_alg):
+
+    if Plan_Eng == 'ff':
+        command_line = Plan_Eng + ' -o ' + Pddl_domain + ' -f ' + Pddl_problem
+    elif Plan_Eng == 'enhsp':
+        command_line = Plan_Eng + ' -o ' + Pddl_domain + ' -f ' + Pddl_problem
+
+    return(command_line)
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -216,9 +245,9 @@ if __name__ == '__main__':
         #Graphic user interface
         [waiter_number, drink4table, hot4table] = gui()
     else:
-        waiter_number = 2
-        drink4table = [4, 0, 0, 0]
-        hot4table = [2, 0, 0, 0]
+        waiter_number = waiter_number_global
+        drink4table = drink4table_global
+        hot4table = hot4table_global
 
     print(waiter_number)
     print(drink4table)
@@ -235,6 +264,16 @@ if __name__ == '__main__':
     #Sum the text and create the new pddl problem
     Pddl_problem = header_new + '\n' + init_new + '\n' + goal_new + '\n' + metric_txt
     #print(Pddl_problem)
-    output_file = open(".\Custom.pddl", "w")
+    output_file = open(cwd + "\\" + problem_name, "w")
     output_file.write(Pddl_problem)
     output_file.close()
+
+    if RUN:
+
+        for g_value in g_values:
+            for h_value in h_values:
+                run_script = run(Plan_Engine, Pddl_domain,  problem_name, Optimizer, g_value, h_value, opt_alg)
+                #os.system('pwd')
+                #os.system('cd ~')
+                #os.system('ls -la')
+                print(run_script)

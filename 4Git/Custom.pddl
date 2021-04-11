@@ -4,7 +4,7 @@
 		bar - Bar
 		table1 table2 table3 table4 - place
         drinkA drinkB drinkC drinkD  - drink
-        w1 w2  - waiter
+        w1 w2 w3 w4  - waiter
 	)
 
 (:init
@@ -13,11 +13,15 @@
         (= (time-barista) 0)
         (= (time-waiter w1) 0) 
 (= (time-waiter w2) 0) 
+(= (time-waiter w3) 0) 
+(= (time-waiter w4) 0) 
 
 
 		;Hand free condition for each waiter
 		(hand-free w1) 
 (hand-free w2) 
+(hand-free w3) 
+(hand-free w4) 
 
 
 		;Drink not-ready initialization
@@ -54,6 +58,8 @@
 		;Position of each waiter
 		(at-waiter w1 bar)
 (at-waiter w2 table1)
+(at-waiter w3 table2)
+(at-waiter w4 table3)
 
 
         ;Ordered condition
@@ -93,6 +99,8 @@
 	(clean table1)(clean table2)(clean table3)(clean table4)
 	(at-waiter w1 bar)
 (at-waiter w2 table1)
+(at-waiter w3 table2)
+(at-waiter w4 table3)
 
 	(not(tray-taken))
 			)
