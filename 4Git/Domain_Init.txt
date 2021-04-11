@@ -1,32 +1,40 @@
 (:init
-
-        ;Time Initialization
-        (= (time-barista) 0)
-        ;WAITER_TIME_INIT
-
+        ;FIXED free barista
+        (free-barista)
+        
+		;FIXED: Tray empty
+		(tray-empty)
+        
+        ;Free waiter condition of each waiter
+        ;WAITER_FREE
+        
 		;Hand free condition for each waiter
 		;HAND_FREE
 
-		;Drink not-ready initialization
-		;DRINK_NOTREADY_INIT_PH
+        ;Tray not carried by waiters
+        ;TRAY_NOT_CARRIED
 
 		;Identity condition for each drink
 		;DRINK_IDENTITY_PH
-
-        ;Table time initialization
-        ;TABLE_TIME_INIT_PH
+		
+		;Identity condition for each biscuit
+		;BISCUIT_IDENTITY_PH
 
         ;Customers per table
         ;CUSTOMERS_PER_TABLE
 
-        ;Hot drink ready time
+        ;Hot drink flag
         ;HOT_FLAG
+        
+        ;Biscuit - Drink relation
+        ;DRINK_FOR_BISCUIT
 
 		;Position of each waiter
 		;WAITER_INITIAL_POS_PH
 
         ;Ordered condition
         ;ORDERED_BY_PH
+        ;ORDERED_BISCUIT
 
         ;FIXED :Table distances
         (= (distance bar table1) 2) 	(= (distance table1 bar) 2)
@@ -48,8 +56,9 @@
 		(= (fl-table-size table2) 1)
 		(= (fl-table-size table3) 2)
 		(= (fl-table-size table4) 1)
+		
+		;Places free at start
+		;PLACE_FREE
 
-		;FIXED: Tray empty
-		(tray-empty)
 
     )

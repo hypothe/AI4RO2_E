@@ -2,72 +2,71 @@
     (:domain ai4ro2_E)
     (:objects
 		bar - Bar
-		table1 table2 table3 table4 - place
-        drinkA drinkB drinkC drinkD  - drink
-        w1 w2 w3 w4  - waiter
+		table1 table2 table3 table4 - Table
+        drinkA drinkB  - Drink
+        biscuitA biscuitB  - Biscuit
+        w1 w2  - waiter
 	)
 
 (:init
-
-        ;Time Initialization
-        (= (time-barista) 0)
-        (= (time-waiter w1) 0) 
-(= (time-waiter w2) 0) 
-(= (time-waiter w3) 0) 
-(= (time-waiter w4) 0) 
-
-
+        ;FIXED free barista
+        (free-barista)
+        
+		;FIXED: Tray empty
+		(tray-empty)
+        
+        ;Free waiter condition of each waiter
+        (free-waiter w1)
+		(free-waiter w2)
+		
+        
 		;Hand free condition for each waiter
-		(hand-free w1) 
-(hand-free w2) 
-(hand-free w3) 
-(hand-free w4) 
+		(hand-free w1)
+		(hand-free w2)
+		
 
-
-		;Drink not-ready initialization
-		(= (time-drink-ready drinkA) -1) 
-(= (time-drink-ready drinkB) -1) 
-(= (time-drink-ready drinkC) -1) 
-(= (time-drink-ready drinkD) -1) 
-
+        ;Tray not carried by waiters
+        (= (fl-tray-carried w1) 0)
+		(= (fl-tray-carried w2) 0)
+		
 
 		;Identity condition for each drink
-		(equals drinkA drinkA)(equals drinkB drinkB)(equals drinkC drinkC)(equals drinkD drinkD)
-
-        ;Table time initialization
-        (= (fl-time-empty table1) -1) (= (fl-last-delivered table1) - 4) 
-(= (fl-time-empty table2) 0) (= (fl-last-delivered table1) - 4)
-(= (fl-time-empty table3) 0) (= (fl-last-delivered table1) - 4)
-(= (fl-time-empty table4) 0) (= (fl-last-delivered table1) - 4)
-
+		(equals drinkA drinkA)(equals drinkB drinkB)
+		
+		
+		;Identity condition for each biscuit
+		(equals biscuitA biscuitA)(equals biscuitB biscuitB)
+		
 
         ;Customers per table
-        (=(fl-customers table1) 4)
-(=(fl-customers table2) 0)
-(=(fl-customers table3) 0)
-(=(fl-customers table4) 0)
+        (=(fl-customers table1) 0)
+		(=(fl-customers table2) 2)
+		(=(fl-customers table3) 0)
+		(=(fl-customers table4) 0)
+		
 
-
-        ;Hot drink ready time
-        (= (fl-hot drinkA) 1)
-(= (fl-hot drinkB) 1)
-(= (fl-hot drinkC) 0)
-(= (fl-hot drinkD) 0)
-
+        ;Hot drink flag
+        (= (fl-hot drinkA) 0)
+		(= (fl-hot drinkB) 0)
+		
+        
+        ;Biscuit - Drink relation
+        (drink-for-biscuit drinkA biscuitA)
+		(drink-for-biscuit drinkB biscuitB)
+		
 
 		;Position of each waiter
 		(at-waiter w1 bar)
-(at-waiter w2 table1)
-(at-waiter w3 table2)
-(at-waiter w4 table3)
-
+		(at-waiter w2 table1)
+		
 
         ;Ordered condition
-        (ordered drinkA table1 ) 
-(ordered drinkB table1 ) 
-(ordered drinkC table1 ) 
-(ordered drinkD table1 ) 
-
+        (ordered drinkA table2 )
+		(ordered drinkB table2 )
+		
+        (ordered biscuitA table2 )
+		(ordered biscuitB table2 )
+		
 
         ;FIXED :Table distances
         (= (distance bar table1) 2) 	(= (distance table1 bar) 2)
@@ -89,21 +88,26 @@
 		(= (fl-table-size table2) 1)
 		(= (fl-table-size table3) 2)
 		(= (fl-table-size table4) 1)
+		
+		;Places free at start
+		(place-free table2)
+		(place-free table3)
+		(place-free table4)
+		
 
-		;FIXED: Tray empty
-		(tray-empty)
 
     )
-(:goal (and
-    (order-delivered drinkA) (order-delivered drinkB) (order-delivered drinkC) (order-delivered drinkD) 
-	(clean table1)(clean table2)(clean table3)(clean table4)
-	(at-waiter w1 bar)
-(at-waiter w2 table1)
-(at-waiter w3 table2)
-(at-waiter w4 table3)
 
-	(not(tray-taken))
-			)
+(:goal (and
+        (order-delivered drinkA) (order-delivered drinkB) 
+        (order-delivered biscuitA) (order-delivered biscuitB) 
+	    (clean table1)(clean table2)(clean table3)(clean table4)
+	    (at-waiter w1 bar)
+		(at-waiter w2 table1)
+		
+	    (not(tray-taken))
+	    )
 	)
-(:metric minimize (time-waiter w1))
+
+(:metric minimize #t)
     )
