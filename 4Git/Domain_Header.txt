@@ -2,7 +2,8 @@
     (:domain ai4ro2_E)
     (:objects
 		bar - Bar
-		table1 table2 table3 table4 - place
-        ;DRINK_PH - drink
+		table1 table2 table3 table4 - Table
+        ;DRINK_PH
+        ;BISCUIT_PH
         ;WAIT_PH - waiter
 	)

@@ -14,7 +14,6 @@
 		
         (tray-taken)
 		(tray-empty)
-        ;(tray-carried ?w - waiter)
 		(has3 ?w - waiter)(has2 ?w - waiter)(has1 ?w - waiter)
         (hand-free ?w - waiter)
 		

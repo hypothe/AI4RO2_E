@@ -1,2 +1,2 @@
-(:metric minimize (time-waiter w1))
+(:metric minimize #t)
     )
