@@ -5,15 +5,17 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # Import dependencies
-import PySimpleGUI as sg
+#import PySimpleGUI as sg 	# disabled for multiple run on docker
 import os
+import subprocess
 
 
 #Set global variables
 
-GUI_Input = True                # (Bool) Activate the GUI for the setting of the problem conditions
-RUN = False                      # (Bool) Active if you want to run the code after having generated it
+GUI_Input = False               # (Bool) Activate the GUI for the setting of the problem conditions
+RUN = True                      # (Bool) Active if you want to run the code after having generated it
 problem_name = "Custom.pddl"    # (str) Problem name, extension needed
+wd = "run"			# (str) Working directory
 
 # Input variables if no gui active
 waiter_number_global = 2            # (int) Number of waiters
@@ -22,12 +24,12 @@ hot4table_global = [2, 0, 0, 0]     # list of (int) Hot drinks for table
 table_number_global = 4             # number of tables present
 
 # Input variables for running the planning engine automatically
-Plan_Engine = 'ff'      # (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
-Pddl_domain = 'numeric_domain_APE.pddl'        # (str) Name of pddl domain file
-Optimizer = True        # (Bool) Set to active for optimization process
-g_values = [1, 3, 5]    # list of (int) g values to be run (active only if Optimizer == True)
-h_values = [1, 3, 5]    # list of (int) h values to be run (active only if Optimizer == True)
-opt_alg = ['dff', 'fgf']    # list of (str) optimization algorithm to be tested (active only if Optimizer == True)
+Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
+Pddl_domain = 'numeric_domain_APE.pddl'         # (str) Name of pddl domain file
+Optimizer = False        			# (Bool) Set to active for optimization process
+g_values = [1]    			# list of (int) g values to be run (active only if Optimizer == True)
+h_values = [1]    			# list of (int) h values to be run (active only if Optimizer == True)
+opt_alg = ['dff', 'fgf']    			# list of (str) optimization algorithm to be tested (active only if Optimizer == True)
 
 #Paramenters
 cwd = os.getcwd()
@@ -295,10 +297,21 @@ def metric_edit():
 
 def run(Plan_Eng, Pddl_domain, Pddl_problem, Optimizer, g_val, h_val, opt_alg):
 
+    # create the sting to run the planning engine
     if Plan_Eng == 'ff':
         command_line = Plan_Eng + ' -o ' + Pddl_domain + ' -f ' + Pddl_problem
     elif Plan_Eng == 'enhsp':
-        command_line = Plan_Eng + ' -o ' + Pddl_domain + ' -f ' + Pddl_problem
+        command_line =  Plan_Eng + ' -o ' + Pddl_domain + ' -f ' + Pddl_problem
+	
+    command_red = "-o " + Pddl_domain + ' -f ' + Pddl_problem
+
+    # run the planning engine
+   
+    #subprocess.run(['enhsp'], input= ' -o ' + Pddl_domain + ' -f ' + Pddl_problem) 
+    print(command_red)
+    subprocess.run(["/root/AI4RO_II/ENHSP-public/enhsp", "-o", "./run/"+Pddl_domain, "-f", "./run/"+Pddl_problem, "out >> out.txt"]) 
+    # move back to original folder
+    print('Done')
 
     return(command_line)
 
@@ -333,7 +346,7 @@ if __name__ == '__main__':
     #Sum the text and create the new pddl problem
     Pddl_problem = header_new + '\n' + init_new + '\n' + goal_new + '\n' + metric_txt
     #print(Pddl_problem)
-    output_file = open(cwd + "/" + problem_name, "w")
+    output_file = open(cwd + "/" + wd + "/"+ problem_name, "w")
     output_file.write(Pddl_problem)
     output_file.close()
 
@@ -342,7 +355,5 @@ if __name__ == '__main__':
         for g_value in g_values:
             for h_value in h_values:
                 run_script = run(Plan_Engine, Pddl_domain,  problem_name, Optimizer, g_value, h_value, opt_alg)
-                #os.system('pwd')
-                #os.system('cd ~')
-                #os.system('ls -la')
+                
                 print(run_script)
