@@ -309,7 +309,7 @@ def run(Plan_Eng, Pddl_domain, Pddl_problem, Optimizer, g_val, h_val, opt_alg):
    
     #subprocess.run(['enhsp'], input= ' -o ' + Pddl_domain + ' -f ' + Pddl_problem) 
     print(command_red)
-    subprocess.run(["/root/AI4RO_II/ENHSP-public/enhsp", "-o", "./run/"+Pddl_domain, "-f", "./run/"+Pddl_problem, "out >> out.txt"]) 
+    subprocess.run(["/root/AI4RO_II/ENHSP-public/enhsp", "-o", "./run/"+Pddl_domain, "-f", "./run/"+Pddl_problem, "> out.txt"]) 
     # move back to original folder
     print('Done')
 
