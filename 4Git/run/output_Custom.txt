@@ -2,104 +2,114 @@ b'Domain parsed
 Problem parsed
 Grounding..
 Light Validation Completed
-Delta time validation model:1
-Delta time execution model:1.0
-Delta time heuristic model:1.0
-Delta Max:1
 Simplification..
+(Pre Simplification) - |A|+|P|+|E|: 123
+(After Easy Simplification) - |A|+|P|+|E|: 99
+(After AIBR):97
+(Pre Simplification) - |A|+|P|+|E|: 123
+(After Easy Simplification) - |A|+|P|+|E|: 99
+(After AIBR):97
 Grounding and Simplification finished
 |A|:67
-|P|:18
-|E|:16
+|P|:15
+|E|:15
+Size(X):13
+Size(F):61
+Delta time heuristic model:1.0
+Delta time planning model:1.0
+Delta time search-execution model:1.0
+Delta time validation model:1
+Setting horizon to:NaN
 Running WA-STAR
 Reachable actions and processes: |A U P U E|:97
-Take all reachable actions
-Actions used at init:67
-h(n = s_0)=159.0
-f(n) = 159.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.175)
-f(n) = 160.0 (Expanded Nodes: 112, Evaluated States: 399, Time: 1.653)
-f(n) = 161.0 (Expanded Nodes: 160, Evaluated States: 559, Time: 2.126)
-Problem Solved
+h(n = s_0)=504.0
+f(n) = 504.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.041)
+Starting Validation
+(Pre Simplification) - |A|+|P|+|E|: 123
+(After Easy Simplification) - |A|+|P|+|E|: 99
+(After AIBR):97
 Epsilon set to be:0.0
-(0.00000) a-start-move Parameters: bar  - Bar  table1  - Table  w1  - waiter  
-(0.00000) serve-table Parameters: w1  - waiter  table1  - Table  
-(0.00000,1.00000)------>waiting
-(1.00000) e-end-move Parameters: w1  - waiter  table1  - Table  
-(1.00000) a-start-clean-table Parameters: table1  - Table  w1  - waiter  
-(1.00000,3.00000)------>waiting
-(3.00000) e-end-clean-table Parameters: table1  - Table  w1  - waiter  
-(3.00000) a-start-move Parameters: table1  - Table  table4  - Table  w1  - waiter  
-(3.00000) serve-table Parameters: w1  - waiter  table3  - Table  
-(3.00000,4.00000)------>waiting
-(4.00000) e-end-move Parameters: w1  - waiter  table4  - Table  
-(4.00000) a-start-clean-table Parameters: table4  - Table  w1  - waiter  
-(4.00000,6.00000)------>waiting
-(6.00000) e-end-clean-table Parameters: table4  - Table  w1  - waiter  
-(6.00000) a-start-move Parameters: table4  - Table  table3  - Table  w1  - waiter  
-(6.00000) serve-table Parameters: w1  - waiter  table4  - Table  
-(6.00000,7.00000)------>waiting
-(7.00000) e-end-move Parameters: w1  - waiter  table3  - Table  
-(7.00000) a-start-clean-table Parameters: table3  - Table  w1  - waiter  
-(7.00000) a-order-start Parameters: drinkB  - Drink  
-(7.00000,10.00000)------>waiting
-(10.00000) e-order-end Parameters: drinkB  - Drink  
-(10.00000,11.00000)------>waiting
-(11.00000) e-end-clean-table Parameters: table3  - Table  w1  - waiter  
-(11.00000) a-start-move Parameters: table3  - Table  bar  - Bar  w1  - waiter  
-(11.00000) a-order-start Parameters: drinkA  - Drink  
-(11.00000,13.00000)------>waiting
-(13.00000) e-end-move Parameters: w1  - waiter  bar  - Bar  
-(13.00000,14.00000)------>waiting
-(14.00000) e-order-end Parameters: drinkA  - Drink  
-(14.00000) pick-2-tray Parameters: bar  - Bar  w1  - waiter  drinkA  - Drink  drinkB  - Drink  
-(14.00000) a-start-move Parameters: bar  - Bar  table2  - Table  w1  - waiter  
-(14.00000,15.00000)------>waiting
-(15.00000) serve-table Parameters: w1  - waiter  table2  - Table  
-(15.00000,16.00000)------>waiting
-(16.00000) e-end-move Parameters: w1  - waiter  table2  - Table  
-(16.00000) put-down-2-drink Parameters: table2  - Table  w1  - waiter  drinkB  - Drink  
-(16.00000) put-down-1-drink Parameters: table2  - Table  w1  - waiter  drinkA  - Drink  
-(16.00000) a-start-move Parameters: table2  - Table  bar  - Bar  w1  - waiter  
-(16.00000) e-biscuit-demanded Parameters: drinkA  - Drink  biscuitA  - Biscuit  
-(16.00000) e-biscuit-demanded Parameters: drinkB  - Drink  biscuitB  - Biscuit  
-(16.00000,18.00000)------>waiting
-(18.00000) e-end-move Parameters: w1  - waiter  bar  - Bar  
-(18.00000) drop-tray Parameters: bar  - Bar  w1  - waiter  
-(18.00000) pick-2-tray Parameters: bar  - Bar  w1  - waiter  biscuitA  - Biscuit  biscuitB  - Biscuit  
-(18.00000) a-start-move Parameters: bar  - Bar  table2  - Table  w1  - waiter  
-(18.00000,20.00000)------>waiting
-(20.00000) e-end-move Parameters: w1  - waiter  table2  - Table  
-(20.00000) e-end-drinking Parameters: drinkB  - Drink  table2  - Table  
-(20.00000) e-end-drinking Parameters: drinkA  - Drink  table2  - Table  
-(20.00000) put-down-2-drink Parameters: table2  - Table  w1  - waiter  biscuitA  - Biscuit  
-(20.00000) put-down-1-drink Parameters: table2  - Table  w1  - waiter  biscuitB  - Biscuit  
-(20.00000) a-start-move Parameters: table2  - Table  bar  - Bar  w1  - waiter  
-(20.00000,22.00000)------>waiting
-(22.00000) e-end-move Parameters: w1  - waiter  bar  - Bar  
-(22.00000) drop-tray Parameters: bar  - Bar  w1  - waiter  
-(22.00000) a-start-move Parameters: bar  - Bar  table2  - Table  w1  - waiter  
-(22.00000,23.00000)------>waiting
-(23.00000) e-end-move Parameters: w1  - waiter  table2  - Table  
-(23.00000) a-start-clean-table Parameters: table2  - Table  w1  - waiter  
-(23.00000,25.00000)------>waiting
-(25.00000) e-end-clean-table Parameters: table2  - Table  w1  - waiter  
-(25.00000) a-start-move Parameters: table2  - Table  bar  - Bar  w1  - waiter  
-(25.00000,26.00000)------>waiting
-(26.00000) e-end-move Parameters: w1  - waiter  bar  - Bar  
-
 Resolution for validation:1.0
 (Pddl+ semantics) Plan is valid:true
-Plan-Length:74
-Metric-Value:26.0
-Planning Time:6554
-Heuristic Time:5390
-Search Time:5765
-Expanded Nodes:1193
-States Evaluated:2658
-Duration:26.0000000
-Total Cost:0.0
+Problem Solved
+0.00000: (a-start-move bar table1 w1 )
+0.00000: (serve-table w1 table1 )
+0.00000: (serve-table w1 table2 )
+0.00000: (serve-table w1 table3 )
+0.00000: (serve-table w1 table4 )
+(0.00000,1.00000)------>waiting
+1.00000: (e-end-move w1 table1 )
+1.00000: (a-start-clean-table table1 w1 )
+(1.00000,3.00000)------>waiting
+3.00000: (e-end-clean-table table1 w1 )
+3.00000: (a-start-move table1 table3 w1 )
+(3.00000,4.00000)------>waiting
+4.00000: (e-end-move w1 table3 )
+4.00000: (a-start-clean-table table3 w1 )
+4.00000: (a-order-start drinkA )
+(4.00000,7.00000)------>waiting
+7.00000: (e-order-end drinkA )
+(7.00000,8.00000)------>waiting
+8.00000: (e-end-clean-table table3 w1 )
+8.00000: (a-start-move table3 table4 w1 )
+(8.00000,9.00000)------>waiting
+9.00000: (e-end-move w1 table4 )
+9.00000: (a-start-clean-table table4 w1 )
+9.00000: (a-order-start drinkB )
+(9.00000,11.00000)------>waiting
+11.00000: (e-end-clean-table table4 w1 )
+(11.00000,12.00000)------>waiting
+12.00000: (e-order-end drinkB )
+12.00000: (a-start-move table4 table1 w1 )
+(12.00000,13.00000)------>waiting
+13.00000: (e-end-move w1 table1 )
+13.00000: (a-start-move table1 bar w1 )
+(13.00000,14.00000)------>waiting
+14.00000: (e-end-move w1 bar )
+14.00000: (pick-2-tray bar w1 drinkA drinkB )
+14.00000: (a-start-move bar table2 w1 )
+(14.00000,16.00000)------>waiting
+16.00000: (e-end-move w1 table2 )
+16.00000: (put-down-2-drink table2 w1 drinkA )
+16.00000: (put-down-1-drink table2 w1 drinkB )
+16.00000: (a-start-move table2 bar w1 )
+16.00000: (e-biscuit-demanded drinkA biscuitA )
+16.00000: (e-biscuit-demanded drinkB biscuitB )
+(16.00000,18.00000)------>waiting
+18.00000: (e-end-move w1 bar )
+18.00000: (drop-tray bar w1 )
+18.00000: (pick-2-tray bar w1 biscuitA biscuitB )
+18.00000: (a-start-move bar table2 w1 )
+(18.00000,20.00000)------>waiting
+20.00000: (e-end-move w1 table2 )
+20.00000: (e-end-drinking drinkB table2 )
+20.00000: (e-end-drinking drinkA table2 )
+20.00000: (put-down-2-drink table2 w1 biscuitB )
+20.00000: (put-down-1-drink table2 w1 biscuitA )
+20.00000: (a-start-move table2 bar w1 )
+(20.00000,22.00000)------>waiting
+22.00000: (e-end-move w1 bar )
+22.00000: (drop-tray bar w1 )
+22.00000: (a-start-move bar table2 w1 )
+(22.00000,23.00000)------>waiting
+23.00000: (e-end-move w1 table2 )
+23.00000: (a-start-clean-table table2 w1 )
+(23.00000,25.00000)------>waiting
+25.00000: (e-end-clean-table table2 w1 )
+25.00000: (a-start-move table2 bar w1 )
+(25.00000,26.00000)------>waiting
+26.00000: (e-end-move w1 bar )
+
+Plan-Length:76
+Duration:26.0
+Metric (Plan):0.0
+Metric (Search):26.0
+Planning Time:2723
+Heuristic Time:1437
+Search Time:1619
+Expanded Nodes:363
+States Evaluated:743
 Fixed constraint violations during search (zero-crossing):0
-Number of Dead-Ends detected:391
-Number of Duplicates detected:1518
-Number of LP invocations:0
-'
+Number of Dead-Ends detected:124
+Number of Duplicates detected:290
+'### ------------------ ###

@@ -24,7 +24,8 @@ hot4table_global = [0, 0, 0, 0]     # list of (int) Hot drinks for table
 table_number_global = 4             # number of tables present
 
 # Input variables for running the planning engine automatically
-engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
+#engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
+engine_path = "/root/ENHSP-Public/enhsp"
 Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
 Pddl_domain = 'numeric_domain_APE_full.pddl'    # (str) Name of pddl domain file
 Optimizer = False        			# (Bool) Set to active for optimization process
@@ -297,27 +298,27 @@ def metric_edit():
     metric_txt = metric_file.read()
     return(metric_txt)
 
-def run(Plan_Eng, Pddl_domain, Pddl_problem, Optimizer, g_val, h_val, opt_alg):	
+def run(Plan_Eng, Pddl_domain, Pddl_problem, Optimizer, g_val, h_val, opt_alg , run_output_file):	
 
     # try torun the planning engine
     try:
         domain_string = "./" + wd + "/" + Pddl_domain
         problem_string = "./" + wd + "/" + Pddl_problem
-        out_name = Pddl_problem[0:-5]
-        output_string = "output_" + out_name + ".txt"
+        
         result = subprocess.run([engine_path, "-o", domain_string, "-f", problem_string],check=True,timeout=max_run_time, capture_output=True)
         #extract output and error and put them in formatted form
         res = str(result.stdout)      
         frm_result = res.replace('\\n','\n')
         #Save output and error in the working directory
         ## WRITE mode changed to APPEND to allow for multiple outputs being saved
-        run_output_file = open(cwd + "/" + wd + "/"+ output_string, "a") 
+        
         run_output_file.write(frm_result)
         run_output_file.write("### ------------------ ###")
-        run_output_file.close()
-    except:
+        return 1
+    except (TimeoutExpired, CalledProcessError):
         fail_str = 'Solution not found for ' + Pddl_problem + 'in  ' + str(max_run_time) + ' seconds'
         print(fail_str)
+        return 0
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -354,8 +355,17 @@ if __name__ == '__main__':
     output_file.close()
 
     if RUN:
-
+        out_name = problem_name[0:-5]
+        output_string = "output_" + out_name + ".txt"
+        run_output_file = open(cwd + "/" + wd + "/"+ output_string, "w")
+        
         for g_value in g_values:
             for h_value in h_values:
-                run_script = run(Plan_Engine, Pddl_domain,  problem_name, Optimizer, g_value, h_value, opt_alg)
-                
+                run_script = run(Plan_Engine, Pddl_domain,  problem_name, Optimizer, g_value, h_value, opt_alg, run_output_file)
+                res_run_str = problem_name + " with hw = " + str(h_value) + " gw = " + str(g_value)
+                if run_script:
+                    print("Succesful run " + res_run_str)
+                else:
+                    print("Unsuccesful run " + res_run_str)
+        
+        run_output_file.close()
