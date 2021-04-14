@@ -1,3 +1,0 @@
-Domain parsed
-Problem parsed
-The following object is not valid:table1  - Table 

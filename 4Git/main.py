@@ -18,18 +18,20 @@ problem_name = "Custom.pddl"    # (str) Problem name, extension needed
 wd = "run"			# (str) Working directory
 
 # Input variables if no gui active
-waiter_number_global = 2            # (int) Number of waiters
-drink4table_global = [4, 0, 0, 0]   # list of (int) Drinks ordered for each table
-hot4table_global = [2, 0, 0, 0]     # list of (int) Hot drinks for table
+waiter_number_global = 1            # (int) Number of waiters
+drink4table_global = [0, 2, 0, 0]   # list of (int) Drinks ordered for each table
+hot4table_global = [0, 0, 0, 0]     # list of (int) Hot drinks for table
 table_number_global = 4             # number of tables present
 
 # Input variables for running the planning engine automatically
+engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
 Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
-Pddl_domain = 'numeric_domain_APE.pddl'         # (str) Name of pddl domain file
+Pddl_domain = 'numeric_domain_APE_full.pddl'    # (str) Name of pddl domain file
 Optimizer = False        			# (Bool) Set to active for optimization process
 g_values = [1]    			# list of (int) g values to be run (active only if Optimizer == True)
 h_values = [1]    			# list of (int) h values to be run (active only if Optimizer == True)
 opt_alg = ['dff', 'fgf']    			# list of (str) optimization algorithm to be tested (active only if Optimizer == True)
+max_run_time = 120			# (int) maximum running time in seconds before stopping the run of the planning engine
 
 #Paramenters
 cwd = os.getcwd()
@@ -295,25 +297,26 @@ def metric_edit():
     metric_txt = metric_file.read()
     return(metric_txt)
 
-def run(Plan_Eng, Pddl_domain, Pddl_problem, Optimizer, g_val, h_val, opt_alg):
+def run(Plan_Eng, Pddl_domain, Pddl_problem, Optimizer, g_val, h_val, opt_alg):	
 
-    # create the sting to run the planning engine
-    if Plan_Eng == 'ff':
-        command_line = Plan_Eng + ' -o ' + Pddl_domain + ' -f ' + Pddl_problem
-    elif Plan_Eng == 'enhsp':
-        command_line =  Plan_Eng + ' -o ' + Pddl_domain + ' -f ' + Pddl_problem
-	
-    command_red = "-o " + Pddl_domain + ' -f ' + Pddl_problem
-
-    # run the planning engine
-   
-    #subprocess.run(['enhsp'], input= ' -o ' + Pddl_domain + ' -f ' + Pddl_problem) 
-    print(command_red)
-    subprocess.run(["/root/AI4RO_II/ENHSP-public/enhsp", "-o", "./run/"+Pddl_domain, "-f", "./run/"+Pddl_problem, "> out.txt"]) 
-    # move back to original folder
-    print('Done')
-
-    return(command_line)
+    # try torun the planning engine
+    try:
+        domain_string = "./" + wd + "/" + Pddl_domain
+        problem_string = "./" + wd + "/" + Pddl_problem
+        out_name = Pddl_problem[0:-5]
+        output_string = "output_" + out_name + ".txt"
+        result = subprocess.run([engine_path, "-o", domain_string, "-f", problem_string],check=True,timeout=max_run_time, capture_output=True)
+        #extract output and error and put them in formatted form
+        res = str(result.stdout)      
+        frm_result = res.replace('\\n','\n')
+        #Save ourpur and error in the working directory
+        
+        run_output_file = open(cwd + "/" + wd + "/"+ output_string, "w") 
+        run_output_file.write(frm_result)
+        run_output_file.close()
+    except:
+        fail_str = 'Solution not found for ' + Pddl_problem + 'in  ' + str(max_run_time) + ' seconds'
+        print(fail_str)
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
@@ -345,7 +348,6 @@ if __name__ == '__main__':
 
     #Sum the text and create the new pddl problem
     Pddl_problem = header_new + '\n' + init_new + '\n' + goal_new + '\n' + metric_txt
-    #print(Pddl_problem)
     output_file = open(cwd + "/" + wd + "/"+ problem_name, "w")
     output_file.write(Pddl_problem)
     output_file.close()
@@ -356,4 +358,3 @@ if __name__ == '__main__':
             for h_value in h_values:
                 run_script = run(Plan_Engine, Pddl_domain,  problem_name, Optimizer, g_value, h_value, opt_alg)
                 
-                print(run_script)
