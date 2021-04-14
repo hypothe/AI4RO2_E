@@ -309,10 +309,11 @@ def run(Plan_Eng, Pddl_domain, Pddl_problem, Optimizer, g_val, h_val, opt_alg):
         #extract output and error and put them in formatted form
         res = str(result.stdout)      
         frm_result = res.replace('\\n','\n')
-        #Save ourpur and error in the working directory
-        
-        run_output_file = open(cwd + "/" + wd + "/"+ output_string, "w") 
+        #Save output and error in the working directory
+        ## WRITE mode changed to APPEND to allow for multiple outputs being saved
+        run_output_file = open(cwd + "/" + wd + "/"+ output_string, "a") 
         run_output_file.write(frm_result)
+        run_output_file.write("### ------------------ ###")
         run_output_file.close()
     except:
         fail_str = 'Solution not found for ' + Pddl_problem + 'in  ' + str(max_run_time) + ' seconds'
