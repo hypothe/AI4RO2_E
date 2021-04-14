@@ -8,12 +8,15 @@
 #import PySimpleGUI as sg 	# disabled for multiple run on docker
 import os
 import subprocess
+#import plotly.express as px
+#import pandas as pd
 
 
 #Set global variables
 
 GUI_Input = False               # (Bool) Activate the GUI for the setting of the problem conditions
 RUN = True                      # (Bool) Active if you want to run the code after having generated it
+PARSE = True			# (Bool) Active if you want to get the plot of the plan
 problem_name = "Custom.pddl"    # (str) Problem name, extension needed
 wd = "run"			# (str) Working directory
 
@@ -24,15 +27,16 @@ hot4table_global = [0, 0, 0, 0]     # list of (int) Hot drinks for table
 table_number_global = 4             # number of tables present
 
 # Input variables for running the planning engine automatically
-#engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
-engine_path = "/root/ENHSP-Public/enhsp"
+engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
+#engine_path = "/root/ENHSP-Public/enhsp"
 Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
 Pddl_domain = 'numeric_domain_APE_full.pddl'    # (str) Name of pddl domain file
 Optimizer = False        			# (Bool) Set to active for optimization process
-g_values = [1]    			# list of (int) g values to be run (active only if Optimizer == True)
-h_values = [1]    			# list of (int) h values to be run (active only if Optimizer == True)
+g_values = [1,2]    			# list of (int) g values to be run (active only if Optimizer == True)
+h_values = [1,2]    			# list of (int) h values to be run (active only if Optimizer == True)
 opt_alg = ['dff', 'fgf']    			# list of (str) optimization algorithm to be tested (active only if Optimizer == True)
 max_run_time = 120			# (int) maximum running time in seconds before stopping the run of the planning engine
+output_keywords = ['Metric (Search):', 'Duration:', 'Search Time:', 'Expanded Nodes:']# list of (str): keywords for relevant outputs
 
 #Paramenters
 cwd = os.getcwd()
@@ -358,14 +362,50 @@ if __name__ == '__main__':
         out_name = problem_name[0:-5]
         output_string = "output_" + out_name + ".txt"
         run_output_file = open(cwd + "/" + wd + "/"+ output_string, "w")
-        
+	
+        # Output status matrix initialization
+        status_array = [ 0 for i in range(len(g_values)*len(h_values))]
+        output_matrix = [[[0 for  i in range(len(g_values))] for j in range(len(h_values))] for k in range(len(output_keywords))]
+        print(output_matrix)
+	    
+        run_count = 0 
         for g_value in g_values:
             for h_value in h_values:
+                run_fail = 0		# Flag to check ouput for this 
                 run_script = run(Plan_Engine, Pddl_domain,  problem_name, Optimizer, g_value, h_value, opt_alg, run_output_file)
                 res_run_str = problem_name + " with hw = " + str(h_value) + " gw = " + str(g_value)
                 if run_script:
                     print("Succesful run " + res_run_str)
                 else:
                     print("Unsuccesful run " + res_run_str)
-        
+                    run_fail = 1
+                status_array[run_count] = run_fail
+                run_count += 1       
         run_output_file.close()
+        print(output_matrix)
+	
+        if PARSE:
+	    
+            #Read the output file to detect the interesting keywords            
+            read_run_output = open(cwd + "/" + wd + "/"+ output_string, "r")
+            for line in read_run_output:
+                key_id = 0
+                for key in output_keywords:
+                    run_id = 0
+                    if key in line:                        
+                        col = run_id %  len(h_values)
+                        raw = run_id -  col * len(g_values)
+                        if status_array[run_id] == 0:
+                            
+                            output_matrix[key_id][raw][col] = line[len(key):-1] 
+                        else:
+                             output_matrix[key_id][raw][col] = 0
+                        run_id += 1
+                    key_id += 1
+        print(status_array)
+        print(output_matrix)
+                
+    
+
+
+
