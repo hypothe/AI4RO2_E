@@ -7,7 +7,6 @@
 # Import dependencies
 #import PySimpleGUI as sg 	# disabled for multiple run on docker
 import os
-import subprocess
 import re
 #import plotly.express as px
 #import pandas as pd
