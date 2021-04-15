@@ -5,7 +5,7 @@
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # Import dependencies
-#import PySimpleGUI as sg 	# disabled for multiple run on docker
+import PySimpleGUI as sg 	# disabled for multiple run on docker
 import os
 import subprocess
 #import plotly.express as px
