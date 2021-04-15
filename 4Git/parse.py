@@ -1,21 +1,17 @@
 #!/usr/bin/env python3
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # Import dependencies
-#import PySimpleGUI as sg 	# disabled for multiple run on docker
+
+import sys, getopt
+
 import os
 import re
-#import plotly.express as px
-#import pandas as pd
 
 
 #Set global variables
 problem_name = "Custom.pddl"    # (str) Problem name, extension needed
 out_wd = "../output"			# (str) Working directory
-output_string = "output_Custom.txt"
+#output_string = "output_Custom.txt"
 
 max_run_time = 120			# (int) maximum running time in seconds before stopping the run of the planning engine
 output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
@@ -33,7 +29,6 @@ def parse(str_out):
     
     hg_val = {key:{} for key in output_keywords}
     
-    print(index_pos)
     f_flag = 1
         
     while f_flag > 0:
@@ -45,8 +40,7 @@ def parse(str_out):
                 f_flag = ind
                 break
                 
-            index_pos[k] = ind + len(k)  
-            print(k + " pos: " + str(index_pos[k]) + "\n")
+            index_pos[k] = ind + len(k)
               
             end = str_out.find("\n", index_pos[k], -1)
             tmp = str_out[index_pos[k]:end]
@@ -60,9 +54,6 @@ def parse(str_out):
         if f_flag < 0 or succ == 0:
         # if this try did not succeed try the next one; if we reached the end of the str exits
             continue
-                
-        print("H:" + str(h_val) + " G: " + str(g_val) + " SUCC: " + str(succ) + "\n")
-        #input()
             
         for k, v in key_pos.items():
         # the new position of the keyword is the first one found after the prev one
@@ -73,22 +64,43 @@ def parse(str_out):
             
             # matrix associating to the couple hw, gw the various parameters found when parsing
             hg_val[k][(h_val, g_val)] = key_val[k]
-            print(tmp + "\n")
             
     return hg_val
 
 
-def main():
+def main(argv):
     """ This function asks the user to insert the number of
         customers for each table and to specify the number of 
         hot drinks for each of them and it automatically generates
         the problem file for the pddl planning engine
     """
-    #Input selector
     
+    usage = ("usage: pyhton3 " + argv[0] + "\n" +
+             "(default values will be used in case options are not provided)\n"
+             "\t-n, --output-path <arg>\t\t path and name of the output file\n" +
+             "\t-h, --help\t\t display this help\n"
+            )
+    output_string = ""
+            
+    #Input selector
+    try:
+        opts, args = getopt.getopt(argv[1:], "hn:", ["help", "output-path"])
+    except getopt.GetoptError:
+        print(usage)
+        sys.exit(1)
+        
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            print(usage)
+            sys.exit()
+        elif opt in ("-n", "--output-name"):
+            output_string = arg
+    
+    if not output_string:
+        output_string = cwd + "/" + out_wd + "/output_" + problem_name[:-5] + ".txt"
     
     #Read the output file to detect the interesting keywords
-    with open(cwd + "/" + out_wd + "/"+ output_string, "r") as read_run_output:
+    with open(output_string, "r") as read_run_output:
         str_out = read_run_output.read()
         hg_val = parse(str_out)
         
@@ -98,4 +110,4 @@ def main():
                 print("\t" + str(l) + ":" + str(v) + "\n")
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)

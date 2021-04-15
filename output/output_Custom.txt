@@ -2,9 +2,9 @@ H_VALUE: 1
 G_VALUE: 1
 SUCCESS: 1
 Duration:26.0
-Planning Time:2237
-Heuristic Time:998
-Search Time:1164
+Planning Time:1110
+Heuristic Time:617
+Search Time:726
 Expanded Nodes:350
 States Evaluated:712
 
@@ -15,11 +15,37 @@ H_VALUE: 2
 G_VALUE: 1
 SUCCESS: 1
 Duration:26.0
-Planning Time:2793
-Heuristic Time:1543
-Search Time:1751
+Planning Time:1068
+Heuristic Time:571
+Search Time:676
 Expanded Nodes:352
 States Evaluated:729
+
+
+### ------------------ ###
+
+H_VALUE: 7
+G_VALUE: 1
+SUCCESS: 1
+Duration:26.0
+Planning Time:1040
+Heuristic Time:585
+Search Time:673
+Expanded Nodes:367
+States Evaluated:819
+
+
+### ------------------ ###
+
+H_VALUE: 10
+G_VALUE: 1
+SUCCESS: 1
+Duration:26.0
+Planning Time:1082
+Heuristic Time:615
+Search Time:725
+Expanded Nodes:376
+States Evaluated:873
 
 
 ### ------------------ ###
@@ -28,22 +54,113 @@ H_VALUE: 1
 G_VALUE: 2
 SUCCESS: 1
 Duration:25.0
-Planning Time:2229
-Heuristic Time:960
-Search Time:1121
+Planning Time:1022
+Heuristic Time:573
+Search Time:665
 Expanded Nodes:279
 States Evaluated:641
 
 
 ### ------------------ ###
 
-H_VALUE: 2
+H_VALUE: 7
 G_VALUE: 2
 SUCCESS: 1
 Duration:26.0
-Planning Time:2762
-Heuristic Time:1427
-Search Time:1639
+Planning Time:1007
+Heuristic Time:525
+Search Time:641
+Expanded Nodes:357
+States Evaluated:759
+
+
+### ------------------ ###
+
+H_VALUE: 10
+G_VALUE: 2
+SUCCESS: 1
+Duration:26.0
+Planning Time:1086
+Heuristic Time:600
+Search Time:713
+Expanded Nodes:361
+States Evaluated:783
+
+
+### ------------------ ###
+
+H_VALUE: 1
+G_VALUE: 7
+SUCCESS: 1
+Duration:27.0
+Planning Time:1195
+Heuristic Time:711
+Search Time:824
+Expanded Nodes:432
+States Evaluated:961
+
+
+### ------------------ ###
+
+H_VALUE: 2
+G_VALUE: 7
+SUCCESS: 1
+Duration:25.0
+Planning Time:1087
+Heuristic Time:618
+Search Time:722
+Expanded Nodes:272
+States Evaluated:621
+
+
+### ------------------ ###
+
+H_VALUE: 10
+G_VALUE: 7
+SUCCESS: 1
+Duration:26.0
+Planning Time:1040
+Heuristic Time:576
+Search Time:686
+Expanded Nodes:351
+States Evaluated:723
+
+
+### ------------------ ###
+
+H_VALUE: 1
+G_VALUE: 10
+SUCCESS: 1
+Duration:27.0
+Planning Time:1648
+Heuristic Time:1122
+Search Time:1271
+Expanded Nodes:822
+States Evaluated:1628
+
+
+### ------------------ ###
+
+H_VALUE: 2
+G_VALUE: 10
+SUCCESS: 1
+Duration:26.0
+Planning Time:1305
+Heuristic Time:801
+Search Time:916
+Expanded Nodes:408
+States Evaluated:911
+
+
+### ------------------ ###
+
+H_VALUE: 7
+G_VALUE: 10
+SUCCESS: 1
+Duration:26.0
+Planning Time:1044
+Heuristic Time:570
+Search Time:661
 Expanded Nodes:350
 States Evaluated:712
 

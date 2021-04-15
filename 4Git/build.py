@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
 # Import dependencies
+import sys, getopt
 import PySimpleGUI as sg 	# disabled for multiple run on docker
 import os
 import subprocess
+import re
 #import plotly.express as px
 #import pandas as pd
 
@@ -19,9 +21,6 @@ waiter_number_global = 1            # (int) Number of waiters
 drink4table_global = [0, 2, 0, 0]   # list of (int) Drinks ordered for each table
 hot4table_global = [0, 0, 0, 0]     # list of (int) Hot drinks for table
 table_number_global = 4             # number of tables present
-
-# Input variables for running the planning engine automatically
-#engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
 
 #Paramenters
 cwd = os.getcwd()
@@ -89,6 +88,9 @@ def headgoal_edit(wait_num, drink_num, hot_num):
     biscuits_goal_string = ""
     wait_head_string = ""
     waiter_final_pos = ""
+    
+    drink_id = 0
+    biscuit_id = 0
 
     for drink_id in range(1, drinks+1):
         drinks_head_string = drinks_head_string + "drink" + chr(64 + drink_id) + " "
@@ -274,20 +276,72 @@ def metric_edit():
     return(metric_txt)
 
 # Press the green button in the gutter to run the script.
-def main():
+def main(argv):
     """ This function asks the user to insert the number of
         customers for each table and to specify the number of 
         hot drinks for each of them and it automatically generates
         the problem file for the pddl planning engine
     """
+    usage = ("usage: pyhton3 " + argv[0] + "\n" +
+             "(default values will be used in case options are not provided)\n" +
+             "\t-f, --problem <arg>\t\tthe path and name of the PDDL problem file to generate\n" +
+             "\t-w, --waiter <arg>\t\tthe number of waiters (int)\n" +
+             "\t-d, --drinks <arg>\t\tthe number of total drinks for each table, as [d1, d2, d3, d4] (list<int>)\n" +
+             "\t-t, --hot-drinks <arg>\t\tthe number of hot drinks for each table, as [t1, t2, t3, t4] (list<int>)\n" +
+             "\t-g, --gui\t\tenable the GUI (overwrites everything else)\n"
+             "\t-h, --help\t\tdisplay this help\n"
+            )
+
+    waiter_number = waiter_number_global
+    drink4table = drink4table_global
+    hot4table = hot4table_global
+    
+    gui_input = GUI_Input
+    problem_name_full = cwd + "/" + wd + "/"+ problem_name
+            
+    try:
+        opts, args = getopt.getopt(argv[1:], "hf:w:d:t:g", ["help", "problem", "waiter", "drinks", "hot-drinks", "gui"])
+    except getopt.GetoptError:
+        print(usage)
+        sys.exit(1)
+        
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            print(usage)
+            sys.exit()
+        elif opt in ("-f", "--problem"):
+            problem_name_full = arg
+        elif opt in ("-w", "--waiter"):
+            waiter_number = int(arg)
+        elif opt in ("-d", "--drinks") and arg[0] == '[' and arg[-1] == ']':
+            d4t = re.findall("\d", arg)
+            drink4table = list()
+            try:
+                for ii in range(0, table_number_global):
+                    drink4table.append(int(d4t[ii]))
+            except IndexError:
+                print("ERR: Too few elements in the drinks for table list passed as argument")
+                sys.exit()
+                
+            print(drink4table)
+        elif opt in ("-t", "--hot-drinks") and arg[0] == '[' and arg[-1] == ']':
+            hot4table = list()
+            h4t = re.findall("\d", arg)
+            try:
+                for ii in range(0, table_number_global):
+                    hot4table.append(int(h4t[ii]))
+            except IndexError:
+                print("ERR: Too few elements in the hot-drinks for table list passed as argument")
+                sys.exit()
+            print(hot4table)
+        elif opt in ("-g", "--gui"):
+            gui_input = True
+    
     #Input selector
-    if GUI_Input:
+    if gui_input:
         #Graphic user interface
         [waiter_number, drink4table, hot4table] = gui()
-    else:
-        waiter_number = waiter_number_global
-        drink4table = drink4table_global
-        hot4table = hot4table_global
+
 
     print(waiter_number)
     print(drink4table)
@@ -299,9 +353,8 @@ def main():
 
     #Sum the text and create the new pddl problem
     Pddl_problem = header_new + '\n' + init_new + '\n' + goal_new + '\n' + metric_txt
-    output_file = open(cwd + "/" + wd + "/"+ problem_name, "w")
-    output_file.write(Pddl_problem)
-    output_file.close()
+    with open(problem_name_full, "w") as output_file:
+        output_file.write(Pddl_problem)
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)
