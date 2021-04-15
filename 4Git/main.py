@@ -16,7 +16,7 @@ import subprocess
 
 GUI_Input = False               # (Bool) Activate the GUI for the setting of the problem conditions
 RUN = True                      # (Bool) Active if you want to run the code after having generated it
-PARSE = True			# (Bool) Active if you want to get the plot of the plan
+PARSE = False			# (Bool) Active if you want to get the plot of the plan
 problem_name = "Custom.pddl"    # (str) Problem name, extension needed
 wd = "run"			# (str) Working directory
 
@@ -27,8 +27,8 @@ hot4table_global = [0, 0, 0, 0]     # list of (int) Hot drinks for table
 table_number_global = 4             # number of tables present
 
 # Input variables for running the planning engine automatically
-engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
-#engine_path = "/root/ENHSP-Public/enhsp"
+#engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
+engine_path = "/root/ENHSP-Public/enhsp"
 Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
 Pddl_domain = 'numeric_domain_APE_full.pddl'    # (str) Name of pddl domain file
 Optimizer = False        			# (Bool) Set to active for optimization process
@@ -36,8 +36,8 @@ g_values = [1,2]    			# list of (int) g values to be run (active only if Optimi
 h_values = [1,2]    			# list of (int) h values to be run (active only if Optimizer == True)
 opt_alg = ['dff', 'fgf']    			# list of (str) optimization algorithm to be tested (active only if Optimizer == True)
 max_run_time = 120			# (int) maximum running time in seconds before stopping the run of the planning engine
-output_keywords = ['Metric (Search):', 'Duration:', 'Search Time:', 'Expanded Nodes:']# list of (str): keywords for relevant outputs
-
+output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
+                    'Search Time', 'Expanded Nodes', 'States Evaluated')# list of (str): keywords for relevant outputs
 #Paramenters
 cwd = os.getcwd()
 
@@ -251,18 +251,12 @@ def init_edit(wait_num, d4t, h4t):
                         biscuit_identity = biscuit_identity + "\n\t\t"
                     
                     ordered_biscuit = ordered_biscuit + "(ordered biscuit"+ chr(64 + biscuit_id) + " table" + str(table_id)+" )\n\t\t"
-        #else:
-            #drink_delivered = (drink_delivered + "(= (fl-time-empty table" + str(table_id)+") 0) " +
-            #    "(= (fl-last-delivered table1) - 4)\n")
 
         customers = customers + "(=(fl-customers table" + str(table_id)+") " + str(drinkspertable) + ")\n\t\t"
 
 
     # Find the placeholders strings in the templates and replace it with the generated string
-    # for the drinks and the waiters
-        #waiter time initialization
-    #init_txt = init_txt.replace(';WAITER_TIME_INIT', waiter_time_init)
-        #waiter initial position
+
     init_txt = init_txt.replace(';WAITER_INITIAL_POS_PH', waiter_init_pos)
         #waiter hand-free condition
     init_txt = init_txt.replace(';HAND_FREE', hand_free_init)
@@ -304,26 +298,55 @@ def metric_edit():
 
 def run(Plan_Eng, Pddl_domain, Pddl_problem, Optimizer, g_val, h_val, opt_alg , run_output_file):	
 
+    domain_string = "./" + wd + "/" + Pddl_domain
+    problem_string = "./" + wd + "/" + Pddl_problem
     # try torun the planning engine
+    flag = 0
+    gh_str = "H_VALUE: " + str(h_val) + "\nG_VALUE: " + str(g_val) + "\n"
+    run_output_file.write(gh_str)
+    
     try:
-        domain_string = "./" + wd + "/" + Pddl_domain
-        problem_string = "./" + wd + "/" + Pddl_problem
-        
-        result = subprocess.run([engine_path, "-o", domain_string, "-f", problem_string],check=True,timeout=max_run_time, capture_output=True)
+        result = subprocess.run([engine_path, "-o", domain_string, "-f", problem_string,
+                                "-hw", str(h_val), "-gw", str(g_val)
+                                ],
+                                check=True, timeout=max_run_time, capture_output=True)
         #extract output and error and put them in formatted form
-        res = str(result.stdout)      
-        frm_result = res.replace('\\n','\n')
-        #Save output and error in the working directory
-        ## WRITE mode changed to APPEND to allow for multiple outputs being saved
         
-        run_output_file.write(frm_result)
-        run_output_file.write("### ------------------ ###")
-        return 1
-    except (TimeoutExpired, CalledProcessError):
+    except (subprocess.TimeoutExpired):
+        run_output_file.write("SUCCESS: " + str(flag) + "\n")
         fail_str = 'Solution not found for ' + Pddl_problem + 'in  ' + str(max_run_time) + ' seconds'
         print(fail_str)
-        return 0
+        
+    except (subprocess.CalledProcessError):
+        run_output_file.write("SUCCESS: " + str(flag) + "\n")
+        fail_str = 'Error found during the solution of ' + Pddl_problem
+        print(fail_str)
+        
+    else:
+        flag = 1
+        res = str(result.stdout)      
+        frm_result = res.replace('\\n','\n')
+        frm_result = trim_output(frm_result)
+        
+        run_output_file.write("SUCCESS: " + str(flag) + "\n")
+        run_output_file.write(frm_result)
+    
+    run_output_file.write("\n\n### ------------------ ###\n\n")
+    return flag
+    
+def trim_output(tot_out):
 
+    trim_out = ""
+    #key_pos = {key:0 for key in output_keywords}
+    #not_end = 1
+    
+    for k in output_keywords:
+        start = tot_out.find(k)
+        end = tot_out.find("\n", start ,-1) + 1
+        trim_out = trim_out + tot_out[start:end]
+        
+    return trim_out
+    
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     """ This function asks the user to insert the number of
@@ -387,21 +410,21 @@ if __name__ == '__main__':
         if PARSE:
 	    
             #Read the output file to detect the interesting keywords            
-            read_run_output = open(cwd + "/" + wd + "/"+ output_string, "r")
-            for line in read_run_output:
-                key_id = 0
-                for key in output_keywords:
-                    run_id = 0
-                    if key in line:                        
-                        col = run_id %  len(h_values)
-                        raw = run_id -  col * len(g_values)
-                        if status_array[run_id] == 0:
-                            
-                            output_matrix[key_id][raw][col] = line[len(key):-1] 
-                        else:
-                             output_matrix[key_id][raw][col] = 0
-                        run_id += 1
-                    key_id += 1
+            with open(cwd + "/" + wd + "/"+ output_string, "r") as read_run_output:
+                for line in read_run_output:
+                    key_id = 0
+                    for key in output_keywords:
+                        run_id = 0
+                        if key in line:                        
+                            col = run_id %  len(h_values)
+                            row = run_id -  col * len(g_values)
+                            if status_array[run_id] == 0:
+                                
+                                output_matrix[key_id][row][col] = line[len(key):-1] 
+                            else:
+                                 output_matrix[key_id][row][col] = 0
+                            run_id += 1
+                        key_id += 1
         print(status_array)
         print(output_matrix)
                 
