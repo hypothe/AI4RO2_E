@@ -2,11 +2,11 @@ H_VALUE: 1
 G_VALUE: 1
 SUCCESS: 1
 Duration:26.0
-Planning Time:3620
-Heuristic Time:1814
-Search Time:2027
-Expanded Nodes: 0, Evaluated States: 0, Time: 0.041)
-States Evaluated:743
+Planning Time:2875
+Heuristic Time:1512
+Search Time:1744
+Expanded Nodes:350
+States Evaluated:712
 
 
 ### ------------------ ###
@@ -15,11 +15,11 @@ H_VALUE: 2
 G_VALUE: 1
 SUCCESS: 1
 Duration:26.0
-Planning Time:2629
-Heuristic Time:1219
-Search Time:1401
-Expanded Nodes: 0, Evaluated States: 0, Time: 0.04)
-States Evaluated:760
+Planning Time:2314
+Heuristic Time:1005
+Search Time:1160
+Expanded Nodes:352
+States Evaluated:729
 
 
 ### ------------------ ###
@@ -27,12 +27,12 @@ States Evaluated:760
 H_VALUE: 1
 G_VALUE: 2
 SUCCESS: 1
-Duration:26.0
-Planning Time:2825
-Heuristic Time:1315
-Search Time:1546
-Expanded Nodes: 0, Evaluated States: 0, Time: 0.048)
-States Evaluated:731
+Duration:25.0
+Planning Time:2296
+Heuristic Time:1072
+Search Time:1231
+Expanded Nodes:279
+States Evaluated:641
 
 
 ### ------------------ ###
@@ -41,11 +41,12 @@ H_VALUE: 2
 G_VALUE: 2
 SUCCESS: 1
 Duration:26.0
-Planning Time:2538
-Heuristic Time:1153
-Search Time:1332
-Expanded Nodes: 0, Evaluated States: 0, Time: 0.04)
-States Evaluated:743
+Planning Time:2708
+Heuristic Time:1505
+Search Time:1726
+Expanded Nodes:350
+States Evaluated:712
 
 
 ### ------------------ ###
+

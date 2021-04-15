@@ -28,6 +28,7 @@ engine_path = "/root/ENHSP-Public/enhsp"
 Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
 Pddl_domain = 'numeric_domain_APE_full.pddl'    # (str) Name of pddl domain file
 Optimizer = False        			# (Bool) Set to active for optimization process
+delta = 0.5
 g_values = [1,2]    			# list of (int) g values to be run (active only if Optimizer == True)
 h_values = [1,2]    			# list of (int) h values to be run (active only if Optimizer == True)
 opt_alg = ['dff', 'fgf']    			# list of (str) optimization algorithm to be tested (active only if Optimizer == True)
@@ -156,14 +157,12 @@ def init_edit(wait_num, d4t, h4t):
 
     # Creates the required new strings for the init block
         #waiter strings
-    #waiter_time_init = ""
     waiter_free_init = ""
     hand_free_init = ""
     waiter_init_pos = ""
         #Drink strings
     drink_identity = ""
-    #drink_delivered = ""
-    #drink_notready = ""
+    
     ordered_by = ""
     hot_drink_string = ""
         #Customers per table
@@ -209,9 +208,7 @@ def init_edit(wait_num, d4t, h4t):
         drinkspertable = drink_4_table[table_id-1]
 
         if drinkspertable != 0:
-            #drink_delivered = (drink_delivered + "(= (fl-time-empty table" + str(table_id)+") -1) " +
-            #    "(= (fl-last-delivered table1) - 4) \n")
-
+            
             # Drinks predicates
             # Flag for hot drinks disabled
             hot_id = 0
@@ -266,10 +263,6 @@ def init_edit(wait_num, d4t, h4t):
     init_txt = init_txt.replace(';BISCUIT_IDENTITY_PH', biscuit_identity)
         #places free at start
     init_txt = init_txt.replace(';PLACE_FREE', place_free_init)
-        #drink not ready
-   # init_txt = init_txt.replace(';DRINK_NOTREADY_INIT_PH', drink_notready)
-        #table initialization
-   # init_txt = init_txt.replace(';TABLE_TIME_INIT_PH', drink_delivered)
         #customers per table
     init_txt = init_txt.replace(';CUSTOMERS_PER_TABLE', customers)
         #ordered by
@@ -303,7 +296,8 @@ def run(Plan_Eng, Pddl_domain, Pddl_problem, Optimizer, g_val, h_val, opt_alg , 
     
     try:
         result = subprocess.run([engine_path, "-o", domain_string, "-f", problem_string,
-                                "-hw", str(h_val), "-gw", str(g_val)
+                                "-hw", str(h_val), "-gw", str(g_val),
+                                "-delta_val", str(delta), "-delta_exec", str(delta)
                                 ],
                                 check=True, timeout=max_run_time, capture_output=True)
         #extract output and error and put them in formatted form
@@ -333,12 +327,13 @@ def run(Plan_Eng, Pddl_domain, Pddl_problem, Optimizer, g_val, h_val, opt_alg , 
 def trim_output(tot_out):
 
     trim_out = ""
-    #key_pos = {key:0 for key in output_keywords}
-    #not_end = 1
     
     for k in output_keywords:
-        start = tot_out.find(k)
-        end = tot_out.find("\n", start ,-1) + 1
+        start = tot_out.rfind(k)
+        # rfind simply retrieves the last time the string appeared
+        # necessary since States Evaluated appears more than once
+        # in different contextes
+        end = tot_out.find("\n", start, -1) + 1
         trim_out = trim_out + tot_out[start:end]
         
     return trim_out
@@ -367,10 +362,6 @@ if __name__ == '__main__':
     init_new = init_edit(waiter_number, drink4table, hot4table)
     metric_txt = metric_edit()
 
-    #print(header_new)
-    #print(goal_new)
-    #print(init_new)
-
     #Sum the text and create the new pddl problem
     Pddl_problem = header_new + '\n' + init_new + '\n' + goal_new + '\n' + metric_txt
     output_file = open(cwd + "/" + wd + "/"+ problem_name, "w")
@@ -380,54 +371,20 @@ if __name__ == '__main__':
     if RUN:
         out_name = problem_name[0:-5]
         output_string = "output_" + out_name + ".txt"
-        run_output_file = open(cwd + "/" + wd + "/"+ output_string, "w")
-	
-        # Output status matrix initialization
-        status_array = [ 0 for i in range(len(g_values)*len(h_values))]
-        output_matrix = [[[0 for  i in range(len(g_values))] for j in range(len(h_values))] for k in range(len(output_keywords))]
-        print(output_matrix)
+        
+        with open(cwd + "/" + wd + "/"+ output_string, "w") as run_output_file:
+	        
+            for g_value in g_values:
+                for h_value in h_values:
+                    run_fail = 0		# Flag to check ouput for this 
+                    run_script = run(Plan_Engine, Pddl_domain,  problem_name, Optimizer, g_value, h_value, opt_alg, run_output_file)
+                    res_run_str = problem_name + " with hw = " + str(h_value) + " gw = " + str(g_value)
+                    if run_script:
+                        print("Succesful run " + res_run_str)
+                    else:
+                        print("Unsuccesful run " + res_run_str)
 	    
-        run_count = 0 
-        for g_value in g_values:
-            for h_value in h_values:
-                run_fail = 0		# Flag to check ouput for this 
-                run_script = run(Plan_Engine, Pddl_domain,  problem_name, Optimizer, g_value, h_value, opt_alg, run_output_file)
-                res_run_str = problem_name + " with hw = " + str(h_value) + " gw = " + str(g_value)
-                if run_script:
-                    print("Succesful run " + res_run_str)
-                else:
-                    print("Unsuccesful run " + res_run_str)
-                    run_fail = 1
-                status_array[run_count] = run_fail
-                run_count += 1       
-        run_output_file.close()
-        print(output_matrix)
-	
-        if PARSE:
-	    
-            #Read the output file to detect the interesting keywords            
-
-            with open(cwd + "/" + wd + "/"+ output_string, "r") as read_run_output:              
-            
-                for line in read_run_output:  
-                    key_id = 0
-                    run_id = 0
-                    for key in output_keywords:  
-                        if  status_array[run_id] == 0:                    
-                            if key in line:  
-                                print('I am here')                                                 
-                                col = run_id %  len(h_values)
-                                raw = run_id -  col * len(g_values)   
-                                print(line[len(key):-1])                                                
-                                output_matrix[key_id][raw][col] = line[len(key):-1]                     
-                            key_id += 1         
-                        else:
-                            output_matrix[:][raw][col] = 0 
-                        run_id += 1             
-                
-                                
-        print(status_array)
-        print(output_matrix)
+               
                 
     
 
