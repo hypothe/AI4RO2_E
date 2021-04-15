@@ -11,10 +11,8 @@ import subprocess
 #Set global variables
 
 GUI_Input = False               # (Bool) Activate the GUI for the setting of the problem conditions
-RUN = True                      # (Bool) Active if you want to run the code after having generated it
-PARSE = False			# (Bool) Active if you want to get the plot of the plan
 problem_name = "Custom.pddl"    # (str) Problem name, extension needed
-wd = "run"			# (str) Working directory
+wd = "../domains/dom_APE"			# (str) Working directory
 
 # Input variables if no gui active
 waiter_number_global = 1            # (int) Number of waiters
@@ -64,7 +62,7 @@ def gui():
     return(waiters, drink4table, hot4table)
 
 
-def headgoal_edit(wait_num, drink_num):
+def headgoal_edit(wait_num, drink_num, hot_num):
     """ This function reads the header and the goal templates and it fills it with the
         required information received from the GUI"""
 
@@ -82,7 +80,7 @@ def headgoal_edit(wait_num, drink_num):
     drinks = drink_num
     waiters = wait_num
     
-    biscuits = drinks-sum(hot4table)
+    biscuits = drinks-hot_num
 
     # Creates the drink and waiter string
     drinks_head_string = ""
@@ -276,7 +274,7 @@ def metric_edit():
     return(metric_txt)
 
 # Press the green button in the gutter to run the script.
-if __name__ == '__main__':
+def main():
     """ This function asks the user to insert the number of
         customers for each table and to specify the number of 
         hot drinks for each of them and it automatically generates
@@ -295,7 +293,7 @@ if __name__ == '__main__':
     print(drink4table)
     print(hot4table)
 
-    [header_new, goal_new] = headgoal_edit(waiter_number, sum(drink4table))
+    [header_new, goal_new] = headgoal_edit(waiter_number, sum(drink4table), sum(hot4table))
     init_new = init_edit(waiter_number, drink4table, hot4table)
     metric_txt = metric_edit()
 
@@ -305,9 +303,5 @@ if __name__ == '__main__':
     output_file.write(Pddl_problem)
     output_file.close()
 
-               
-                
-    
-
-
-
+if __name__ == '__main__':
+    main()

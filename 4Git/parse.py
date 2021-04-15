@@ -14,7 +14,7 @@ import re
 
 #Set global variables
 problem_name = "Custom.pddl"    # (str) Problem name, extension needed
-wd = "run"			# (str) Working directory
+out_wd = "../output"			# (str) Working directory
 output_string = "output_Custom.txt"
 
 max_run_time = 120			# (int) maximum running time in seconds before stopping the run of the planning engine
@@ -24,7 +24,7 @@ index_keywords = ('H_VALUE', 'G_VALUE', 'SUCCESS')
 #Paramenters
 cwd = os.getcwd()
 
-def parse(read_file):
+def parse(str_out):
 
     key_pos = {key:0 for key in output_keywords}
     key_val = {key:0 for key in output_keywords}
@@ -75,11 +75,10 @@ def parse(read_file):
             hg_val[k][(h_val, g_val)] = key_val[k]
             print(tmp + "\n")
             
-
     return hg_val
 
 
-if __name__ == '__main__':
+def main():
     """ This function asks the user to insert the number of
         customers for each table and to specify the number of 
         hot drinks for each of them and it automatically generates
@@ -89,7 +88,7 @@ if __name__ == '__main__':
     
     
     #Read the output file to detect the interesting keywords
-    with open(cwd + "/" + wd + "/"+ output_string, "r") as read_run_output:
+    with open(cwd + "/" + out_wd + "/"+ output_string, "r") as read_run_output:
         str_out = read_run_output.read()
         hg_val = parse(str_out)
         
@@ -97,4 +96,6 @@ if __name__ == '__main__':
             print(k)
             for l, v in hg_val[k].items():
                 print("\t" + str(l) + ":" + str(v) + "\n")
-                    
+
+if __name__ == '__main__':
+    main()

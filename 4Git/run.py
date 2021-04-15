@@ -5,7 +5,8 @@ import subprocess
 
 problem_name = "Custom.pddl"    # (str) Problem name, extension needed
 
-wd = "run"			# (str) Working directory
+wd = "../domains/dom_APE"			# (str) Working directory
+out_wd = "../output"
 
 engine_path = "/root/ENHSP-Public/enhsp"
 Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
@@ -78,7 +79,7 @@ def main():
     out_name = problem_name[0:-5]
     output_string = "output_" + out_name + ".txt"
         
-    with open(cwd + "/" + wd + "/"+ output_string, "w") as run_output_file:
+    with open(cwd + "/" + out_wd + "/"+ output_string, "w") as run_output_file:
 
         for g_value in g_values:
             for h_value in h_values:
