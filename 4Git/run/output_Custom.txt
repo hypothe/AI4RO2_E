@@ -16,9 +16,9 @@ Reachable actions and processes: |A U P U E|:97
 Take all reachable actions
 Actions used at init:67
 h(n = s_0)=159.0
-f(n) = 159.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.095)
-f(n) = 160.0 (Expanded Nodes: 112, Evaluated States: 399, Time: 1.15)
-f(n) = 161.0 (Expanded Nodes: 160, Evaluated States: 559, Time: 1.459)
+f(n) = 159.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.057)
+f(n) = 160.0 (Expanded Nodes: 112, Evaluated States: 399, Time: 0.703)
+f(n) = 161.0 (Expanded Nodes: 160, Evaluated States: 559, Time: 0.886)
 Problem Solved
 Epsilon set to be:0.0
 (0.00000) a-start-move Parameters: bar  - Bar  table1  - Table  w1  - waiter  
@@ -91,9 +91,9 @@ Resolution for validation:1.0
 (Pddl+ semantics) Plan is valid:true
 Plan-Length:74
 Metric-Value:26.0
-Planning Time:4125
-Heuristic Time:3343
-Search Time:3582
+Planning Time:2350
+Heuristic Time:1927
+Search Time:2087
 Expanded Nodes:1193
 States Evaluated:2658
 Duration:26.0000000
@@ -120,9 +120,9 @@ Reachable actions and processes: |A U P U E|:97
 Take all reachable actions
 Actions used at init:67
 h(n = s_0)=159.0
-f(n) = 159.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.082)
-f(n) = 160.0 (Expanded Nodes: 112, Evaluated States: 399, Time: 0.962)
-f(n) = 161.0 (Expanded Nodes: 160, Evaluated States: 559, Time: 1.29)
+f(n) = 159.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.068)
+f(n) = 160.0 (Expanded Nodes: 112, Evaluated States: 399, Time: 0.748)
+f(n) = 161.0 (Expanded Nodes: 160, Evaluated States: 559, Time: 0.95)
 Problem Solved
 Epsilon set to be:0.0
 (0.00000) a-start-move Parameters: bar  - Bar  table1  - Table  w1  - waiter  
@@ -195,9 +195,9 @@ Resolution for validation:1.0
 (Pddl+ semantics) Plan is valid:true
 Plan-Length:74
 Metric-Value:26.0
-Planning Time:3880
-Heuristic Time:3123
-Search Time:3358
+Planning Time:2648
+Heuristic Time:2004
+Search Time:2196
 Expanded Nodes:1193
 States Evaluated:2658
 Duration:26.0000000
@@ -224,9 +224,9 @@ Reachable actions and processes: |A U P U E|:97
 Take all reachable actions
 Actions used at init:67
 h(n = s_0)=159.0
-f(n) = 159.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.066)
-f(n) = 160.0 (Expanded Nodes: 112, Evaluated States: 399, Time: 0.673)
-f(n) = 161.0 (Expanded Nodes: 160, Evaluated States: 559, Time: 0.86)
+f(n) = 159.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.059)
+f(n) = 160.0 (Expanded Nodes: 112, Evaluated States: 399, Time: 0.616)
+f(n) = 161.0 (Expanded Nodes: 160, Evaluated States: 559, Time: 0.813)
 Problem Solved
 Epsilon set to be:0.0
 (0.00000) a-start-move Parameters: bar  - Bar  table1  - Table  w1  - waiter  
@@ -299,9 +299,9 @@ Resolution for validation:1.0
 (Pddl+ semantics) Plan is valid:true
 Plan-Length:74
 Metric-Value:26.0
-Planning Time:2686
-Heuristic Time:1935
-Search Time:2096
+Planning Time:2266
+Heuristic Time:1738
+Search Time:1884
 Expanded Nodes:1193
 States Evaluated:2658
 Duration:26.0000000
@@ -328,9 +328,9 @@ Reachable actions and processes: |A U P U E|:97
 Take all reachable actions
 Actions used at init:67
 h(n = s_0)=159.0
-f(n) = 159.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.058)
-f(n) = 160.0 (Expanded Nodes: 112, Evaluated States: 399, Time: 0.756)
-f(n) = 161.0 (Expanded Nodes: 160, Evaluated States: 559, Time: 0.993)
+f(n) = 159.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.056)
+f(n) = 160.0 (Expanded Nodes: 112, Evaluated States: 399, Time: 0.59)
+f(n) = 161.0 (Expanded Nodes: 160, Evaluated States: 559, Time: 0.756)
 Problem Solved
 Epsilon set to be:0.0
 (0.00000) a-start-move Parameters: bar  - Bar  table1  - Table  w1  - waiter  
@@ -403,9 +403,9 @@ Resolution for validation:1.0
 (Pddl+ semantics) Plan is valid:true
 Plan-Length:74
 Metric-Value:26.0
-Planning Time:2900
-Heuristic Time:2310
-Search Time:2493
+Planning Time:2154
+Heuristic Time:1708
+Search Time:1851
 Expanded Nodes:1193
 States Evaluated:2658
 Duration:26.0000000

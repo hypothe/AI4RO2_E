@@ -1,8 +1,4 @@
 #!/usr/bin/env python3
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
 # Import dependencies
 #import PySimpleGUI as sg 	# disabled for multiple run on docker
@@ -387,21 +383,25 @@ if __name__ == '__main__':
         if PARSE:
 	    
             #Read the output file to detect the interesting keywords            
-            read_run_output = open(cwd + "/" + wd + "/"+ output_string, "r")
-            for line in read_run_output:
+            read_run_output = open(cwd + "/" + wd + "/"+ output_string, "r")            
+            
+            for line in read_run_output:  
                 key_id = 0
-                for key in output_keywords:
-                    run_id = 0
-                    if key in line:                        
-                        col = run_id %  len(h_values)
-                        raw = run_id -  col * len(g_values)
-                        if status_array[run_id] == 0:
-                            
-                            output_matrix[key_id][raw][col] = line[len(key):-1] 
-                        else:
-                             output_matrix[key_id][raw][col] = 0
-                        run_id += 1
-                    key_id += 1
+                run_id = 0
+                for key in output_keywords:  
+                    if  status_array[run_id] == 0:                    
+                        if key in line:  
+                            print('I am here')                                                 
+                            col = run_id %  len(h_values)
+                            raw = run_id -  col * len(g_values)   
+                            print(line[len(key):-1])                                                
+                            output_matrix[key_id][raw][col] = line[len(key):-1]                     
+                        key_id += 1         
+                    else:
+                        output_matrix[:][raw][col] = 0 
+                    run_id += 1             
+                
+                                
         print(status_array)
         print(output_matrix)
                 
