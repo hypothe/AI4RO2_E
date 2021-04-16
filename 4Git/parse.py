@@ -22,7 +22,7 @@ three_D = True
 #Paramenters
 cwd = os.getcwd()
 #Parameters for latexstyle plot
-#plt.rc('text', usetex=True)
+plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
 def parse(str_out):
