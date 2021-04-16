@@ -1,0 +1,3 @@
+#!/bin/bash 
+
+    java python3-matplotlib  -classpath /root/AI4RO_II/AI4RO2_E/4Git/out/:/root/AI4RO_II/AI4RO2_E/4Git/libs/* ENHSP "$@"

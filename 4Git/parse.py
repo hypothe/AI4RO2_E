@@ -7,6 +7,11 @@ import sys, getopt
 import os
 import re
 
+import matplotlib.pyplot as plt
+from matplotlib import cm
+import numpy as np
+from scipy.interpolate import griddata
+
 
 #Set global variables
 problem_name = "Custom.pddl"    # (str) Problem name, extension needed
@@ -108,6 +113,47 @@ def main(argv):
             print(k)
             for l, v in hg_val[k].items():
                 print("\t" + str(l) + ":" + str(v) + "\n")
+
+    #Output visualization
+    plot_num = 111
+    print(hg_val.keys())
+    for key in hg_val.keys():
+        print(key)
+        if plot_num == 111:
+            x = []
+            y = []
+            for sub_key in hg_val[key].keys():
+                x.append(int(sub_key[0]))
+                y.append(int(sub_key[1]))
+        xi = np.linspace(min(x),max(x)) 
+        yi = np.linspace(min(y),max(y)) 
+        print(xi)
+        print(yi)
+        X, Y = np.meshgrid(xi, yi)
+        z = list(hg_val[key].values())
+        Z = griddata((x, y), z, (xi, yi),method='cubic')
+        print(x)
+        print(y)
+        print(z)
+        print(Z)
+        fig = plt.figure(key)
+        ax = fig.add_subplot(plot_num, projection='3d')
+
+
+        #m = cm.ScalarMappable()
+        #m.set_array(Z)
+        #col = plt.colorbar(m)
+        surf = ax.plot_trisurf(x, y, z)#, cmap = m.cmap, norm = m.norm)
+        ax.set_xlim(0,1.1*max(x))
+        ax.set_ylim(0,1.1*max(y))
+        ax.set_zlim(0, 1.1*max(z))
+        ax.set_xlabel('g')
+        ax.set_ylabel('h')
+        ax.set_zlabel(key)
+        
+        #Save figure
+        plt.savefig(str(key+".pdf"))
+        plt.close(key)
 
 if __name__ == '__main__':
     main(sys.argv)
