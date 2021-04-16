@@ -18,8 +18,12 @@ out_wd = "../output"			# (str) Working directory
 output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
                     'Search Time', 'Expanded Nodes', 'States Evaluated')	# list of (str): keywords for relevant outputs
 index_keywords = ('H_VALUE', 'G_VALUE', 'SUCCESS')
+three_D = True
 #Paramenters
 cwd = os.getcwd()
+#Parameters for latexstyle plot
+#plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
 
 def parse(str_out):
 
@@ -126,21 +130,23 @@ def main(argv):
         print(y)
         print(z)
         fig = plt.figure(key)
-        ax = fig.add_subplot(plot_num, projection='3d')
-
-
-        #m = cm.ScalarMappable()
-        #m.set_array(Z)
-        #col = plt.colorbar(m)
-        surf = ax.scatter(x, y, z, cmap = 'rainbow', c = z)
-        fig.colorbar(surf)
-        ax.set_xlim(0,1.1*max(x))
-        ax.set_ylim(0,1.1*max(y))
-        ax.set_zlim(0, 1.1*max(z))
-        ax.set_xlabel('g')
-        ax.set_ylabel('h')
-        ax.set_zlabel(key)
         
+        if three_D:      
+            ax = fig.add_subplot(plot_num, projection='3d')     
+            plot = ax.scatter(x, y, z, cmap = 'rainbow', c=z)            
+            ax.set_xlim(0,1.1*max(x))
+            ax.set_ylim(0,1.1*max(y)) 
+            ax.set_zlim(0.9*min(z), 1.1*max(z))
+            ax.set_xlabel('g')
+            ax.set_ylabel('h')                       
+            ax.set_title(key)
+        else:
+            plot = plt.scatter(x, y, c=z, cmap = 'rainbow')
+            plt.xlabel('g')
+            plt.ylabel('h')
+            plt.title(key)
+        fig.colorbar(plot) 
+
         #Save figure
         plt.savefig(str(key+".pdf"))
         plt.close(key)
