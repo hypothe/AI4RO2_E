@@ -9,18 +9,14 @@ import re
 
 import matplotlib.pyplot as plt
 from matplotlib import cm
-import numpy as np
-from scipy.interpolate import griddata
 
 
 #Set global variables
-problem_name = "Custom.pddl"    # (str) Problem name, extension needed
+problem_name = "Custom.pddl"    	# (str) Problem name, extension needed
 out_wd = "../output"			# (str) Working directory
-#output_string = "output_Custom.txt"
 
-max_run_time = 120			# (int) maximum running time in seconds before stopping the run of the planning engine
 output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
-                    'Search Time', 'Expanded Nodes', 'States Evaluated')# list of (str): keywords for relevant outputs
+                    'Search Time', 'Expanded Nodes', 'States Evaluated')	# list of (str): keywords for relevant outputs
 index_keywords = ('H_VALUE', 'G_VALUE', 'SUCCESS')
 #Paramenters
 cwd = os.getcwd()
@@ -125,17 +121,10 @@ def main(argv):
             for sub_key in hg_val[key].keys():
                 x.append(int(sub_key[0]))
                 y.append(int(sub_key[1]))
-        xi = np.linspace(min(x),max(x)) 
-        yi = np.linspace(min(y),max(y)) 
-        print(xi)
-        print(yi)
-        X, Y = np.meshgrid(xi, yi)
         z = list(hg_val[key].values())
-        Z = griddata((x, y), z, (xi, yi),method='cubic')
         print(x)
         print(y)
         print(z)
-        print(Z)
         fig = plt.figure(key)
         ax = fig.add_subplot(plot_num, projection='3d')
 
@@ -143,7 +132,8 @@ def main(argv):
         #m = cm.ScalarMappable()
         #m.set_array(Z)
         #col = plt.colorbar(m)
-        surf = ax.plot_trisurf(x, y, z)#, cmap = m.cmap, norm = m.norm)
+        surf = ax.scatter(x, y, z, cmap = 'rainbow', c = z)
+        fig.colorbar(surf)
         ax.set_xlim(0,1.1*max(x))
         ax.set_ylim(0,1.1*max(y))
         ax.set_zlim(0, 1.1*max(z))
