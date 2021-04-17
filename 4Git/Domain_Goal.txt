@@ -1,7 +1,0 @@
-(:goal (and
-    ;DRINK_PH
-	(clean table1)(clean table2)(clean table3)(clean table4)
-	;WAIT_PH
-	(not(tray-taken))
-			)
-	)

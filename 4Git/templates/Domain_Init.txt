@@ -1,0 +1,64 @@
+(:init
+        ;FIXED free barista
+        (free-barista)
+        
+		;FIXED: Tray empty
+		(tray-empty)
+        
+        ;Free waiter condition of each waiter
+        ;WAITER_FREE
+        
+		;Hand free condition for each waiter
+		;HAND_FREE
+
+        ;Tray not carried by waiters
+        ;TRAY_NOT_CARRIED
+
+		;Identity condition for each drink
+		;DRINK_IDENTITY_PH
+		
+		;Identity condition for each biscuit
+		;BISCUIT_IDENTITY_PH
+
+        ;Customers per table
+        ;CUSTOMERS_PER_TABLE
+
+        ;Hot drink flag
+        ;HOT_FLAG
+        
+        ;Biscuit - Drink relation
+        ;DRINK_FOR_BISCUIT
+
+		;Position of each waiter
+		;WAITER_INITIAL_POS_PH
+
+        ;Ordered condition
+        ;ORDERED_BY_PH
+        ;ORDERED_BISCUIT
+
+        ;FIXED :Table distances
+        (= (distance bar table1) 2) 	(= (distance table1 bar) 2)
+		(= (distance bar table2) 2) 	(= (distance table2 bar) 2)
+		(= (distance table1 table2) 1)	(= (distance table2 table1) 1)
+
+		(= (distance bar table3) 3) 	(= (distance table3 bar) 3)
+		(= (distance table1 table3) 1) 	(= (distance table3 table1) 1)
+		(= (distance table3 table2) 1)	(= (distance table2 table3) 1)
+
+		(= (distance bar table4) 3) 	(= (distance table4 bar) 3)
+		(= (distance table1 table4) 1) 	(= (distance table4 table1) 1)
+		(= (distance table4 table2) 1)	(= (distance table2 table4) 1)
+		(= (distance table4 table3) 1)	(= (distance table3 table4) 1)
+
+
+        ;FIXED: Tables size
+		(= (fl-table-size table1) 1)
+		(= (fl-table-size table2) 1)
+		(= (fl-table-size table3) 2)
+		(= (fl-table-size table4) 1)
+		
+		;Places free at start
+		;PLACE_FREE
+
+
+    )

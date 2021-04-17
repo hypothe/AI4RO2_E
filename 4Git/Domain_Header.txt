@@ -1,8 +1,0 @@
-(define (problem ai4ro2_E_problem)
-    (:domain ai4ro2_E)
-    (:objects
-		bar - Bar
-		table1 table2 table3 table4 - place
-        ;DRINK_PH - drink
-        ;WAIT_PH - waiter
-	)
