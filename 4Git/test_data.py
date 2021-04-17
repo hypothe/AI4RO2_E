@@ -21,7 +21,7 @@ domain_name_full_ = run.Pddl_domain_
 output_name_full_ = "../output/temp_output.txt"
 run_time = 60 # 300
 csv_name_full_ = "../graphs/hg_val.csv"
-csvfile_ = None
+writer_ = None
 
 def rec(table, last_table, drink4table, hot4table, placed_drinks):
     if table < last_table and placed_drinks <= tot_drinks:
@@ -65,18 +65,8 @@ def rec(table, last_table, drink4table, hot4table, placed_drinks):
             print_to_csv(hg_val, drink4table, hot4table)
             
 def print_to_csv(hg_val, drink4table, hot4table):
-    global csvfile_ 
-    fieldnames = ['avg_x', 'avg_y', 'std_x', 'std_y',
-                'hot_avg_x', 'hot_avg_y', 'hot_std_x', 'hot_std_y',
-                'hw', 'gw']
-    
-    for key in run.output_keywords:
-        fieldnames.append(key)
-    
-    ## print(fieldnames)   
-            
-    writer = csv.DictWriter(csvfile_, fieldnames=fieldnames, dialect='excel')
-    writer.writeheader()
+    global writer_
+    writer = writer_
     row = {}
     row['avg_x'], row['avg_y'], row['std_x'], row['std_y'] = avg_drink_pos(drink4table)
     row['hot_avg_x'], row['hot_avg_y'], row['hot_std_x'], row['hot_std_y'] = avg_drink_pos(hot4table)
@@ -94,7 +84,7 @@ def avg_drink_pos(stuff4table):
     table3(-1,-1)  table4(1,-1)
     """
     x_sign = (-1, 1, -1, 1)
-    y_sign = (1, -1, -1, 1)
+    y_sign = (1, 1, -1, -1)
     
     tot = sum(stuff4table)
     if tot == 0:
@@ -105,17 +95,28 @@ def avg_drink_pos(stuff4table):
     std_x = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_x, 2)
     std_y = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_y, 2)
     
-    return avg_x, avg_y, std_x, std_y
+    print("FROM {}: AVG_X {} AVG_Y {} STD_X {} STD_Y {}".format(stuff4table, avg_x, avg_y, std_x, std_y))
+    return '%.3f'%(avg_x), '%.3f'%(avg_y), '%.3f'%(std_x), '%.3f'%(std_y)
                 
 def main():
 
-    global rounds_, csvfile_, csv_name_full
+    global rounds_, csv_name_full, writer_
     drink4table = [0 for ii in range(0, num_tables_)]
     hot4table = [0 for ii in range(0, num_tables_)]
     table = 0
     last_table = num_tables_
     
-    with open(csv_name_full_, 'w', newline='') as csvfile_:
+    with open(csv_name_full_, 'w', newline='') as csvfile:
+        fieldnames = ['avg_x', 'avg_y', 'std_x', 'std_y',
+                    'hot_avg_x', 'hot_avg_y', 'hot_std_x', 'hot_std_y',
+                    'hw', 'gw']
+        for key in run.output_keywords:
+            fieldnames.append(key)
+    
+        ## print(fieldnames)   
+            
+        writer_ = csv.DictWriter(csvfile, fieldnames=fieldnames, dialect='excel')
+        writer_.writeheader()
         rec(table, last_table, drink4table, hot4table, 0)
         
     print(rounds_)

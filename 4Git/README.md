@@ -57,6 +57,20 @@ With the parameters is possible to set:
 - plots can be set to 3D view instead of the default 2D+color
 - LaTeX style can be adopted in those graphs (requires `sudo apt-get install texlive-full`)
 
+### test_data.py
+
+```
+python3 test_data.py
+```
+
+Script that:
+1. generates all possible problems with a maximum amount of drinks per table and total drinks ordered
+2. runs them all with a collection of hw, gw values
+3. parses the output of all runs for all problems and saves everything in a csv file
+
+
+---
+
 ## Future possible changes in the python scripting
 
 Stuff to look into

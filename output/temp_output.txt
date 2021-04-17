@@ -1,28 +1,15 @@
 H_VALUE: 1
 G_VALUE: 1
 SUCCESS: 1
-Duration:31.0
-Planning Time:1066
-Heuristic Time:597
-Search Time:692
-Expanded Nodes:302
-States Evaluated:675
+Duration:45.0
+Planning Time:24642
+Heuristic Time:23151
+Search Time:24194
+Expanded Nodes:27927
+States Evaluated:42463
 
 
 ### ------------------ ###
 
 H_VALUE: 5
 G_VALUE: 1
-SUCCESS: 1
-Duration:31.0
-Planning Time:1364
-Heuristic Time:862
-Search Time:999
-Expanded Nodes:427
-States Evaluated:987
-
-
-### ------------------ ###
-
-H_VALUE: 1
-G_VALUE: 5
