@@ -152,7 +152,6 @@ def main(argv):
         output_string = "output_" + problem_trim_name + ".txt"
         
     with open(cwd + "/" + out_wd + "/"+ output_string, "w") as run_output_file:
-
         for g_value in g_values:
             for h_value in h_values:
                 if h_value == g_value != 1:
@@ -165,7 +164,7 @@ def main(argv):
                     print("Succesful run " + res_run_str)
                 else:
                     print("Unsuccesful run " + res_run_str)
-	    
+          
 
 if __name__ == '__main__':
     main(sys.argv)

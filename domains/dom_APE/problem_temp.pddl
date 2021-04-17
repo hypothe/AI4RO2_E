@@ -5,7 +5,7 @@
 		table1 table2 table3 table4 - Table
         drinkA drinkB  - Drink
         biscuitA biscuitB  - Biscuit
-        w1 w2 w3 w4  - waiter
+        w1  - waiter
 	)
 
 (:init
@@ -17,23 +17,14 @@
         
         ;Free waiter condition of each waiter
         (free-waiter w1)
-		(free-waiter w2)
-		(free-waiter w3)
-		(free-waiter w4)
 		
         
 		;Hand free condition for each waiter
 		(hand-free w1)
-		(hand-free w2)
-		(hand-free w3)
-		(hand-free w4)
 		
 
         ;Tray not carried by waiters
         (= (fl-tray-carried w1) 0)
-		(= (fl-tray-carried w2) 0)
-		(= (fl-tray-carried w3) 0)
-		(= (fl-tray-carried w4) 0)
 		
 
 		;Identity condition for each drink
@@ -46,9 +37,9 @@
 
         ;Customers per table
         (=(fl-customers table1) 0)
-		(=(fl-customers table2) 2)
+		(=(fl-customers table2) 0)
 		(=(fl-customers table3) 0)
-		(=(fl-customers table4) 0)
+		(=(fl-customers table4) 2)
 		
 
         ;Hot drink flag
@@ -63,17 +54,14 @@
 
 		;Position of each waiter
 		(at-waiter w1 bar)
-		(at-waiter w2 table1)
-		(at-waiter w3 table2)
-		(at-waiter w4 table3)
 		
 
         ;Ordered condition
-        (ordered drinkA table2 )
-		(ordered drinkB table2 )
+        (ordered drinkA table4 )
+		(ordered drinkB table4 )
 		
-        (ordered biscuitA table2 )
-		(ordered biscuitB table2 )
+        (ordered biscuitA table4 )
+		(ordered biscuitB table4 )
 		
 
         ;FIXED :Table distances
@@ -98,6 +86,9 @@
 		(= (fl-table-size table4) 1)
 		
 		;Places free at start
+		(place-free table1)
+		(place-free table2)
+		(place-free table3)
 		(place-free table4)
 		
 
@@ -109,9 +100,6 @@
         (order-delivered biscuitA) (order-delivered biscuitB) 
 	    (clean table1)(clean table2)(clean table3)(clean table4)
 	    (at-waiter w1 bar)
-		(at-waiter w2 table1)
-		(at-waiter w3 table2)
-		(at-waiter w4 table3)
 		
 	    (not(tray-taken))
 	    )
