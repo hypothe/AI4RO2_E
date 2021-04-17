@@ -25,7 +25,7 @@ output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
                        
 cwd = os.getcwd()
 
-def run(Plan_Eng, domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run_time):	
+def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run_time):	
 
     # try torun the planning engine
     flag = 0
@@ -157,8 +157,7 @@ def main(argv):
             for h_value in h_values:
                 if h_value == g_value != 1:
                     continue
-                run_fail = 0		# Flag to check ouput for this 
-                run_script = run(Plan_Engine, domain_string,  problem_string, 
+                run_script = run(domain_string,  problem_string, 
                                 Optimizer, g_value, h_value,
                                 run_output_file, run_time)
                 res_run_str = problem_trim_name + " with hw = " + str(h_value) + " gw = " + str(g_value)

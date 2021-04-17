@@ -275,6 +275,24 @@ def metric_edit():
     metric_txt = metric_file.read()
     return(metric_txt)
 
+def edit(waiter_number, drink4table, hot4table, problem_name_full):
+    for ii in range(0, table_number_global):
+        hot4table[ii] = min(drink4table[ii], hot4table[ii])
+        
+    #print(waiter_number)
+    #print(drink4table)
+    #print(hot4table)
+
+    [header_new, goal_new] = headgoal_edit(waiter_number, sum(drink4table), sum(hot4table))
+    init_new = init_edit(waiter_number, drink4table, hot4table)
+    metric_txt = metric_edit()
+
+    #Sum the text and create the new pddl problem
+    Pddl_problem = header_new + '\n' + init_new + '\n' + goal_new + '\n' + metric_txt
+    with open(problem_name_full, "w") as output_file:
+        output_file.write(Pddl_problem)
+       
+
 # Press the green button in the gutter to run the script.
 def main(argv):
     """ This function asks the user to insert the number of
@@ -339,23 +357,9 @@ def main(argv):
     if gui_input:
         #Graphic user interface
         [waiter_number, drink4table, hot4table] = gui()
-    # There cannot be more hot drinks than total drinks, duh
-    for ii in range(0, table_number_global):
-        hot4table[ii] = min(drink4table[ii], hot4table[ii])
         
-    #print(waiter_number)
-    #print(drink4table)
-    #print(hot4table)
-
-    [header_new, goal_new] = headgoal_edit(waiter_number, sum(drink4table), sum(hot4table))
-    init_new = init_edit(waiter_number, drink4table, hot4table)
-    metric_txt = metric_edit()
-
-    #Sum the text and create the new pddl problem
-    Pddl_problem = header_new + '\n' + init_new + '\n' + goal_new + '\n' + metric_txt
-    with open(problem_name_full, "w") as output_file:
-        output_file.write(Pddl_problem)
-        
+    edit(waiter_number, drink4table, hot4table, problem_name_full) 
+    
     print("Generated " + problem_name_full + "with:\n" +
             "number_of_waiters:\t" + str(waiter_number) + "\n" +
             "tot_drinks_for_table:\t" + str(drink4table) + "\n" +

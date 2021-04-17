@@ -36,7 +36,7 @@ def parse(str_out):
     index_pos = {key:0 for key in index_keywords}
     index_val = {key:0 for key in index_keywords}
     
-    hg_val = {key:{} for key in output_keywords}
+    hg_val = {}
     
     f_flag = 1
         
@@ -62,11 +62,13 @@ def parse(str_out):
         if f_flag < 0:
         # if this try did not succeed try the next one; if we reached the end of the str exits
             continue
-            
+        
+        hg_val[(h_val, g_val)] = {key:{} for key in output_keywords}    
+        
         for k, v in key_pos.items():
         # the new position of the keyword is the first one found after the prev one
             if succ == 0: #unsuccessful run, fill values with placeholder
-                hg_val[k][(h_val, g_val)] = float('nan')
+                hg_val[(h_val, g_val)][k] = float('nan')
                 continue
                 
             key_pos[k] = str_out.find(k, v, -1) + len(k)
@@ -75,38 +77,44 @@ def parse(str_out):
             key_val[k] = float(re.sub('[^\d\.]+', '', tmp)) #remove any leftover character from the int
             
             # matrix associating to the couple hw, gw the various parameters found when parsing
-            hg_val[k][(h_val, g_val)] = key_val[k]
+            
+            hg_val[(h_val, g_val)][k] = key_val[k]
             
     return hg_val
     
 def plot_hg(hg_val, ddd):
     plot_num = 111
     #print(hg_val.keys())
-    for key in hg_val.keys():
+
+    x = []
+    y = []
+    z = {key:[] for key in output_keywords}
+    
+    for hg_key in hg_val.keys(): #(h,g)
         #print(key)
+        x.append(int(hg_key[0]))
+        y.append(int(hg_key[1]))
+        
         if plot_num == 111:
-            x = []
-            y = []
-            for sub_key in hg_val[key].keys():
-                x.append(int(sub_key[0]))
-                y.append(int(sub_key[1]))
-        z = list(hg_val[key].values())
+            for sub_key in hg_val[hg_key].keys():
+                z[sub_key].append(hg_val[hg_key][sub_key])
         #print(x)
         #print(y)
         #print(z)
+    for key in z:
         fig = plt.figure(key)
         
         if ddd:      
             ax = fig.add_subplot(plot_num, projection='3d')     
-            plot = ax.scatter(x, y, z, cmap = 'rainbow', c=z)            
+            plot = ax.scatter(x, y, z[key], cmap = 'rainbow', c=z[key])            
             ax.set_xlim(0,1.1*max(x))
             ax.set_ylim(0,1.1*max(y)) 
-            ax.set_zlim(0.9*min(z), 1.1*max(z))
+            ax.set_zlim(0.9*min(z[key]), 1.1*max(z[key]))
             ax.set_xlabel('g')
             ax.set_ylabel('h')                       
             ax.set_title(key)
         else:
-            plot = plt.scatter(x, y, c=z, cmap = 'rainbow')
+            plot = plt.scatter(x, y, c=z[key], cmap = 'rainbow')
             plt.xlabel('g')
             plt.ylabel('h')
             plt.title(key)
