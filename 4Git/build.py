@@ -24,6 +24,7 @@ table_number_global = 4             # number of tables present
 
 #Paramenters
 cwd = os.getcwd()
+template_wd = "templates"
 
 def gui():
 
@@ -51,12 +52,11 @@ def gui():
     window = sg.Window('AI for Robotics II', layout)
     event, values = window.read()
     window.close()
-    print(values)
+    # print(values)
     #Extract input from GUI
     waiters = int(values[2])
     drink4table = [int(values[3]), int(values[5]), int(values[7]), int(values[9])]
-    hot4table = [min(int(values[3]), int(values[4])), min(int(values[5]), int(values[6])), 
-                min(int(values[7]),int(values[8])), min(int(values[9]),int(values[10]))]
+    hot4table = [int(values[4]), int(values[6]), int(values[8]), int(values[10])]
 
     return(waiters, drink4table, hot4table)
 
@@ -68,8 +68,8 @@ def headgoal_edit(wait_num, drink_num, hot_num):
     "Open the header and the goal txt file"
     header_name = "Domain_Header.txt"
     goal_name = "Domain_Goal.txt"
-    header_file = open(cwd + "/" + header_name, "r")
-    goal_file = open(cwd + "/" + goal_name, "r")
+    header_file = open(cwd + "/" + template_wd + "/" + header_name, "r")
+    goal_file = open(cwd + "/" + template_wd  + "/" + goal_name, "r")
     header_txt = header_file.read()
     goal_txt = goal_file.read()
 
@@ -136,7 +136,7 @@ def init_edit(wait_num, d4t, h4t):
 
     "Open the header and the goal txt file"
     init_name = "Domain_Init.txt"
-    init_file = open(cwd + "/" + init_name, "r")
+    init_file = open(cwd + "/" + template_wd + "/" + init_name, "r")
     init_txt = init_file.read()
 
     "Number of drinks and waiters required"
@@ -271,7 +271,7 @@ def metric_edit():
 
     "Read the metric txt file"
     metric_name = "Domain_Metric.txt"
-    metric_file = open(cwd + "/" + metric_name, "r")
+    metric_file = open(cwd + "/" + template_wd + "/" + metric_name, "r")
     metric_txt = metric_file.read()
     return(metric_txt)
 
@@ -284,10 +284,10 @@ def main(argv):
     """
     usage = ("usage: pyhton3 " + argv[0] + "\n" +
              "(default values will be used in case options are not provided)\n" +
-             "\t-f, --problem <arg>\t\tthe path and name of the PDDL problem file to generate\n" +
-             "\t-w, --waiter <arg>\t\tthe number of waiters (int)\n" +
-             "\t-d, --drinks <arg>\t\tthe number of total drinks for each table, as [d1, d2, d3, d4] (list<int>)\n" +
-             "\t-t, --hot-drinks <arg>\t\tthe number of hot drinks for each table, as [t1, t2, t3, t4] (list<int>)\n" +
+             "\t-f, --problem <arg>\tthe path and name of the PDDL problem file to generate\n" +
+             "\t-w, --waiters <arg>\tthe number of waiters (int)\n" +
+             "\t-d, --drinks <arg>\tthe number of total drinks for each table, as [d1,d2,d3,d4] (list<int>)\n" +
+             "\t-t, --hot-drinks <arg>\tthe number of hot drinks for each table, as [t1,t2,t3,t4] (list<int>)\n" +
              "\t-g, --gui\t\tenable the GUI (overwrites everything else)\n"
              "\t-h, --help\t\tdisplay this help\n"
             )
@@ -300,7 +300,7 @@ def main(argv):
     problem_name_full = cwd + "/" + wd + "/"+ problem_name
             
     try:
-        opts, args = getopt.getopt(argv[1:], "hf:w:d:t:g", ["help", "problem", "waiter", "drinks", "hot-drinks", "gui"])
+        opts, args = getopt.getopt(argv[1:], "hf:w:d:t:g", ["help", "problem=", "waiters=", "drinks=", "hot-drinks=", "gui"])
     except getopt.GetoptError:
         print(usage)
         sys.exit(1)
@@ -323,7 +323,6 @@ def main(argv):
                 print("ERR: Too few elements in the drinks for table list passed as argument")
                 sys.exit()
                 
-            print(drink4table)
         elif opt in ("-t", "--hot-drinks") and arg[0] == '[' and arg[-1] == ']':
             hot4table = list()
             h4t = re.findall("\d", arg)
@@ -333,7 +332,6 @@ def main(argv):
             except IndexError:
                 print("ERR: Too few elements in the hot-drinks for table list passed as argument")
                 sys.exit()
-            print(hot4table)
         elif opt in ("-g", "--gui"):
             gui_input = True
     
@@ -341,11 +339,13 @@ def main(argv):
     if gui_input:
         #Graphic user interface
         [waiter_number, drink4table, hot4table] = gui()
-
-
-    print(waiter_number)
-    print(drink4table)
-    print(hot4table)
+    # There cannot be more hot drinks than total drinks, duh
+    for ii in range(0, table_number_global):
+        hot4table[ii] = min(drink4table[ii], hot4table[ii])
+        
+    #print(waiter_number)
+    #print(drink4table)
+    #print(hot4table)
 
     [header_new, goal_new] = headgoal_edit(waiter_number, sum(drink4table), sum(hot4table))
     init_new = init_edit(waiter_number, drink4table, hot4table)
@@ -355,6 +355,12 @@ def main(argv):
     Pddl_problem = header_new + '\n' + init_new + '\n' + goal_new + '\n' + metric_txt
     with open(problem_name_full, "w") as output_file:
         output_file.write(Pddl_problem)
-
+        
+    print("Generated " + problem_name_full + "with:\n" +
+            "number_of_waiters:\t" + str(waiter_number) + "\n" +
+            "tot_drinks_for_table:\t" + str(drink4table) + "\n" +
+            "hot_drinks_for_table:\t" + str(hot4table) + "\n"
+        )
+        
 if __name__ == '__main__':
     main(sys.argv)

@@ -1,168 +1,130 @@
-H_VALUE: 1
-G_VALUE: 1
+H_VALUE: 1.0
+G_VALUE: 4.0
 SUCCESS: 1
-Duration:26.0
-Planning Time:1110
-Heuristic Time:617
-Search Time:726
-Expanded Nodes:350
-States Evaluated:712
+Duration:47.0
+Planning Time:10284
+Heuristic Time:9616
+Search Time:9854
+Expanded Nodes:1365
+States Evaluated:5710
 
 
 ### ------------------ ###
 
-H_VALUE: 2
-G_VALUE: 1
+H_VALUE: 2.0
+G_VALUE: 4.0
 SUCCESS: 1
-Duration:26.0
-Planning Time:1068
-Heuristic Time:571
-Search Time:676
-Expanded Nodes:352
-States Evaluated:729
+Duration:47.0
+Planning Time:8377
+Heuristic Time:7708
+Search Time:7915
+Expanded Nodes:1239
+States Evaluated:4802
 
 
 ### ------------------ ###
 
-H_VALUE: 7
-G_VALUE: 1
+H_VALUE: 5.0
+G_VALUE: 4.0
 SUCCESS: 1
-Duration:26.0
-Planning Time:1040
-Heuristic Time:585
-Search Time:673
-Expanded Nodes:367
-States Evaluated:819
+Duration:47.0
+Planning Time:11820
+Heuristic Time:11081
+Search Time:11369
+Expanded Nodes:1900
+States Evaluated:7346
 
 
 ### ------------------ ###
 
-H_VALUE: 10
-G_VALUE: 1
-SUCCESS: 1
-Duration:26.0
-Planning Time:1082
-Heuristic Time:615
-Search Time:725
-Expanded Nodes:376
-States Evaluated:873
+H_VALUE: 3.0
+G_VALUE: 4.0
+SUCCESS: 0
 
 
 ### ------------------ ###
 
-H_VALUE: 1
-G_VALUE: 2
+H_VALUE: 1.0
+G_VALUE: 5.0
 SUCCESS: 1
-Duration:25.0
-Planning Time:1022
-Heuristic Time:573
-Search Time:665
-Expanded Nodes:279
-States Evaluated:641
+Duration:47.0
+Planning Time:11876
+Heuristic Time:11053
+Search Time:11337
+Expanded Nodes:1482
+States Evaluated:6292
 
 
 ### ------------------ ###
 
-H_VALUE: 7
-G_VALUE: 2
+H_VALUE: 2.0
+G_VALUE: 5.0
 SUCCESS: 1
-Duration:26.0
-Planning Time:1007
-Heuristic Time:525
-Search Time:641
-Expanded Nodes:357
-States Evaluated:759
+Duration:47.0
+Planning Time:8760
+Heuristic Time:8020
+Search Time:8269
+Expanded Nodes:1194
+States Evaluated:4729
 
 
 ### ------------------ ###
 
-H_VALUE: 10
-G_VALUE: 2
-SUCCESS: 1
-Duration:26.0
-Planning Time:1086
-Heuristic Time:600
-Search Time:713
-Expanded Nodes:361
-States Evaluated:783
+H_VALUE: 3.0
+G_VALUE: 5.0
+SUCCESS: 0
 
 
 ### ------------------ ###
 
-H_VALUE: 1
-G_VALUE: 7
+H_VALUE: 1.0
+G_VALUE: 6.0
 SUCCESS: 1
-Duration:27.0
-Planning Time:1195
-Heuristic Time:711
-Search Time:824
-Expanded Nodes:432
-States Evaluated:961
+Duration:44.0
+Planning Time:20741
+Heuristic Time:19566
+Search Time:20293
+Expanded Nodes:7706
+States Evaluated:16199
 
 
 ### ------------------ ###
 
-H_VALUE: 2
-G_VALUE: 7
+H_VALUE: 2.0
+G_VALUE: 6.0
 SUCCESS: 1
-Duration:25.0
-Planning Time:1087
-Heuristic Time:618
-Search Time:722
-Expanded Nodes:272
-States Evaluated:621
+Duration:47.0
+Planning Time:9065
+Heuristic Time:8289
+Search Time:8579
+Expanded Nodes:1180
+States Evaluated:4633
 
 
 ### ------------------ ###
 
-H_VALUE: 10
-G_VALUE: 7
+H_VALUE: 5.0
+G_VALUE: 6.0
 SUCCESS: 1
-Duration:26.0
-Planning Time:1040
-Heuristic Time:576
-Search Time:686
-Expanded Nodes:351
-States Evaluated:723
+Duration:48.0
+Planning Time:45448
+Heuristic Time:43095
+Search Time:44934
+Expanded Nodes:34853
+States Evaluated:54120
 
 
 ### ------------------ ###
 
-H_VALUE: 1
-G_VALUE: 10
+H_VALUE: 3.0
+G_VALUE: 6.0
 SUCCESS: 1
-Duration:27.0
-Planning Time:1648
-Heuristic Time:1122
-Search Time:1271
-Expanded Nodes:822
-States Evaluated:1628
-
-
-### ------------------ ###
-
-H_VALUE: 2
-G_VALUE: 10
-SUCCESS: 1
-Duration:26.0
-Planning Time:1305
-Heuristic Time:801
-Search Time:916
-Expanded Nodes:408
-States Evaluated:911
-
-
-### ------------------ ###
-
-H_VALUE: 7
-G_VALUE: 10
-SUCCESS: 1
-Duration:26.0
-Planning Time:1044
-Heuristic Time:570
-Search Time:661
-Expanded Nodes:350
-States Evaluated:712
+Duration:47.0
+Planning Time:9256
+Heuristic Time:8421
+Search Time:8747
+Expanded Nodes:1239
+States Evaluated:4802
 
 
 ### ------------------ ###
