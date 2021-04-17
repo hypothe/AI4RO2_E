@@ -64,6 +64,36 @@ Stuff to look into
 - sensibility analysis "by hand" of each parameter
 - create script to automatize the sensibility analysis for a range of values
 
+## ML implementation for "best (g, h) values" retrieval from problem data
+
+Two possible approaches to follow
+
+### Multilinear Regression
+
+Train a multilinear classifier on data such as
+(n-of-drinks, n-of-hot-drinks, drink-pos-avg, drink-pos-variance, h, g, solution-quality)
+
+then, for a given problem file:
+1. generate a list of, (h, g)
+2. evaluate the quality for the touple (problem-data, h, g) on the trained classifier
+3. find the (h, g) tuple that had the best quality
+
+pro: makes sense, a relation is surely in place
+cons: will have to iterate on different couples (h, g) for a problem
+
+### kNN Classifier
+
+Save, for each training problem, only the (h, g) couple which yield the best quality solution, as
+(n-of-drinks, n-of-hot-drinks, drink-pos-avg, drink-pos-variance, h, g)
+
+then, for a given problem file
+1. perform kNN classification, finding the closest (k-mode) training instance for everything (but h, g)
+2. take the (h, g) of that solution
+
+pro: easier to develop, no training phase required
+cons: needs A LOT of data (not a real problem tho, since even for 3 max drinks per table we can have a lot of variability),
+    maybe slower
+
 ## Dependencies
 
 Python3 is needed to launch those scripts.
