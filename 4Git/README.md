@@ -113,3 +113,9 @@ cons: needs A LOT of data (not a real problem tho, since even for 3 max drinks p
 Python3 is needed to launch those scripts.
 ENHSP-19 is also needed to solve the domain-problem couple. By default the position of the planner executable
 is assumed at `/root/ENHSP-Public/enhsp`, to change it open `run.py` and modify the `enigne_path` global variable.
+
+---
+
+# Changes
+
+-  pass from h,g to ratio, simplifying the plot and whatever
