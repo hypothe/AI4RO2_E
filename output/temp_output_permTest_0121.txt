@@ -1,0 +1,59 @@
+H_VALUE: 15.000000000000004
+G_VALUE: 1.0
+SUCCESS: 0
+
+
+### ------------------ ###
+
+H_VALUE: 3.8729833462074175
+G_VALUE: 1.0
+SUCCESS: 1
+Duration:58.0
+Planning Time:74869
+Heuristic Time:72279
+Search Time:74334
+Expanded Nodes:12244
+States Evaluated:43177
+
+
+### ------------------ ###
+
+H_VALUE: 1.0
+G_VALUE: 1.0
+SUCCESS: 1
+Duration:54.0
+Planning Time:25053
+Heuristic Time:23753
+Search Time:24504
+Expanded Nodes:3634
+States Evaluated:13395
+
+
+### ------------------ ###
+
+H_VALUE: 1.0
+G_VALUE: 3.8729833462074175
+SUCCESS: 1
+Duration:54.0
+Planning Time:12886
+Heuristic Time:11885
+Search Time:12321
+Expanded Nodes:1601
+States Evaluated:6104
+
+
+### ------------------ ###
+
+H_VALUE: 1.0
+G_VALUE: 15.000000000000004
+SUCCESS: 1
+Duration:45.0
+Planning Time:37143
+Heuristic Time:34935
+Search Time:36595
+Expanded Nodes:21323
+States Evaluated:34015
+
+
+### ------------------ ###
+

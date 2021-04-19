@@ -5,6 +5,7 @@ import run
 import parse
 import numpy as np
 import random
+import itertools
 
 from sklearn.decomposition import PCA
 import csv
@@ -28,7 +29,7 @@ output_name_full_ = "../output/temp_output.txt"
 csv_name_full_ = "../graphs/hg_val.csv"
 writer_ = None
 
-def rec(table, last_table, drink4table, hot4table, placed_drinks):
+def rec_test(table, last_table, drink4table, hot4table, placed_drinks):
     if table < last_table and placed_drinks <= tot_drinks:
     
         for drink in range(0,min(max_drinks_+1, tot_drinks - placed_drinks+1)):
@@ -37,15 +38,15 @@ def rec(table, last_table, drink4table, hot4table, placed_drinks):
             for hot in range(0, drink+1):
                 hot4table[table] = hot
                 
-                rec(table+1, last_table, drink4table, hot4table, placed_drinks + drink)
+                rec_test(table+1, last_table, drink4table, hot4table, placed_drinks + drink)
                 
     elif placed_drinks > 0 and random.random() < 0.05:
        
         rounds_ = rounds_ + 1
-        do_stuff(drink4table, hot4table)
+        test(drink4table, hot4table)
         
             
-def do_stuff(drink4table, hot4table):
+def test(drink4table, hot4table):
     global rounds_, output_name_full, domain_name_full_, problem_name_full_
     global ratios_, run_time
      
@@ -57,9 +58,14 @@ def do_stuff(drink4table, hot4table):
     ## RUN the problem file for all couples of h, g
     with open(output_name_full_, "w") as run_output_file:
         #for g_value in g_values:
-        h_value = 1.0
-        for g_value in ratios_:
-                continue
+        for gg in ratios_:
+            if gg < 1.0:
+                h_value = 1.0/gg
+                g_value = 1.0
+            else:
+                h_value = 1.0
+                g_value = gg
+                
             res = run.run(domain_name_full_, problem_name_full_, False, g_value, h_value, run_output_file, run_time)
             if res:
                 print("Succesful run")
@@ -74,6 +80,13 @@ def do_stuff(drink4table, hot4table):
         ## SAVE the results in a csv
         ### notice the csv is opened in the main, so that won't be overwritten between problems
         print_to_csv(hg_val, drink4table, hot4table)
+        
+def perm_test(perm_order4table):
+    ## conversion to set to remove duplicates
+    for order in set(tuple(tt) for tt in perm_order4table):
+        #print(order)
+        test(order, [0,0,0,0])
+
             
 def print_to_csv(hg_val, drink4table, hot4table):
     global writer_
@@ -161,7 +174,10 @@ def main():
     table = 0
     last_table = num_tables_
     
-    identif = (max_drinks_, tot_drinks, waiter_number_, h_values, g_values, run_time)
+    # identif = (max_drinks_, tot_drinks, waiter_number_, ratios_, run_time)
+    
+    drink4table = [0, 1, 2, 1]
+    identif = ("permTest_", drink4table)
     
     problem_name_full_ = uniq_str(problem_name_full_, identif)
     output_name_full_ = uniq_str(output_name_full_, identif)
@@ -178,7 +194,9 @@ def main():
             
         writer_ = csv.DictWriter(csvfile, fieldnames=fieldnames, dialect='excel')
         writer_.writeheader()
-        rec(table, last_table, drink4table, hot4table, 0)
+        
+        # rec_test(table, last_table, drink4table, hot4table, 0)
+        perm_test(itertools.permutations(drink4table))
         
     print(rounds_)
 
