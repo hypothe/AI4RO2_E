@@ -3,23 +3,27 @@
 import build
 import run
 import parse
+import numpy as np
+import random
 
 import csv
 
 max_drinks_ = 2 # 4
 num_tables_ = 4
-tot_drinks = 4 # 8
+tot_drinks = 6 # 8
 rounds_ = 0
 waiter_number_ = 1 # 2
-problem_name_full_ = "../domains/dom_APE/problem_temp.pddl"
 g_values = [1, 5]
 h_values = [1, 5]
+ratios_ = np.geomspace(1/15, 15, num = 5).tolist()
 ## g_values = [1, 3, 7, 10]
 ## h_values = [1, 3, 7, 10]
+run_time = 120 # 300
+
 engine_path_ = run.engine_path
 domain_name_full_ = run.Pddl_domain_
+problem_name_full_ = "../domains/dom_APE/problem_temp.pddl"
 output_name_full_ = "../output/temp_output.txt"
-run_time = 60 # 300
 csv_name_full_ = "../graphs/hg_val.csv"
 writer_ = None
 
@@ -34,9 +38,9 @@ def rec(table, last_table, drink4table, hot4table, placed_drinks):
                 
                 rec(table+1, last_table, drink4table, hot4table, placed_drinks + drink)
                 
-    elif placed_drinks > 0:
+    elif placed_drinks > 0 and random.random() < 0.05:
         global rounds_, output_name_full, domain_name_full_, problem_name_full_
-        global g_values, h_values, run_time
+        global ratios_, run_time
         rounds_ = rounds_ + 1
         
         ## BUILD the problem file
@@ -45,15 +49,15 @@ def rec(table, last_table, drink4table, hot4table, placed_drinks):
         
         ## RUN the problem file for all couples of h, g
         with open(output_name_full_, "w") as run_output_file:
-            for g_value in g_values:
-                for h_value in h_values:
-                    if h_value == g_value != 1:
-                        continue
-                    res = run.run(domain_name_full_, problem_name_full_, False, g_value, h_value, run_output_file, run_time)
-                    if res:
-                        print("Succesful run")
-                    else:
-                        print("Unsuccesful run")
+            #for g_value in g_values:
+            h_value = 1.0
+            for g_value in ratios_:
+                    continue
+                res = run.run(domain_name_full_, problem_name_full_, False, g_value, h_value, run_output_file, run_time)
+                if res:
+                    print("Succesful run")
+                else:
+                    print("Unsuccesful run")
         
         ## PARSE the obtained output and save it
         with open(output_name_full_, "r") as run_output_file:    
@@ -77,6 +81,21 @@ def print_to_csv(hg_val, drink4table, hot4table):
         for par_key, v in hg_val[hg_key].items():
             row[par_key] = v
         writer.writerow(row)
+        
+def uniq_str(file_name, prop):
+
+    l = file_name.rfind(".")
+    ss = file_name[0:l] + '_'
+    for ii in prop:
+        try:
+            for jj in ii: # if it's iterable
+                ss = ss + str(jj)
+        except  TypeError:
+            ss = ss + str(ii)
+            
+    ss = ss + file_name[l:]
+    # print(ss)
+    return ss
 
 def avg_drink_pos(stuff4table):
     """
@@ -101,11 +120,19 @@ def avg_drink_pos(stuff4table):
 def main():
 
     global rounds_, csv_name_full, writer_
+    global problem_name_full_, domain_name_full_, output_name_full_, csv_name_full_
+    
     drink4table = [0 for ii in range(0, num_tables_)]
     hot4table = [0 for ii in range(0, num_tables_)]
     table = 0
     last_table = num_tables_
     
+    identif = (max_drinks_, tot_drinks, waiter_number_, h_values, g_values, run_time)
+    
+    problem_name_full_ = uniq_str(problem_name_full_, identif)
+    output_name_full_ = uniq_str(output_name_full_, identif)
+    csv_name_full_ = uniq_str(csv_name_full_, identif)
+
     with open(csv_name_full_, 'w', newline='') as csvfile:
         fieldnames = ['avg_x', 'avg_y', 'std_x', 'std_y',
                     'hot_avg_x', 'hot_avg_y', 'hot_std_x', 'hot_std_y',
