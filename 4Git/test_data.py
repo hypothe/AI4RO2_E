@@ -79,12 +79,13 @@ def print_to_csv(hg_val, drink4table, hot4table):
     global writer_
     writer = writer_
     row = {}
-    row['tot'], row['avg_x'], row['avg_y'], row['std_x'], row['std_y'] = avg_drink_pos(drink4table)
-    row['hot_tot'], row['hot_avg_x'], row['hot_avg_y'], row['hot_std_x'], row['hot_std_y'] = avg_drink_pos(hot4table)
+    row['tot'], row['avg_x'], row['avg_y'], row['eig_1'], row['eig_2'] = avg_drink_pos(drink4table)
+    row['hot_tot'], row['hot_avg_x'], row['hot_avg_y'], row['hot_eig_1'], row['hot_eig_2'] = avg_drink_pos(hot4table)
     
     for hg_key in hg_val:
         row['hw'] = hg_key[0]
         row['gw'] = hg_key[1]
+        row['hg_ratio'] = hg_key[0]/hg_key[1]
         for par_key, v in hg_val[hg_key].items():
             row[par_key] = v
         writer.writerow(row)
@@ -147,17 +148,16 @@ def avg_drink_pos(stuff4table):
     std_x = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_x, 2)
     std_y = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_y, 2)
     
-    print("FROM {}: TOT {} AVG_X {} AVG_Y {} STD_X {} STD_Y {}".format(stuff4table, tot, avg_x, avg_y, std_x, std_y))
-    return ('%.3f'%(tot), '%.3f'%(avg_x), '%.3f'%(avg_y), '%.3f'%(std_x), '%.3f'%(std_y))
+    print("FROM {}: TOT {} AVG_X {} AVG_Y {} eig_1 {} eig_2 {}".format(stuff4table, tot, avg_x, avg_y, lambda_[0], lambda_[1]))
+    return ('%.3f'%(tot), '%.3f'%(avg_x), '%.3f'%(avg_y), '%.3f'%(lambda_[0]), '%.3f'%(lambda_[1]))
                 
 def main():
 
     global rounds_, csv_name_full, writer_
     global problem_name_full_, domain_name_full_, output_name_full_, csv_name_full_
-    
+
     drink4table = [0 for ii in range(0, num_tables_)]
     hot4table = [0 for ii in range(0, num_tables_)]
-
     table = 0
     last_table = num_tables_
     
@@ -168,9 +168,9 @@ def main():
     csv_name_full_ = uniq_str(csv_name_full_, identif)
 
     with open(csv_name_full_, 'w', newline='') as csvfile:
-        fieldnames = ['tot','avg_x', 'avg_y', 'std_x', 'std_y',
-                    'hot_tot', 'hot_avg_x', 'hot_avg_y', 'hot_std_x', 'hot_std_y',
-                    'hw', 'gw']
+        fieldnames = ['tot','avg_x', 'avg_y', 'eig_1', 'eig_2',
+                    'hot_tot', 'hot_avg_x', 'hot_avg_y', 'hot_eig_1', 'hot_eig_2',
+                    'hw', 'gw','hg_ratio']
         for key in run.output_keywords:
             fieldnames.append(key)
     
