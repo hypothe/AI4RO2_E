@@ -11,7 +11,9 @@ Pddl_problem_ = "../domains/dom_APE/Custom.pddl"    # (str) Problem name, extens
 run_wd = "../domains/dom_APE"			# (str) Working directory
 out_wd = "../output"
 
-engine_path = "/root/ENHSP-Public/enhsp"
+
+#engine_path = "/root/ENHSP-Public/enhsp"
+engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
 Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
 Pddl_domain_ = '../domains/dom_APE/numeric_domain_APE_full.pddl'    # (str) Name of pddl domain file
 Optimizer = False        			# (Bool) Set to active for optimization process

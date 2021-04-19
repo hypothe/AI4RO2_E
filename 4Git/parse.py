@@ -8,6 +8,7 @@ import os
 import re
 
 import matplotlib.pyplot as plt
+import numpy as np
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 
@@ -20,13 +21,14 @@ output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
                     'Search Time', 'Expanded Nodes', 'States Evaluated')	# list of (str): keywords for relevant outputs
 index_keywords = ('H_VALUE', 'G_VALUE', 'SUCCESS')
 three_D = False
+ratio = True
 
 graphs_wd = "../graphs" # directory to save the graphs in
 
 #Paramenters
 cwd = os.getcwd()
 #Parameters for latexstyle plot
-#plt.rc('text', usetex=True)
+plt.rc('text', usetex=True)
 plt.rc('font', family='serif')
 
 def parse(str_out):
@@ -98,9 +100,6 @@ def plot_hg(hg_val, ddd):
         if plot_num == 111:
             for sub_key in hg_val[hg_key].keys():
                 z[sub_key].append(hg_val[hg_key][sub_key])
-        #print(x)
-        #print(y)
-        #print(z)
     for key in z:
         fig = plt.figure(key)
         
@@ -114,10 +113,9 @@ def plot_hg(hg_val, ddd):
             ax.set_ylabel('h')                       
             ax.set_title(key)
         else:
-            plot = plt.scatter(x, y, c=z[key], cmap = 'rainbow')
-            plt.xlabel('g')
-            plt.ylabel('h')
-            plt.title(key)
+            plot = plt.scatter(np.true_divide(np.array(x), np.array(y)), z[key], c=z[key], cmap = 'rainbow')
+            plt.xlabel(r"$ \frac{w_g}{w_h}$")
+            plt.ylabel(key)
         fig.colorbar(plot) 
 
         #Save figure
@@ -167,10 +165,6 @@ def main(argv):
         hg_val = parse(str_out)
    
     plot_hg(hg_val, ddd)     
-        #for k in hg_val:
-        #    print(k)
-        #    for l, v in hg_val[k].items():
-        #        print("\t" + str(l) + ":" + str(v) + "\n")
 
     #Output visualization
     
