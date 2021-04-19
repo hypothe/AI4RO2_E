@@ -100,8 +100,13 @@ def print_to_csv(hg_val, drink4table, hot4table):
         row['gw'] = hg_key[1]
         row['hg_ratio'] = hg_key[0]/hg_key[1]
         for par_key, v in hg_val[hg_key].items():
-            row[par_key] = v
+            # row[par_key] = v
+            row[par_key] = round_dec(v, 3)
+            
         writer.writerow(row)
+        
+def round_dec(val, dec):
+    return round(val * 10**dec)/(10**dec))
         
 def uniq_str(file_name, prop):
 
@@ -192,7 +197,7 @@ def main():
     
         ## print(fieldnames)   
             
-        writer_ = csv.DictWriter(csvfile, fieldnames=fieldnames, dialect='excel')
+        writer_ = csv.DictWriter(csvfile, fieldnames=fieldnames, dialect='excel', quoting=csv.QUOTE_NONNUMERIC)
         writer_.writeheader()
         
         # rec_test(table, last_table, drink4table, hot4table, 0)
