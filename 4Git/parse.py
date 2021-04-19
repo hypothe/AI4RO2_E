@@ -88,14 +88,14 @@ def plot_hg(hg_val, ddd):
     plot_num = 111
     #print(hg_val.keys())
 
-    x = []
-    y = []
+    h = []
+    g = []
     z = {key:[] for key in output_keywords}
     
     for hg_key in hg_val.keys(): #(h,g)
         #print(key)
-        x.append(int(hg_key[0]))
-        y.append(int(hg_key[1]))
+        h.append(int(hg_key[0]))
+        g.append(int(hg_key[1]))
         
         if plot_num == 111:
             for sub_key in hg_val[hg_key].keys():
@@ -105,16 +105,16 @@ def plot_hg(hg_val, ddd):
         
         if ddd:      
             ax = fig.add_subplot(plot_num, projection='3d')     
-            plot = ax.scatter(x, y, z[key], cmap = 'rainbow', c=z[key])            
-            ax.set_xlim(0,1.1*max(x))
-            ax.set_ylim(0,1.1*max(y)) 
+            plot = ax.scatter(h, g, z[key], cmap = 'rainbow', c=z[key])            
+            ax.set_xlim(0,1.1*max(h))
+            ax.set_ylim(0,1.1*max(g)) 
             ax.set_zlim(0.9*min(z[key]), 1.1*max(z[key]))
-            ax.set_xlabel('g')
-            ax.set_ylabel('h')                       
+            ax.set_xlabel('h')
+            ax.set_ylabel('g')                       
             ax.set_title(key)
         else:
-            plot = plt.scatter(np.true_divide(np.array(x), np.array(y)), z[key], c=z[key], cmap = 'rainbow')
-            plt.xlabel(r"$ \frac{w_g}{w_h}$")
+            plot = plt.scatter(np.true_divide(np.array(h), np.array(g)), z[key], c=z[key], cmap = 'rainbow')
+            plt.xlabel(r"$ \frac{w_h}{w_g}$")
             plt.ylabel(key)
         fig.colorbar(plot) 
 
