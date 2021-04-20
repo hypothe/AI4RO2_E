@@ -149,17 +149,13 @@ def avg_drink_pos(stuff4table):
     cov = np.cov(x_d, y_d)
     lambda_sq_, v = np.linalg.eig(cov)
     lambda_ = np.sqrt(lambda_sq_)
-    print('lambda')
-    print(lambda_)
-    print('v')
-    print(v)
-    #avg_x = sum([i*j for i, j in zip(stuff4table, x_sign)])/tot
-    #avg_y = sum([i*j for i, j in zip(stuff4table, y_sign)])/tot
     avg_x = np.mean(x_d)
     avg_y = np.mean(y_d)
     ## xi and yi will yield always 1, since they're either 1 or -1 squared
-    std_x = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_x, 2)
-    std_y = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_y, 2)
+    std_x = np.sd(x_d)
+    std_y = np.sd(y_d)
+    #std_x = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_x, 2)
+    #std_y = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_y, 2)
     
     print("FROM {}: TOT {} AVG_X {} AVG_Y {} eig_1 {} eig_2 {}".format(stuff4table, tot, avg_x, avg_y, lambda_[0], lambda_[1]))
     return ('%.3f'%(tot), '%.3f'%(avg_x), '%.3f'%(avg_y), '%.3f'%(lambda_[0]), '%.3f'%(lambda_[1]))

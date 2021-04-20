@@ -10,6 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 import pandas as pd
 import numpy as np
+from sklearn import linear_model
 
 
 
@@ -47,7 +48,7 @@ def main():
             #input()
             if row['hg_ratio'] != '63.8729833462074175':
                 x.append(float(row['avg_x']))
-                y.append(float(row['avg_y']))
+                y.append(float(row['avg_y']))   
                 h_g.append(float(row['hg_ratio']))
                 z['dur'].append(float(row['Duration']))
                 z['pltime'].append(float(row['Planning Time']))
@@ -55,6 +56,16 @@ def main():
                 z['search'].append(float(row['Search Time']))
                 z['ex_nod'].append(float(row['Expanded Nodes']))
                 z['ev_stat'].append(float(row['States Evaluated']))
+                X = pd.DataFrame([x,y,h_g])
+                Y1 = z['dur']
+                Y2 = z['pltime']
+
+
+        #Regression
+        X_arr = np.array(X).T
+        regr = linear_model.LinearRegression()  
+        regr.fit(X_arr,pd.np.array(Y2))   
+        regr.predict(X_arr)
 
         print(z)
         # Display correlation matrix of ther output
@@ -92,6 +103,11 @@ def main():
             fig.colorbar(plot) 
             plt.savefig(graphs_wd+"/"+name.replace(" ", "_")+".pdf")
             plt.close(name)
+   
+
+        #Display regression output
+        print(regr.coef_) 
+        print(regr.score(X_arr,Y2))
 
 if __name__ == '__main__':
     main()
