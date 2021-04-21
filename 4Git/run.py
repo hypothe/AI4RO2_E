@@ -2,6 +2,7 @@
 
 import sys, getopt
 
+import signal
 import os
 import re
 import subprocess
@@ -12,8 +13,8 @@ run_wd = "../domains/dom_APE"			# (str) Working directory
 out_wd = "../output"
 
 
-#engine_path = "/root/ENHSP-Public/enhsp"
-engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
+engine_path = "/root/ENHSP-Public/enhsp"
+#engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
 Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
 Pddl_domain_ = '../domains/dom_APE/numeric_domain_APE_full.pddl'    # (str) Name of pddl domain file
 Optimizer = False        			# (Bool) Set to active for optimization process
@@ -34,33 +35,48 @@ def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run
     gh_str = "H_VALUE: " + str(h_val) + "\nG_VALUE: " + str(g_val) + "\n"
     run_output_file.write(gh_str)
     
-    try:
-        print("Running " + problem_full + " gw: " +str(g_val) + " hw: " + str(h_val))
-        result = subprocess.run([engine_path, "-o", domain_full, "-f", problem_full,
+    
+    print("Running " + problem_full + " gw: " +str(g_val) + " hw: " + str(h_val))
+    with subprocess.Popen([engine_path, "-o", domain_full, "-f", problem_full,
                                 "-hw", str(h_val), "-gw", str(g_val),
                                 "-delta_val", str(delta), "-delta_exec", str(delta)
-                                ],
-                                check=True, timeout=max_run_time, capture_output=True)
-        #extract output and error and put them in formatted form
-        
-    except (subprocess.TimeoutExpired):
-        run_output_file.write("SUCCESS: " + str(flag) + "\n")
-        fail_str = 'Solution not found for ' + problem_full + 'in  ' + str(run_time) + ' seconds'
-        print(fail_str)
-        
-    except (subprocess.CalledProcessError):
-        run_output_file.write("SUCCESS: " + str(flag) + "\n")
-        fail_str = 'Error found during the solution of ' + problem_full
-        print(fail_str)
-        
-    else:
-        flag = 1
-        res = str(result.stdout)      
-        frm_result = res.replace('\\n','\n')
-        frm_result = trim_output(frm_result)
-        
-        run_output_file.write("SUCCESS: " + str(flag) + "\n")
-        run_output_file.write(frm_result)
+                            ], stdout=subprocess.PIPE, text=True, preexec_fn=os.setsid) as result:
+        try:
+            res, _ = result.communicate(timeout=run_time)
+            #print(type(res))
+            #input()
+            #res = out.read()
+            if result.returncode:
+                raise subprocess.CalledProcessError(cmd=result.args, returncode=result.returncode)
+            #extract output and error and put them in formatted form
+            
+        except (subprocess.TimeoutExpired):
+            #result.kill() ## should be done
+            ###
+            group_pid = os.getpgid(result.pid)
+            os.killpg(group_pid, signal.SIGINT)
+            ###
+            #result.send_signal(1) #SIGHUP, internet people say this should allow it to clean children?
+            #_, _ = result.communicate()
+            run_output_file.write("SUCCESS: " + str(flag) + "\n")
+            fail_str = 'Solution not found for ' + problem_full + 'in  ' + str(run_time) + ' seconds'
+            print(fail_str)
+            
+        except (subprocess.CalledProcessError):
+            run_output_file.write("SUCCESS: " + str(flag) + "\n")
+            fail_str = 'Error found during the solution of ' + problem_full
+            print(fail_str)
+            
+        else:
+            flag = 1
+            #res = str(result.stdout)  
+            #print(res)
+            #input()    
+            frm_result = res.replace('\\n','\n')
+            frm_result = trim_output(frm_result)
+            
+            run_output_file.write("SUCCESS: " + str(flag) + "\n")
+            run_output_file.write(frm_result)
     
     run_output_file.write("\n\n### ------------------ ###\n\n")
     return flag
