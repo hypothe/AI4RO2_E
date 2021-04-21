@@ -14,6 +14,7 @@ import pandas as pd
 import numpy as np
 from sklearn import linear_model
 import warnings
+import math
 
 warnings.filterwarnings('ignore')
 
@@ -35,23 +36,23 @@ def corrdot(*args, **kwargs):
     ax.annotate(corr_text, [.5, .5,],  xycoords="axes fraction",
                 ha='center', va='center', fontsize=font_size)
 
-def evaluate_corr(csvfile, h_val, g_val):
+def evaluate_corr(data_dict, h_val, g_val):
 
-    x = list()
-    y = list()
-    k = list()
     z = {key:list() for key in ('dur', 'pltime', 'heur', 'search', 'ex_nod', 'ev_stat')}
 
-    par1 = 'avg_x'  #'eig_1'
-    par2 = 'avg_y'  #'eig_2'
-    par3 = 'tot'    #'hg_ratio'
+    pars = ['tot', 'avg_x', 'avg_y', 'hot_tot', 'hot_avg_x', 'hot_avg_y']
     
-    des = 'pltime'  #'dur'
+    x = {in_par:list() for in_par in pars}
+    #par1 = 'avg_x'  #'eig_1'
+    #par2 = 'avg_y'  #'eig_2'
+    #par3 = 'tot'    #'hg_ratio'
+    des = "log(dur) + log(search/1000)"
+    des1 = 'dur'
+    des2 = 'search' #'heur'   #'pltime'
     
-    reader = csv.DictReader(csvfile, quoting=csv.QUOTE_NONNUMERIC) # set this when csv will be prop set
     #reader = csv.DictReader(csvfile) # basically a list of dict   
      
-    for row in reader:
+    for row in data_dict:
         #print(row.values())
         skip = False
         for v in row.values():
@@ -61,9 +62,12 @@ def evaluate_corr(csvfile, h_val, g_val):
         
         if not skip and round(float(row['hw'])) == h_val and round(float(row['gw'])) == g_val:
         #if row['hg_ratio'] != '63.8729833462074175':
-            x.append(float(row[par1]))
-            y.append(float(row[par2]))   
-            k.append(float(row[par3]))
+            for in_par in pars:
+                x[in_par].append(float(row[in_par]))
+                
+            #x.append(float(row[par1]))
+            #y.append(float(row[par2]))   
+            #k.append(float(row[par3]))
             z['dur'].append(float(row['Duration']))
             z['pltime'].append(float(row['Planning Time']))
             z['heur'].append(float(row['Heuristic Time']))
@@ -71,8 +75,15 @@ def evaluate_corr(csvfile, h_val, g_val):
             z['ex_nod'].append(float(row['Expanded Nodes']))
             z['ev_stat'].append(float(row['States Evaluated']))
             #X = pd.DataFrame([x,y,k])
-            X = pd.DataFrame([x,y,k])
-            Y = z[des]
+    X = pd.DataFrame(x.values())
+    #Y = z[des]
+    ## FIRST attempt Quality function
+    ### log chosen since from graphs an exp like behaviour seems to emerge
+    #Y = [ math.log(oo1/10 + oo2/10000) for oo1, oo2 in zip(z[des1], z[des2])]
+    Y = [ math.log(oo1) + math.log(oo2/1000) for oo1, oo2 in zip(z[des1], z[des2])]
+    #Y = [ math.log(oo) for oo in z[des2] ]
+    
+    z['Q'] = Y
 
     #Regression
     X_arr = np.array(X).T
@@ -80,8 +91,19 @@ def evaluate_corr(csvfile, h_val, g_val):
     regr.fit(X_arr,pd.np.array(Y))   
     regr.predict(X_arr)
 
+    #Display regression output
+    print("Regression INPUT: {}".format(pars))
+    print("Regression OUTPUT: [{}]".format(des))
+    print("Regression coefficient:\t{}".format(regr.coef_))
+    print("Regression score:\t{}".format(regr.score(X_arr,Y)))
+    
+    return x, z
     #print(z)
+    
+def plot_graphs(k, par1, par2, z, h_val, g_val):
     # Display correlation matrix of ther output
+    x = k[par1]
+    y = k[par2]
     output_df = pd.DataFrame(z)
     plt.figure("corr")
     sns.set(font_scale=1.6)
@@ -127,11 +149,6 @@ def evaluate_corr(csvfile, h_val, g_val):
             
     plt.show(block=False)
         
-    #Display regression output
-    print("Regression INPUT: [{}, {}, {}]".format(par1, par2, par3))
-    print("Regression OUTPUT: [{}]".format(des))
-    print("Regression coefficient:\t{}".format(regr.coef_))
-    print("Regression score:\t{}".format(regr.score(X_arr,Y)))
     input("Close open windows...")
     plt.close('ALL')
 
@@ -140,6 +157,8 @@ def main(argv):
     
     h_val = 1.0
     g_val = 15.0
+    in_par1 = 'avg_x'
+    in_par2 = 'avg_y'
     
     usage = ("usage: pyhton3 " + argv[0] + "\n" +
              "(default values will be used in case options are not provided)\n"
@@ -174,7 +193,12 @@ def main(argv):
     try:
         with open(filename, newline='') as csvfile:
             print("Starting correlation step for data in {} with h:{} g:{}".format(filename, h_val, g_val))
-            evaluate_corr(csvfile, h_val, g_val)
+            reader = csv.DictReader(csvfile, quoting=csv.QUOTE_NONNUMERIC) # set this when csv will be prop set
+            
+            k, z = evaluate_corr(reader, h_val, g_val)
+            
+        plot_graphs(k, in_par1, in_par2, z, h_val, g_val)    
+        
         
     except FileNotFoundError:
         print("File {} not found".format(arg))
