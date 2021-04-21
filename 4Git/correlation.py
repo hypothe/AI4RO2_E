@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-import sys, getopt
+import sys, getopt, re
 
 import csv
 import run
@@ -60,7 +60,7 @@ def evaluate_corr(data_dict, h_val, g_val):
                 skip = True
                 break
         
-        if not skip and round(float(row['hw'])) == h_val and round(float(row['gw'])) == g_val:
+        if not skip and float(row['hw']) == h_val and float(row['gw']) == g_val:
         #if row['hg_ratio'] != '63.8729833462074175':
             for in_par in pars:
                 x[in_par].append(float(row[in_par]))
@@ -200,7 +200,7 @@ def main(argv):
             print("Starting correlation step for data in {} with h:{} g:{}".format(filename, h_val, g_val))
             reader = csv.DictReader(csvfile, quoting=csv.QUOTE_NONNUMERIC) # set this when csv will be prop set
             
-            k, z = evaluate_corr(reader, h_val, g_val)
+            k, z = evaluate_corr(reader, h_val=h_val, g_val=g_val)
             
         plot_graphs(k, in_par1, in_par2, z, h_val, g_val)    
         

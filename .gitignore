@@ -50,4 +50,10 @@ modules.order
 Module.symvers
 Mkfile.old
 dkms.conf
+
+## Python stuff
 __pycache__
+*.log
+
+## Graphs
+*.pdf
