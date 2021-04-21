@@ -56,17 +56,7 @@ def rec_gen(table, last_table, drink4table, hot4table, placed_drinks):
     elif placed_drinks > 0:  ## and random.random() < 0.001:
         global all_cases
         all_cases.append(copy.deepcopy((drink4table, hot4table)))
-        #print("Lucky one:\t||{}||{}||".format(drink4table, hot4table))
-        ##config = tuple(((drink4table[:]), (hot4table[:]))) ## needed to generate a copy of object
-        
-        ##if config not in explored_cases:
-        ##    #print("Ahah, doing it!")
-        ##    global rounds_
-        ##    rounds_ = rounds_ + 1
-        ##    test(config[0], config[1])
-        ##    ## print("AFTER test {}:\t||{}||{}||".format(rounds_,drink4table, hot4table))
-        ##    explored_cases.append(config)
-        ##    print("EXP_DRINK: {}".format(explored_cases))
+
  
 def set_test(n_of_tests):
     global all_cases, explored_cases#, rounds_
@@ -84,7 +74,6 @@ def test(drink4table, hot4table):
     
     ## BUILD the problem file
     build.edit(waiter_number_, drink4table, hot4table, problem_name_full_)
-    #print("Problem {} with\n\td4t: {}\n\th4t: {}".format(rounds_, drink4table, hot4table))
         
     ## RUN the problem file for all couples of h, g
     with open(output_name_full_, "w") as run_output_file:
@@ -191,15 +180,14 @@ def avg_drink_pos(stuff4table):
     cov = np.cov(x_d, y_d)
     lambda_sq_, v = np.linalg.eig(cov)
     lambda_ = np.sqrt(lambda_sq_)
-    #print('lambda: {}'.format(lambda_))
-    #print('v: {}'.format(v))
-    #avg_x = sum([i*j for i, j in zip(stuff4table, x_sign)])/tot
-    #avg_y = sum([i*j for i, j in zip(stuff4table, y_sign)])/tot
+
     avg_x = np.mean(x_d)
     avg_y = np.mean(y_d)
     ## xi and yi will yield always 1, since they're either 1 or -1 squared
-    std_x = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_x, 2)
-    std_y = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_y, 2)
+    std_x = np.sd(x_d)
+    std_y = np.sd(y_d)
+    #std_x = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_x, 2)
+    #std_y = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_y, 2)
     
     #print("FROM {}: TOT {} AVG_X {} AVG_Y {} eig_1 {} eig_2 {}".format(stuff4table, tot, avg_x, avg_y, lambda_[0], lambda_[1]))
     return (tot, avg_x, avg_y, lambda_[0], lambda_[1])
@@ -237,8 +225,6 @@ def main():
     rec_gen(table, last_table, drink4table, hot4table, 0)
     
     set_test(4)
-        # perm_test(itertools.permutations(drink4table))
-    #print("EXP_CASES: {}".format(explored_cases))
     
     try:
         with open(csv_name_full_, 'r', newline='') as csvfile:

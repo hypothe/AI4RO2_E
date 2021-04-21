@@ -6,22 +6,23 @@ import sys, getopt
 
 import os
 import re
-
+import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import seaborn as sns
 from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 
 
 #Set global variables
-problem_name = "Custom.pddl"    	# (str) Problem name, extension needed
-out_wd = "../output"			# (str) Working directory
+problem_name = "temp_output_permTest_0121.pddl"    	# (str) Problem name, extension needed
+out_wd = "/root/AI4RO_II/AI4RO2_E/output"			# (str) Working directory
 
 output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
                     'Search Time', 'Expanded Nodes', 'States Evaluated')	# list of (str): keywords for relevant outputs
 index_keywords = ('H_VALUE', 'G_VALUE', 'SUCCESS')
-three_D = False
-ratio = True
+three_D = True
+ratio = False
 
 graphs_wd = "../graphs" # directory to save the graphs in
 
@@ -37,7 +38,7 @@ def parse(str_out):
     key_val = {key:0 for key in output_keywords}
     index_pos = {key:0 for key in index_keywords}
     index_val = {key:0 for key in index_keywords}
-    
+        
     hg_val = {}
     
     f_flag = 1
@@ -90,16 +91,31 @@ def plot_hg(hg_val, ddd):
 
     h = []
     g = []
-    z = {key:[] for key in output_keywords}
+    z = {key:[] for key in output_keywords}    
     
-    for hg_key in hg_val.keys(): #(h,g)
-        #print(key)
+    for hg_key in hg_val.keys(): 
         h.append(int(hg_key[0]))
         g.append(int(hg_key[1]))
         
         if plot_num == 111:
             for sub_key in hg_val[hg_key].keys():
                 z[sub_key].append(hg_val[hg_key][sub_key])
+    
+    # Display correlation matrix of ther output
+    output_df = pd.DataFrame(z)
+    plt.figure("corr")
+    sns.set(font_scale=1.6)
+    #Parameters for latexstyle plot
+    plt.rc('text', usetex=True)
+    plt.rc('font', family='serif')
+    g = sns.PairGrid(output_df, aspect=1.4, diag_sharey=False)
+    g.map_lower(sns.regplot, lowess=True, ci=False, line_kws={'color': 'black'})
+    g.map_diag(sns.distplot, kde_kws={'color': 'black'})
+    g.map_upper(corrdot)
+    #Save figure   
+    plt.savefig(graphs_wd+"/Correlation_Matrix.pdf")
+    plt.close("corr")
+    # Plot the output
     for key in z:
         fig = plt.figure(key)
         
@@ -121,6 +137,21 @@ def plot_hg(hg_val, ddd):
         #Save figure
         plt.savefig(graphs_wd+"/"+key.replace(" ", "_")+".pdf")
         plt.close(key)
+
+
+
+def corrdot(*args, **kwargs):
+    corr_r = args[0].corr(args[1], 'pearson')
+    corr_text = f"{corr_r:2.2f}".replace("0.", ".")
+    ax = plt.gca()
+    ax.set_axis_off()
+    marker_size = abs(corr_r) * 10000
+    ax.scatter([.5], [.5], marker_size, [corr_r], alpha=0.6, cmap="coolwarm",
+               vmin=-1, vmax=1, transform=ax.transAxes)
+    font_size = abs(corr_r) * 40 + 5
+    ax.annotate(corr_text, [.5, .5,],  xycoords="axes fraction",
+                ha='center', va='center', fontsize=font_size)
+
 
 def main(argv):
     """ This function asks the user to insert the number of
@@ -157,7 +188,7 @@ def main(argv):
             plt.rc('text', usetex=True)
     
     if not output_string:
-        output_string = cwd + "/" + out_wd + "/output_" + problem_name[:-5] + ".txt"
+        output_string = out_wd + "/" + problem_name[:-5] + ".txt"
     
     #Read the output file to detect the interesting keywords
     with open(output_string, "r") as read_run_output:
