@@ -159,11 +159,12 @@ def main(argv):
     g_val = 15.0
     in_par1 = 'avg_x'
     in_par2 = 'avg_y'
+    filename = ""
     
     usage = ("usage: pyhton3 " + argv[0] + "\n" +
-             "(default values will be used in case options are not provided)\n"
-             "\t-c, --csv <arg>\tpath and name of the csv file to read\n",
-             "\t-d, --hg_val <arg>\tcouple of hw and gw [hw,gw]\n",
+             "(default values will be used in case options are not provided)\n" +
+             "\t-c, --csv <arg>\t\tpath and name of the csv file to read (mandatory)\n" +
+             "\t-d, --hg_val <arg>\tcouple of hw and gw [hw,gw]\n" +
              "\t-h, --help\t\tdisplay this help\n"
             )
     try:
@@ -189,7 +190,11 @@ def main(argv):
             except IndexError:
                 print("Too few arguments")
                 sys.exit()
-
+    
+    if not filename:
+        print("Missing mandatory argument '-c' <csv_filepath>")
+        sys.exit()
+    
     try:
         with open(filename, newline='') as csvfile:
             print("Starting correlation step for data in {} with h:{} g:{}".format(filename, h_val, g_val))
