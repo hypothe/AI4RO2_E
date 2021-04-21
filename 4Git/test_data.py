@@ -184,8 +184,8 @@ def avg_drink_pos(stuff4table):
     avg_x = np.mean(x_d)
     avg_y = np.mean(y_d)
     ## xi and yi will yield always 1, since they're either 1 or -1 squared
-    std_x = np.sd(x_d)
-    std_y = np.sd(y_d)
+    std_x = np.std(x_d)
+    std_y = np.std(y_d)
     #std_x = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_x, 2)
     #std_y = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_y, 2)
     
@@ -220,7 +220,7 @@ def main():
     except FileNotFoundError:
         pass #in this case do nothing, explored_cases is already an empty list
         
-    print(explored_cases)
+    #print(explored_cases)
     ### PERFORM TEST RUN   
     rec_gen(table, last_table, drink4table, hot4table, 0)
     

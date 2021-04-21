@@ -6,7 +6,7 @@
         drinkA drinkB drinkC drinkD  - Drink
 		drinkE drinkF  - Drink
         biscuitA biscuitB biscuitC biscuitD  - Biscuit
-		
+		biscuitE  - Biscuit
         w1  - waiter
 	)
 
@@ -38,29 +38,30 @@
 		;Identity condition for each biscuit
 		(equals biscuitA biscuitA)(equals biscuitB biscuitB)
 		(equals biscuitC biscuitC)(equals biscuitD biscuitD)
-		
+		(equals biscuitE biscuitE)
 
         ;Customers per table
-        (=(fl-customers table1) 2)
-		(=(fl-customers table2) 2)
-		(=(fl-customers table3) 0)
-		(=(fl-customers table4) 2)
+        (=(fl-customers table1) 4)
+		(=(fl-customers table2) 0)
+		(=(fl-customers table3) 1)
+		(=(fl-customers table4) 1)
 		
 
         ;Hot drink flag
         (= (fl-hot drinkA) 0)
 		(= (fl-hot drinkB) 0)
-		(= (fl-hot drinkC) 1)
-		(= (fl-hot drinkD) 1)
-		(= (fl-hot drinkE) 0)
+		(= (fl-hot drinkC) 0)
+		(= (fl-hot drinkD) 0)
+		(= (fl-hot drinkE) 1)
 		(= (fl-hot drinkF) 0)
 		
         
         ;Biscuit - Drink relation
         (drink-for-biscuit drinkA biscuitA)
 		(drink-for-biscuit drinkB biscuitB)
-		(drink-for-biscuit drinkE biscuitC)
-		(drink-for-biscuit drinkF biscuitD)
+		(drink-for-biscuit drinkC biscuitC)
+		(drink-for-biscuit drinkD biscuitD)
+		(drink-for-biscuit drinkF biscuitE)
 		
 
 		;Position of each waiter
@@ -70,15 +71,16 @@
         ;Ordered condition
         (ordered drinkA table1 )
 		(ordered drinkB table1 )
-		(ordered drinkC table2 )
-		(ordered drinkD table2 )
-		(ordered drinkE table4 )
+		(ordered drinkC table1 )
+		(ordered drinkD table1 )
+		(ordered drinkE table3 )
 		(ordered drinkF table4 )
 		
         (ordered biscuitA table1 )
 		(ordered biscuitB table1 )
-		(ordered biscuitC table4 )
-		(ordered biscuitD table4 )
+		(ordered biscuitC table1 )
+		(ordered biscuitD table1 )
+		(ordered biscuitE table4 )
 		
 
         ;FIXED :Table distances
@@ -116,7 +118,7 @@
         (order-delivered drinkA) (order-delivered drinkB) (order-delivered drinkC) (order-delivered drinkD) 
 		(order-delivered drinkE) (order-delivered drinkF) 
         (order-delivered biscuitA) (order-delivered biscuitB) (order-delivered biscuitC) (order-delivered biscuitD) 
-		
+		(order-delivered biscuitE) 
 	    (clean table1)(clean table2)(clean table3)(clean table4)
 	    (at-waiter w1 bar)
 		
