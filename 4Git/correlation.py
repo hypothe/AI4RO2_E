@@ -12,13 +12,16 @@ from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 import pandas as pd
 import numpy as np
-from sklearn import linear_model
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.feature_selection import RFE
+from itertools import compress
 import warnings
 import math
 
 warnings.filterwarnings('ignore')
 
-graphs_wd = "../graphs" # directory to save the graphs in
+graphs_wd = "./root/AI4RO_II/AI4RO2_E/graphs" # directory to save the graphs in
 ddd = False
 regr_name_full_ = "../lib/regr_model.pkl"
 
@@ -102,13 +105,9 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
     
     for hg_key in x.keys():        
         X = pd.DataFrame(x[hg_key].values())
-        #Y = z[des]
-        ## FIRST attempt Quality function
         ### log chosen since from graphs an exp like behaviour seems to emerge
-        #Y = [ math.log(oo1/10 + oo2/10000) for oo1, oo2 in zip(z[des1], z[des2])]
-        #Y = [ math.log(oo1) + math.log(oo2/1000) for oo1, oo2 in zip(z[des1], z[des2])]
         Y1 = [ math.log(oo) for oo in z[hg_key][des1] ]
-        Y2 = [ math.log(oo/1000) for oo in z[hg_key][des2] ]
+        Y2 = [ math.log(oo/1000) for oo in z[hg_key][des2] ]  #1/1000 to pass into seconds from ms
         
         z[hg_key]['Q1'] = Y1
         z[hg_key]['Q2'] = Y2
@@ -118,20 +117,50 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
         regr[hg_key] = list()
         
         for Y, des in zip([Y1, Y2], [des1, des2]):
-            rr = linear_model.LinearRegression()  
-            rr.fit(X_arr,pd.np.array(Y))   
-            rr.predict(X_arr)
+            best_model = 0
+            high_score = 0
+            score_list = []
+            nof = 0
+            top_score = 0
+            nof_list = np.arange(X_arr.shape[1])
             
-            regr[hg_key].append(rr)
+            for n in range(1,len(nof_list)):
+                X_train, X_test, y_train, y_test = train_test_split(X_arr, np.array(Y), test_size = 0.3, random_state = 0)
+                model = LinearRegression() 
+                rfe = RFE(model, nof_list[n]) 
+                X_train_rfe = rfe.fit_transform(X_train, y_train)
+                X_test_rfe = rfe.transform(X_test)   
+                model.fit(X_train_rfe, y_train)
+                score = model.score(X_test_rfe, y_test)  
+                score_list.append(score) 
+                if score > high_score:
+                    high_score = score
+                    top_coef = model.coef_
+                    nof = nof_list[n]
+                #print(">>SUPPORT: {}".format(rfe.support_))
+             
+            #Detect best features
+            RFE_regressor = LinearRegression()
+            rfe = RFE(RFE_regressor, nof)
+            X_rfe = rfe.fit_transform(X_arr, np.array(Y))
+            RFE_regressor.fit(X_arr, np.array(Y))
+            #rr = linear_model.LinearRegression()  
+            #rr.fit(X_arr,pd.np.array(Y))   
+            #rr.predict(X_arr)
+            
+            regr[hg_key].append(RFE_regressor)
 
             #Display regression output
             print("Hw: {}\tGw: {}".format(hg_key[0], hg_key[1]))
             print("Ratio of successful run:\t{}".format((tot_run[hg_key]-fail_run[hg_key])/tot_run[(hg_key)]))
             print("Regression INPUT:\t{}".format(pars))
             print("Regression OUTPUT:\t[{}]".format(des))
-            print("Regression coefficient:\t{}".format(rr.coef_))
-            print("Regression intercept:\t{}".format(rr.intercept_))
-            print("Regression score:\t{}".format(rr.score(X_arr,Y)))
+            print("Regression coefficients:\t{}".format(RFE_regressor.coef_)) #(top_coef))
+            print("Regression intercept:\t{}".format(RFE_regressor.intercept_))
+            print("Regression score:\t{}".format(RFE_regressor.score(X_arr, np.array(Y))))
+            print("Optimum number of feature: %d" %nof)
+            print("Score with %d features: %f" %(nof, high_score))
+            print("The most relevat features are: {}".format(list(compress(pars,rfe.support_))))
             print("##-------------##")
         print("#################")
     return x, z, regr
@@ -236,7 +265,7 @@ def main(argv):
                 print("h and g values should be float")
                 sys.exit()
             except IndexError:
-                print("Too few arguments")
+                print("Not enough arguments")
                 sys.exit()
     
     if not filename:
@@ -244,6 +273,7 @@ def main(argv):
         sys.exit()
     
     try:
+        print("try")
         with open(filename, newline='') as csvfile:
             print("Starting correlation step for data in {} with h:{} g:{}".format(filename, h_val, g_val))
             reader = csv.DictReader(csvfile, quoting=csv.QUOTE_NONNUMERIC) # set this when csv will be prop set
