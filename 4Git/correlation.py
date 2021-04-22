@@ -12,13 +12,16 @@ from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 import pandas as pd
 import numpy as np
-from sklearn import linear_model
+from sklearn.linear_model import LinearRegression
+from sklearn.model_selection import train_test_split
+from sklearn.feature_selection import RFE
+from itertools import compress
 import warnings
 import math
 
 warnings.filterwarnings('ignore')
 
-graphs_wd = "../graphs" # directory to save the graphs in
+graphs_wd = "./root/AI4RO_II/AI4RO2_E/graphs" # directory to save the graphs in
 ddd = False
 
 filename = graphs_wd + "/hg_val_permTest_0121.csv"
@@ -61,13 +64,8 @@ def evaluate_corr(data_dict, h_val, g_val):
                 break
         
         if not skip and float(row['hw']) == h_val and float(row['gw']) == g_val:
-        #if row['hg_ratio'] != '63.8729833462074175':
             for in_par in pars:
                 x[in_par].append(float(row[in_par]))
-                
-            #x.append(float(row[par1]))
-            #y.append(float(row[par2]))   
-            #k.append(float(row[par3]))
             z['dur'].append(float(row['Duration']))
             z['pltime'].append(float(row['Planning Time']))
             z['heur'].append(float(row['Heuristic Time']))
@@ -81,24 +79,48 @@ def evaluate_corr(data_dict, h_val, g_val):
     ### log chosen since from graphs an exp like behaviour seems to emerge
     #Y = [ math.log(oo1/10 + oo2/10000) for oo1, oo2 in zip(z[des1], z[des2])]
     Y = [ math.log(oo1) + math.log(oo2/1000) for oo1, oo2 in zip(z[des1], z[des2])]
+    Y = z[des2]
     #Y = [ math.log(oo) for oo in z[des2] ]
     
     z['Q'] = Y
 
     #Regression
     X_arr = np.array(X).T
-    regr = linear_model.LinearRegression()  
-    regr.fit(X_arr,pd.np.array(Y))   
-    regr.predict(X_arr)
-
+    best_model = 0
+    high_score = 0
+    score_list = []
+    nof = 0
+    top_score = 0
+    nof_list = np.arange(X_arr.shape[1])
+    for n in range(1,len(nof_list)):
+        X_train, X_test, y_train, y_test = train_test_split(X_arr, np.array(Y), test_size = 0.3, random_state = 0)
+        model = LinearRegression() 
+        rfe = RFE(model, nof_list[n]) 
+        X_train_rfe = rfe.fit_transform(X_train, y_train)
+        X_test_rfe = rfe.transform(X_test)   
+        model.fit(X_train_rfe, y_train)
+        score = model.score(X_test_rfe, y_test)  
+        score_list.append(score) 
+        if score > high_score:
+            high_score = score
+            top_coef = model.coef_
+            nof = nof_list[n]
+         
+    #Detect best features
+    RFE_regressor = LinearRegression()
+    rfe = RFE(RFE_regressor, nof)
+    X_rfe = rfe.fit_transform(X_arr, np.array(Y))
+    RFE_regressor.fit(X_arr, np.array(Y))
     #Display regression output
     print("Regression INPUT: {}".format(pars))
     print("Regression OUTPUT: [{}]".format(des))
-    print("Regression coefficient:\t{}".format(regr.coef_))
-    print("Regression score:\t{}".format(regr.score(X_arr,Y)))
-    
+    print("Regression coefficient:\t{}".format(top_coef))
+    print("Regression score:\t{}".format(high_score))
+    print("Optimum number of feature: %d" %nof)
+    print("Score with %d features: %f" %(nof, high_score))
+    print("The most relevat features are: {}".format(list(compress(pars,rfe.support_))))
+
     return x, z
-    #print(z)
     
 def plot_graphs(k, par1, par2, z, h_val, g_val):
     # Display correlation matrix of ther output
@@ -188,7 +210,7 @@ def main(argv):
                 print("h and g values should be float")
                 sys.exit()
             except IndexError:
-                print("Too few arguments")
+                print("Not enough arguments")
                 sys.exit()
     
     if not filename:
@@ -196,6 +218,7 @@ def main(argv):
         sys.exit()
     
     try:
+        print("try")
         with open(filename, newline='') as csvfile:
             print("Starting correlation step for data in {} with h:{} g:{}".format(filename, h_val, g_val))
             reader = csv.DictReader(csvfile, quoting=csv.QUOTE_NONNUMERIC) # set this when csv will be prop set
