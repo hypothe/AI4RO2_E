@@ -85,6 +85,55 @@ def parse(str_out):
             
     return hg_val
     
+def parse_problem(problem_filename):
+    #fl_hot = "(= (fl-hot drinkA) 1)"
+    #table = "(ordered drinkA table1 )"
+    with open(problem_filename, 'r') as f:
+        problem = f.read()
+        
+        drinks_str = re.findall("\(=\s+\(fl-hot\s+drink\w+\)\s+\d\)", problem)
+        drink_dict = {}
+        table_dict = {}
+        
+        waiter_str = re.findall("\(free-waiter\s+w\d+\)", problem)
+        n_waiters = len(waiter_str)
+        
+        for drink in drinks_str:
+            ## find name of the dirnk, eg "drinkA"
+            d_id = re.sub("(\(=\s+\(fl-hot\s+|\)\s+\d\))", "", drink)
+            ## find if such drink was hot (1) or cold (0)
+            d_fl = int(re.sub("(^\(=\s+\(fl-hot\s+drink\w+\)\s+|\s*\)$)", "", drink))
+            drink_dict[d_id] = d_fl
+        
+        order_str = re.findall("\(ordered\s+drink\w+\s+table\w+\s*\)", problem)
+        #print("ORDER_STR".format(order_str))
+        
+        for order in order_str:
+            ## find number of the table
+            t_id = int(re.sub("(^\(ordered\s+drink\w+\s+table|\s*\)$)", "", order))
+            ## find name of the drink
+            t_dr = re.sub("(^\(ordered\s+|\s+table\w+\s*\)$)", "", order)
+            ## ducktaping a lot
+            
+            try:
+                table_dict[t_id]
+            except KeyError:
+                table_dict[t_id] = list()
+            finally:
+                table_dict[t_id].append(t_dr)
+
+        drink4table = [0 for ii in table_dict.keys()]
+        hot4table = [0 for ii in table_dict.keys()]
+
+        for t_id, d_list in table_dict.items():
+            drink4table[t_id-1] = len(d_list)
+            for drink in d_list:
+                if drink_dict[drink] > 0:
+                    hot4table[t_id-1] += 1
+                    
+        return n_waiters, drink4table, hot4table
+            
+    
 def plot_hg(hg_val, ddd):
     plot_num = 111
     #print(hg_val.keys())

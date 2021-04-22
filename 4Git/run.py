@@ -7,7 +7,13 @@ import os
 import re
 import subprocess
 
+import parse
+from data_util import avg_drink_pos, round_dec, uniq_str
+
+import pickle
+
 Pddl_problem_ = "../domains/dom_APE/Custom.pddl"    # (str) Problem name, extension needed
+regr_name_full_ = "../lib/regr_model.pkl"
 
 run_wd = "../domains/dom_APE"			# (str) Working directory
 out_wd = "../output"
@@ -28,13 +34,17 @@ output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
                        
 cwd = os.getcwd()
 
-def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run_time):	
-
+def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run_time=None, show_output=False):	
+    
+    #if show_output:
+    #    out = None
+    #else:
+    #    out = subprocess.PIPE
     # try torun the planning engine
+    frm_result = ""
     flag = 0
     gh_str = "H_VALUE: " + str(h_val) + "\nG_VALUE: " + str(g_val) + "\n"
     run_output_file.write(gh_str)
-    
     
     print("Running " + problem_full + " gw: " +str(g_val) + " hw: " + str(h_val))
     with subprocess.Popen([engine_path, "-o", domain_full, "-f", problem_full,
@@ -42,30 +52,25 @@ def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run
                                 "-delta_val", str(delta), "-delta_exec", str(delta)
                             ], stdout=subprocess.PIPE, text=True, preexec_fn=os.setsid) as result:
         try:
-            res, _ = result.communicate(timeout=run_time)
-            #print(type(res))
-            #input()
-            #res = out.read()
+            res, err = result.communicate(timeout=run_time)
             if result.returncode:
                 raise subprocess.CalledProcessError(cmd=result.args, returncode=result.returncode)
             #extract output and error and put them in formatted form
             
         except (subprocess.TimeoutExpired):
-            #result.kill() ## should be done
             ###
             group_pid = os.getpgid(result.pid)
             os.killpg(group_pid, signal.SIGINT)
             ###
-            #result.send_signal(1) #SIGHUP, internet people say this should allow it to clean children?
-            #_, _ = result.communicate()
-            run_output_file.write("SUCCESS: " + str(flag) + "\n")
+            #run_output_file.write("SUCCESS: " + str(flag) + "\n")
             fail_str = 'Solution not found for ' + problem_full + 'in  ' + str(run_time) + ' seconds'
             print(fail_str)
             
         except (subprocess.CalledProcessError):
-            run_output_file.write("SUCCESS: " + str(flag) + "\n")
+            #run_output_file.write("SUCCESS: " + str(flag) + "\n")
             fail_str = 'Error found during the solution of ' + problem_full
             print(fail_str)
+            print(err.replace('\\n', '\n'))
             
         else:
             flag = 1
@@ -73,10 +78,14 @@ def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run
             #print(res)
             #input()    
             frm_result = res.replace('\\n','\n')
+            
             frm_result = trim_output(frm_result)
             
-            run_output_file.write("SUCCESS: " + str(flag) + "\n")
-            run_output_file.write(frm_result)
+    if show_output:
+        print(res.replace('\\n','\n'))
+                        
+    run_output_file.write("SUCCESS: " + str(flag) + "\n")
+    run_output_file.write(frm_result)
     
     run_output_file.write("\n\n### ------------------ ###\n\n")
     return flag
@@ -94,6 +103,41 @@ def trim_output(tot_out):
         trim_out = trim_out + tot_out[start:end]
         
     return trim_out
+    
+def get_best_hg(regr_dict, problem_filename):
+
+    #print(regr_dict)
+    #input()
+
+    best_out = float('inf')
+    ## Parse problem file
+    n_waiters, drink4table, hot4table = parse.parse_problem(problem_filename)
+    print(drink4table)
+    
+    tot, avg_x, avg_y, _, _ = avg_drink_pos(drink4table)
+    hot_tot, hot_avg_x, hot_avg_y, _, _ = avg_drink_pos(hot4table)
+    
+    params = [n_waiters, tot, avg_x, avg_y, hot_tot, hot_avg_x, hot_avg_y]
+    ## Apply linear regression coefficien to estimate the Y function for all (h,g) values
+    
+    ## load already explored drinks configurations
+    
+      
+    exp_out = list()
+    for hg_key, regr_list in regr_dict.items():
+        for regr in regr_list:
+            exp_out.append(sum([a_i*par_i for par_i, a_i in zip(params, regr.coef_)]) + regr.intercept_)
+            
+        Q_fact = sum(exp_out)/len(exp_out)
+        print("[H: {:6}\tG: {:6}]\t->Q: {}".format(hg_key[0], hg_key[1], Q_fact))   
+        
+        if Q_fact < best_out:
+            best_out = Q_fact
+            h_val = hg_key[0]
+            g_val = hg_key[1]
+        
+    print("Chosen [H: {}\tG: {}]".format(h_val, g_val))
+    return [h_val], [g_val]
 
 def main(argv):
 
@@ -102,8 +146,11 @@ def main(argv):
              "\t-f, --problem <arg>\tPDDL problem file\n" +
              "\t-n, --output-path <arg>\tpath and name of the output file\n" +
              "\t-o, --domain <arg>\tPDDL domain file\n" +
-             "\t-p, --path <arg>\tpath to PDDL files\n" +
+             "\t-p, --path <arg>\tpath to directory of PDDL files\n" +
              "\t-t, --time <arg>\tmaximum run time of each instance, in seconds\n" +
+             "\t-s, --silence\don't print output of each run on the terminal\n" +
+             "\t-M, --machine-learning \t\tautomatically find close-to-optimal [hw,gw]\n"+
+             "\t\t\t\t\t values with trained Linear Regression model\n" +
              "\t--gw <arg>\t\tthe list of gw values as [gw1,gw2,gw3,...] (list<float>)\n" +
              "\t--hw <arg>\t\tthe list of hw values as [hw1,hw2,hw3,...] (list<float>)\n" +
              "\t-h, --help\t\tdisplay this help\n"
@@ -112,18 +159,24 @@ def main(argv):
     Pddl_domain = Pddl_domain_
     Pddl_problem = Pddl_problem_
     output_string = ""
-    run_time = max_run_time
+    run_time = None #max_run_time ## None won't trigger a timeout
     g_values = g_values_
     h_values = h_values_
+    ML = False
+    show_output = True
     
     try:
-        opts, args = getopt.getopt(argv[1:], "hf:o:p:n:t:",
+        opts, args = getopt.getopt(argv[1:], "hf:o:p:n:t:Ms",
                         ["help", "problem=", "domain=", "path=", "output-path=", "time=",
-                        "gw=", "hw="])
+                        "gw=", "hw=", "machine-learning", "silence"])
     except getopt.GetoptError:
         print(usage)
         sys.exit(1)
-        
+    
+    
+    if ("-M", '') in opts or ("--machine-learning", '') in opts:
+        ML = True
+                 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             print(usage)
@@ -138,8 +191,10 @@ def main(argv):
             output_string = arg
         elif opt in ("-t", "--time"):
             run_time = int(arg)
-        elif opt in ("--gw") and arg[0] == '[' and arg[-1] == ']':
-            gw = re.findall("\d\.?\d*", arg)
+        elif opt in ("-s", "--silence"):
+            show_output = False
+        elif not ML and opt in ("--gw") and arg[0] == '[' and arg[-1] == ']':
+            gw = re.findall("\d+\.?\d*", arg)
             g_values = list()
             try:
                 for gg in gw:
@@ -147,8 +202,8 @@ def main(argv):
             except ValueError:
                 print("g values should be float")
                 sys.exit()
-        elif opt in ("--hw") and arg[0] == '[' and arg[-1] == ']':
-            hw = re.findall("\d", arg)
+        elif not ML and opt in ("--hw") and arg[0] == '[' and arg[-1] == ']':
+            hw = re.findall("\d+\.?\d*", arg)
             h_values = list()
             try:
                 for hh in hw:
@@ -156,8 +211,7 @@ def main(argv):
             except ValueError:
                 print("h values should be float")
                 sys.exit()
-               
-           
+      
     #if not usr_wd:
     #    usr_wd = run_wd
     
@@ -169,6 +223,26 @@ def main(argv):
     if not output_string:
         output_string = "output_" + problem_trim_name + ".txt"
         
+               
+    if ML:
+            ## load saved Linear Regression
+        try:
+            with open(regr_name_full_, 'rb') as f:
+                regr_dict = pickle.load(f)
+                h_values, g_values = get_best_hg(regr_dict, problem_string)
+                
+        except FileNotFoundError:
+            #pass #in this case do nothing, explored_cases is already an empty list
+            print("No regression model found at {}, default hw and gw will be used".format(regr_name_full))
+            print("To generate it run first\n" +
+                "\tpython3 correlation.py -c <csv_filename>\n")
+        
+            h_values = [1.0]
+            g_values = [1.0]         
+        
+    #print(h_values)
+    #print(g_values)
+    #input()
     with open(cwd + "/" + out_wd + "/"+ output_string, "w") as run_output_file:
         for g_value in g_values:
             for h_value in h_values:
@@ -176,7 +250,7 @@ def main(argv):
                     continue
                 run_script = run(domain_string,  problem_string, 
                                 Optimizer, g_value, h_value,
-                                run_output_file, run_time)
+                                run_output_file, run_time=run_time, show_output = show_output)
                 res_run_str = problem_trim_name + " with hw = " + str(h_value) + " gw = " + str(g_value)
                 if run_script:
                     print("Succesful run " + res_run_str)

@@ -3,6 +3,8 @@
 import build
 import run
 import parse
+from data_util import avg_drink_pos, round_dec, uniq_str
+
 import numpy as np
 import random
 import itertools
@@ -17,7 +19,7 @@ max_drinks_ = 4 # 4
 num_tables_ = 4
 tot_drinks = 6 # 8
 rounds_ = 0
-waiter_number_ = 1 # 2
+waiter_number_ = 2 # 2
 #g_values = [1, 5]
 #h_values = [1, 5]
 ratio_min = 1 #1.0
@@ -32,13 +34,17 @@ engine_path_ = run.engine_path
 domain_name_full_ = run.Pddl_domain_
 problem_name_full_ = "../domains/dom_APE/problem_temp.pddl"
 output_name_full_ = "../output/temp_output.txt"
-csv_name_full_ = "../graphs/hg_val.csv"
-exp_name_full_ = "../output/drinks_explored.pkl"
+csv_name_full_ = "../lib/hg_val.csv"
+exp_name_full_ = "../lib/drinks_explored.pkl"
 writer_ = None
 
 explored_cases = list()
 all_cases = list()
 results_ = list()
+
+n_comb = [list() for ii in range(0, tot_drinks+1)]
+for ii in range(0, tot_drinks+1):
+    n_comb[ii] = [0 for jj in range(0, ii+1)]
 
 def rec_gen(table, last_table, drink4table, hot4table, placed_drinks):
     global explored_cases
@@ -54,38 +60,52 @@ def rec_gen(table, last_table, drink4table, hot4table, placed_drinks):
             
                 
     elif placed_drinks > 0:  ## and random.random() < 0.001:
-        global all_cases
-        all_cases.append(copy.deepcopy((drink4table, hot4table)))
-
+        global all_cases, n_comb
+        
+        for n_waiters in range(1, waiter_number_+1):
+            all_cases.append(copy.deepcopy((n_waiters, drink4table, hot4table)))
+            n_comb[sum(drink4table)][sum(hot4table)] += 1
  
 def set_test(n_of_tests):
     global all_cases, explored_cases#, rounds_
     
     not_explored_cases = [case for case in all_cases if case not in explored_cases]
-    cases_to_explore = random.choices(not_explored_cases, k = min(n_of_tests, len(not_explored_cases)))
+    ### for each case, its weight is inverselly proportional to the number of cases
+    ### with the same tot drink and tot hot drinks
     
+    print(n_comb)
+    input()
+    
+    weights = [1/n_comb[sum(case[1])][sum(case[2])] for case in not_explored_cases]
+    
+    cases_to_explore = random.choices(not_explored_cases, weights = weights, k = min(n_of_tests, len(not_explored_cases)))
+    
+    rr = 1
+    tot_rounds = len(cases_to_explore)
     for config in cases_to_explore:
-        test(config[0], config[1])
+        print("Test #{} out of {}".format(rr, tot_rounds))
+        test(config[0], config[1], config[2])
         explored_cases.append(copy.deepcopy(config))
+        rr += 1
             
-def test(drink4table, hot4table):
+def test(n_waiters, drink4table, hot4table):
     global output_name_full, domain_name_full_, problem_name_full_
     global ratios_, run_time
     
     ## BUILD the problem file
-    build.edit(waiter_number_, drink4table, hot4table, problem_name_full_)
+    build.edit(n_waiters, drink4table, hot4table, problem_name_full_)
         
     ## RUN the problem file for all couples of h, g
     with open(output_name_full_, "w") as run_output_file:
         #for g_value in g_values:
+        print("n_waiters: {}\ndrink4table: {}\nhot4table: {}".format(n_waiters, drink4table, hot4table)) 
         for gg in ratios_:
             if gg < 1.0:
                 h_value = round_dec(1.0/gg, 3)
                 g_value = 1.0
             else:
                 h_value = 1.0
-                g_value = round_dec(gg, 3)
-                
+                g_value = round_dec(gg, 3)   
             res = run.run(domain_name_full_, problem_name_full_, False, g_value, h_value, run_output_file, run_time)
             if res:
                 print("Succesful run")
@@ -98,18 +118,19 @@ def test(drink4table, hot4table):
          
         hg_val = parse.parse(str_out)
         ## SAVE the results in a csv
-        save_results(hg_val, drink4table, hot4table)
+        save_results(n_waiters, hg_val, drink4table, hot4table)
         
-def perm_test(perm_order4table):
+#def perm_test(perm_order4table):
     ## conversion to set to remove duplicates
-    for order in set(tuple(tt) for tt in perm_order4table):
+#    for order in set(tuple(tt) for tt in perm_order4table):
         #print(order)
-        test(order, [0,0,0,0])
+#        test(order, [0,0,0,0])
 
             
-def save_results(hg_val, drink4table, hot4table):
+def save_results(n_waiters, hg_val, drink4table, hot4table):
     global results_
     row = {}
+    row['waiter'] = n_waiters 
     row['tot'], row['avg_x'], row['avg_y'], row['eig_1'], row['eig_2'] = [round_dec(val, 3) for val in avg_drink_pos(drink4table)]
     row['hot_tot'], row['hot_avg_x'], row['hot_avg_y'], row['hot_eig_1'], row['hot_eig_2'] = [round_dec(val, 3) for val in avg_drink_pos(hot4table)]
     #print("HG_VAL: {}".format(hg_val))
@@ -125,73 +146,8 @@ def save_results(hg_val, drink4table, hot4table):
         results_.append(copy.deepcopy(row))
         ##print("RESULTS: {}".format(results_))
         ## input()    
-        
-def round_dec(val, dec):
-    res = val
-    try:
-         res = round(val * 10**dec)/(10**dec)
-    except ValueError:
-        pass
-    return res
-    
-def uniq_str(file_name, prop):
 
-    l = file_name.rfind(".")
-    ss = file_name[0:l] + '_'
-    for ii in prop:
-        try:
-            for jj in ii: # if it's iterable
-                ss = ss + str(jj)
-        except  TypeError:
-            ss = ss + str(ii)
-            
-    ss = ss + file_name[l:]
-    # print(ss)
-    return ss
-
-def avg_drink_pos(stuff4table):
-    """
-    table1(-1,1)   table2(1,1)
-    table3(-1,-1)  table4(1,-1)
-    """
-    x_sign = (-1, 1, -1, 1)
-    y_sign = (1, 1, -1, -1)
-    
-    tot = sum(stuff4table)
-
-    if tot == 0:
-        return 0, 0, 0, 0, 0
-    elif tot == 1:
-        return 1, x_sign[np.where(np.array(stuff4table) != 0)[0][0]], y_sign[np.where(np.array(stuff4table) != 0)[0][0]], 0 , 0
-
-    x_d = []
-    y_d = []
-    #print(stuff4table)
-    #print(x_sign)
-    #print(y_sign)
-    for i in range(0, len(x_sign)):
-        if stuff4table[i] != 0: 
-            for k in range(0, stuff4table[i]):
-                x_d.append(x_sign[i])
-                y_d.append(y_sign[i])
-
-    #print(x_d)
-    #print(y_d)
-    cov = np.cov(x_d, y_d)
-    lambda_sq_, v = np.linalg.eig(cov)
-    lambda_ = np.sqrt(lambda_sq_)
-
-    avg_x = np.mean(x_d)
-    avg_y = np.mean(y_d)
-    ## xi and yi will yield always 1, since they're either 1 or -1 squared
-    std_x = np.std(x_d)
-    std_y = np.std(y_d)
-    #std_x = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_x, 2)
-    #std_y = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_y, 2)
-    
-    #print("FROM {}: TOT {} AVG_X {} AVG_Y {} eig_1 {} eig_2 {}".format(stuff4table, tot, avg_x, avg_y, lambda_[0], lambda_[1]))
-    return (tot, avg_x, avg_y, lambda_[0], lambda_[1])
-                
+               
 def main():
 
     global rounds_, csv_name_full, explored_cases, exp_name_full_, results_
@@ -210,8 +166,8 @@ def main():
     
     problem_name_full_ = uniq_str(problem_name_full_, identif)
     output_name_full_ = uniq_str(output_name_full_, identif)
-    csv_name_full_ = uniq_str(csv_name_full_, identif)
-    exp_name_full_ = uniq_str(exp_name_full_, identif)
+    #csv_name_full_ = uniq_str(csv_name_full_, identif)
+    #exp_name_full_ = uniq_str(exp_name_full_, identif)
     
     ## load already explored drinks configurations
     try:
@@ -224,7 +180,7 @@ def main():
     ### PERFORM TEST RUN   
     rec_gen(table, last_table, drink4table, hot4table, 0)
     
-    set_test(4)
+    set_test(2)
     
     try:
         with open(csv_name_full_, 'r', newline='') as csvfile:
@@ -233,7 +189,7 @@ def main():
         newfile = True
         
     with open(csv_name_full_, 'a', newline='') as csvfile:
-        fieldnames = ['tot','avg_x', 'avg_y', 'eig_1', 'eig_2',
+        fieldnames = ['waiter','tot','avg_x', 'avg_y', 'eig_1', 'eig_2',
                     'hot_tot', 'hot_avg_x', 'hot_avg_y', 'hot_eig_1', 'hot_eig_2',
                     'hw', 'gw','hg_ratio']
         for key in run.output_keywords:
