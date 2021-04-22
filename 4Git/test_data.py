@@ -12,7 +12,7 @@ import pickle
 
 from sklearn.decomposition import PCA
 import csv
-import os
+import os, getopt, sys
 import copy
 
 max_drinks_ = 4 # 4
@@ -72,9 +72,6 @@ def set_test(n_of_tests):
     not_explored_cases = [case for case in all_cases if case not in explored_cases]
     ### for each case, its weight is inverselly proportional to the number of cases
     ### with the same tot drink and tot hot drinks
-    
-    print(n_comb)
-    input()
     
     weights = [1/n_comb[sum(case[1])][sum(case[2])] for case in not_explored_cases]
     
@@ -148,7 +145,7 @@ def save_results(n_waiters, hg_val, drink4table, hot4table):
         ## input()    
 
                
-def main():
+def main(argv):
 
     global rounds_, csv_name_full, explored_cases, exp_name_full_, results_
     global problem_name_full_, domain_name_full_, output_name_full_, csv_name_full_
@@ -157,9 +154,27 @@ def main():
     hot4table = [0 for ii in range(0, num_tables_)]
     table = 0
     last_table = num_tables_
+    n_of_tests = 1
     
+    usage = ("usage: pyhton3 " + argv[0] + "\n" +
+             "(default values will be used in case options are not provided)\n" +
+             "\t-n, --test-number <arg>\t\tnumber of tests to be carried out\n" +
+             "\t-h, --help\t\tdisplay this help\n"
+            )
+    try:
+        opts, args = getopt.getopt(argv[1:], "hn:", ["help","test-number="])
+    except getopt.GetoptError:
+        print(usage)
+        sys.exit(1)
+        
+    for opt, arg in opts:
+        if opt in ("-h", "--help"):
+            print(usage)
+            sys.exit()
+        elif opt in ("-n", "--test-number"):
+            n_of_tests = int(arg)
     
-    identif = (max_drinks_, tot_drinks, waiter_number_, run_time)
+    identif = (max_drinks_, tot_drinks, run_time)
     
     #drink4table = [0, 1, 2, 1]
     #identif = ("permTest_", drink4table)
@@ -180,7 +195,7 @@ def main():
     ### PERFORM TEST RUN   
     rec_gen(table, last_table, drink4table, hot4table, 0)
     
-    set_test(2)
+    set_test(n_of_tests)
     
     try:
         with open(csv_name_full_, 'r', newline='') as csvfile:
@@ -210,4 +225,4 @@ def main():
     #print("ROUNDS: {}".format(rounds_))
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv)

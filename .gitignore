@@ -55,5 +55,8 @@ dkms.conf
 __pycache__
 *.log
 
+## Temp Files
+temp_output*
+
 ## Graphs
 *.pdf

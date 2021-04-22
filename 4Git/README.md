@@ -64,7 +64,7 @@ python3 test_data.py
 ```
 
 Script that:
-1. generates all possible problems with a maximum amount of drinks per table and total drinks ordered
+1. generates a fixed number of problems among all possible problems with a maximum amount of drinks per table and total drinks ordered
 2. runs them all with a collection of hw, gw values
 3. parses the output of all runs for all problems and saves everything in a csv file
 
