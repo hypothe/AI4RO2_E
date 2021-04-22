@@ -1,9 +1,0 @@
-H_VALUE: 1
-G_VALUE: 1
-SUCCESS: 0
-
-
-### ------------------ ###
-
-H_VALUE: 5
-G_VALUE: 1

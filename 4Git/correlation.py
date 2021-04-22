@@ -137,7 +137,7 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
     return x, z, regr
     
     
-def plot_graphs(k, par1, par2, j, h_val, g_val):
+def plot_graphs(k, par1, par2, j, h_val, g_val, save_fig=False):
     # Display correlation matrix of ther output
     x = k[(h_val, g_val)][par1]
     y = k[(h_val, g_val)][par2]
@@ -153,7 +153,8 @@ def plot_graphs(k, par1, par2, j, h_val, g_val):
     g.map_diag(sns.distplot, kde_kws={'color': 'black'})
     g.map_upper(corrdot)
     #Save figure   
-    plt.savefig(graphs_wd+"/Correlation_Matrix.pdf")
+    if save_fig:
+        plt.savefig(graphs_wd+"/Correlation_Matrix.pdf")
     plt.close("corr")
                
     plot_num = 111
@@ -183,7 +184,8 @@ def plot_graphs(k, par1, par2, j, h_val, g_val):
             plt.title(name)
                 
         fig.colorbar(plot)
-        plt.savefig(filename)
+        if save_fig:
+            plt.savefig(filename)
             
     plt.show(block=False)
         
@@ -199,16 +201,18 @@ def main(argv):
     in_par2 = 'avg_y'
     filename = ""
     show_plot = False
+    save_fig = False
     
     usage = ("usage: pyhton3 " + argv[0] + "\n" +
              "(default values will be used in case options are not provided)\n" +
              "\t-c, --csv <arg>\t\tpath and name of the csv file to read (mandatory)\n" +
              "\t-d, --hg_val <arg>\tcouple of hw and gw [hw,gw]\n" +
              "\t-p, --plot\t\tenable plots\n" +
+             "\t-s, --save-figures\tsave all figures as pdf (in 'graphs' folder)\n" +
              "\t-h, --help\t\tdisplay this help\n"
             )
     try:
-        opts, args = getopt.getopt(argv[1:], "hc:d:p", ["help","csv=", "hg_val=", "plot"])
+        opts, args = getopt.getopt(argv[1:], "hc:d:ps", ["help","csv=", "hg_val=", "plot", "save-figures"])
     except getopt.GetoptError:
         print(usage)
         sys.exit(1)
@@ -221,6 +225,8 @@ def main(argv):
             filename = arg
         elif opt in ("-p", "--plot"):
             show_plot = True
+        elif opt in ("-s", "--save-figures"):
+            save_fig = True
         elif opt in ("-d", "--hg_val"):
             ll = re.findall("\d\.?\d*", arg)
             try:
@@ -247,7 +253,7 @@ def main(argv):
             
         ### SAVE REGR WITH PICKLE
         if show_plot:    
-            plot_graphs(k, in_par1, in_par2, z, h_val, g_val)    
+            plot_graphs(k, in_par1, in_par2, z, h_val, g_val, save_fig = save_fig)    
              
         ## save regression model
         with open(regr_name_full_, 'wb') as f:
