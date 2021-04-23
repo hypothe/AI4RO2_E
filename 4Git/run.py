@@ -7,22 +7,20 @@ import os
 import re
 import subprocess
 
-import parse
-from data_util import avg_drink_pos, round_dec, uniq_str
-
+import data_util
 import pickle
 
 Pddl_problem_ = "../domains/dom_APE/Custom.pddl"    # (str) Problem name, extension needed
-regr_name_full_ = "../lib/regr_model.pkl"
+regr_name_full_ = data_util.regr_name_full_
 
 run_wd = "../domains/dom_APE"			# (str) Working directory
 out_wd = "../output"
 
+engine_path = data_util.engine_path
 
-engine_path = "/root/ENHSP-Public/enhsp"
-#engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
+
 Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
-Pddl_domain_ = '../domains/dom_APE/numeric_domain_APE_full.pddl'    # (str) Name of pddl domain file
+Pddl_domain_ = data_util.domain_name_full_    # (str) Name of pddl domain file
 Optimizer = False        			# (Bool) Set to active for optimization process
 delta = 0.5
 g_values_ = [1, 2, 7, 10]    			# list of (int) g values to be run (active only if Optimizer == True)
@@ -36,21 +34,16 @@ cwd = os.getcwd()
 
 def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run_time=None, show_output=False):	
     
-    #if show_output:
-    #    out = None
-    #else:
-    #    out = subprocess.PIPE
-    # try torun the planning engine
     frm_result = ""
     flag = 0
     gh_str = "H_VALUE: " + str(h_val) + "\nG_VALUE: " + str(g_val) + "\n"
     run_output_file.write(gh_str)
     
     print("Running " + problem_full + " gw: " +str(g_val) + " hw: " + str(h_val))
-    with subprocess.Popen([engine_path, "-o", domain_full, "-f", problem_full,
-                                "-hw", str(h_val), "-gw", str(g_val),
+    with subprocess.Popen(["java", "-jar", engine_path, "-o", domain_full, "-f", problem_full,
+                                "-wh", str(h_val), "-wg", str(g_val),
                                 "-delta_val", str(delta), "-delta_exec", str(delta)
-                            ], stdout=subprocess.PIPE, text=True, preexec_fn=os.setsid) as result:
+                            ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid) as result:
         try:
             res, err = result.communicate(timeout=run_time)
             if result.returncode:
@@ -74,9 +67,6 @@ def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run
             
         else:
             flag = 1
-            #res = str(result.stdout)  
-            #print(res)
-            #input()    
             frm_result = res.replace('\\n','\n')
             
             frm_result = trim_output(frm_result)
@@ -114,8 +104,8 @@ def get_best_hg(regr_dict, problem_filename):
     n_waiters, drink4table, hot4table = parse.parse_problem(problem_filename)
     print(drink4table)
     
-    tot, avg_x, avg_y, _, _ = avg_drink_pos(drink4table)
-    hot_tot, hot_avg_x, hot_avg_y, _, _ = avg_drink_pos(hot4table)
+    tot, avg_x, avg_y, _, _ = data_util.avg_drink_pos(drink4table)
+    hot_tot, hot_avg_x, hot_avg_y, _, _ = data_util.avg_drink_pos(hot4table)
     
     params = [n_waiters, tot, avg_x, avg_y, hot_tot, hot_avg_x, hot_avg_y]
     ## Apply linear regression coefficien to estimate the Y function for all (h,g) values

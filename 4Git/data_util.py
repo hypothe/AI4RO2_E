@@ -1,5 +1,20 @@
 import numpy as np
 
+#engine_path = "/root/ENHSP-Public/enhsp"
+#engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
+engine_path = "/root/enhsp-20/enhsp2.jar"
+
+graphs_wd = "../graphs"
+
+domain_name_full_ = "../domains/dom_APE/numeric_domain_APE_full.pddl"
+problem_name_full_ = "../domains/dom_APE/problem_temp.pddl"
+output_name_full_ = "../output/temp_output.txt"
+
+csv_name_full_ = "../lib/hg_val_20.csv" ## the data gathered using enhsp-20
+exp_name_full_ = "../lib/drinks_explored_20.pkl" ## the data gathered using enhsp-20
+
+regr_name_full_ = "../lib/regr_model.pkl"
+
 def avg_drink_pos(stuff4table):
     """
     table1(-1,1)   table2(1,1)

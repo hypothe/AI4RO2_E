@@ -3,7 +3,7 @@
 import build
 import run
 import parse
-from data_util import avg_drink_pos, round_dec, uniq_str
+import data_util
 
 import numpy as np
 import random
@@ -23,19 +23,20 @@ waiter_number_ = 2 # 2
 #g_values = [1, 5]
 #h_values = [1, 5]
 ratio_min = 1 #1.0
-ratio_max = 15
-ratio_num = 5
-ratios_ = np.geomspace(ratio_min, ratio_max, num = ratio_num).tolist()
+ratio_max = 20  #15
+ratio_num = 7   #5
+#ratios_ = np.geomspace(ratio_min, ratio_max, num = ratio_num).tolist()
+ratios_ = np.linspace(ratio_min, ratio_max, num = ratio_num).tolist()
 ## g_values = [1, 3, 7, 10]
 ## h_values = [1, 3, 7, 10]
-run_time = 120 # 300
+run_time_ = 300 #120
 
 engine_path_ = run.engine_path
-domain_name_full_ = run.Pddl_domain_
-problem_name_full_ = "../domains/dom_APE/problem_temp.pddl"
-output_name_full_ = "../output/temp_output.txt"
-csv_name_full_ = "../lib/hg_val.csv"
-exp_name_full_ = "../lib/drinks_explored.pkl"
+domain_name_full_ = data_util.domain_name_full_
+problem_name_full_ = data_util.problem_name_full_
+output_name_full_ = data_util.output_name_full_
+csv_name_full_ = data_util.csv_name_full_ 
+exp_name_full_ = data_util.exp_name_full_
 writer_ = None
 
 explored_cases = list()
@@ -59,14 +60,17 @@ def rec_gen(table, last_table, drink4table, hot4table, placed_drinks):
                 rec_gen(table+1, last_table, drink4table, hot4table, placed_drinks + drink)
             
                 
-    elif placed_drinks > 0:  ## and random.random() < 0.001:
+    elif placed_drinks > 0:
         global all_cases, n_comb
+        ordered_drinks = sum(drink4table)
+        ordered_hot = sum(hot4table)
         
-        for n_waiters in range(1, waiter_number_+1):
+        for n_waiters in range(1, round(8/ordered_drinks)+1): 
+        ## a sort of heuristic... didn't seem to work with more than 4 drinks for 2 waiters
             all_cases.append(copy.deepcopy((n_waiters, drink4table, hot4table)))
-            n_comb[sum(drink4table)][sum(hot4table)] += 1
+            n_comb[ordered_drinks][ordered_hot] += 1
  
-def set_test(n_of_tests):
+def set_test(n_of_tests, run_time=None):
     global all_cases, explored_cases#, rounds_
     
     not_explored_cases = [case for case in all_cases if case not in explored_cases]
@@ -81,13 +85,13 @@ def set_test(n_of_tests):
     tot_rounds = len(cases_to_explore)
     for config in cases_to_explore:
         print("Test #{} out of {}".format(rr, tot_rounds))
-        test(config[0], config[1], config[2])
+        test(config[0], config[1], config[2], run_time)
         explored_cases.append(copy.deepcopy(config))
         rr += 1
             
-def test(n_waiters, drink4table, hot4table):
+def test(n_waiters, drink4table, hot4table, run_time=None):
     global output_name_full, domain_name_full_, problem_name_full_
-    global ratios_, run_time
+    global ratios_
     
     ## BUILD the problem file
     build.edit(n_waiters, drink4table, hot4table, problem_name_full_)
@@ -98,11 +102,11 @@ def test(n_waiters, drink4table, hot4table):
         print("n_waiters: {}\ndrink4table: {}\nhot4table: {}".format(n_waiters, drink4table, hot4table)) 
         for gg in ratios_:
             if gg < 1.0:
-                h_value = round_dec(1.0/gg, 3)
+                h_value = data_util.round_dec(1.0/gg, 3)
                 g_value = 1.0
             else:
                 h_value = 1.0
-                g_value = round_dec(gg, 3)   
+                g_value = data_util.round_dec(gg, 3)   
             res = run.run(domain_name_full_, problem_name_full_, False, g_value, h_value, run_output_file, run_time)
             if res:
                 print("Succesful run")
@@ -128,8 +132,8 @@ def save_results(n_waiters, hg_val, drink4table, hot4table):
     global results_
     row = {}
     row['waiter'] = n_waiters 
-    row['tot'], row['avg_x'], row['avg_y'], row['eig_1'], row['eig_2'] = [round_dec(val, 3) for val in avg_drink_pos(drink4table)]
-    row['hot_tot'], row['hot_avg_x'], row['hot_avg_y'], row['hot_eig_1'], row['hot_eig_2'] = [round_dec(val, 3) for val in avg_drink_pos(hot4table)]
+    row['tot'], row['avg_x'], row['avg_y'], row['eig_1'], row['eig_2'] = [data_util.round_dec(val, 3) for val in data_util.avg_drink_pos(drink4table)]
+    row['hot_tot'], row['hot_avg_x'], row['hot_avg_y'], row['hot_eig_1'], row['hot_eig_2'] = [data_util.round_dec(val, 3) for val in data_util.avg_drink_pos(hot4table)]
     #print("HG_VAL: {}".format(hg_val))
     for hg_key in hg_val:
         row['hw'] = hg_key[0]
@@ -137,7 +141,7 @@ def save_results(n_waiters, hg_val, drink4table, hot4table):
         row['hg_ratio'] = hg_key[0]/hg_key[1]
         for par_key, v in hg_val[hg_key].items():
             # row[par_key] = v
-            row[par_key] = round_dec(v, 3)
+            row[par_key] = data_util.round_dec(v, 3)
             
         
         results_.append(copy.deepcopy(row))
@@ -155,10 +159,12 @@ def main(argv):
     table = 0
     last_table = num_tables_
     n_of_tests = 1
+    run_time = run_time_
     
     usage = ("usage: pyhton3 " + argv[0] + "\n" +
              "(default values will be used in case options are not provided)\n" +
              "\t-n, --test-number <arg>\t\tnumber of tests to be carried out\n" +
+             "\t-t, --time <arg>\ttimeout for each run instance (seconds)\n" +
              "\t-h, --help\t\tdisplay this help\n"
             )
     try:
@@ -173,16 +179,19 @@ def main(argv):
             sys.exit()
         elif opt in ("-n", "--test-number"):
             n_of_tests = int(arg)
+        elif opt in ("-t", "--time"):
+            run_time = int(arg)
+    
     
     identif = (max_drinks_, tot_drinks, run_time)
     
     #drink4table = [0, 1, 2, 1]
     #identif = ("permTest_", drink4table)
     
-    problem_name_full_ = uniq_str(problem_name_full_, identif)
-    output_name_full_ = uniq_str(output_name_full_, identif)
-    #csv_name_full_ = uniq_str(csv_name_full_, identif)
-    #exp_name_full_ = uniq_str(exp_name_full_, identif)
+    problem_name_full_ = data_util.uniq_str(problem_name_full_, identif)
+    output_name_full_ = data_util.uniq_str(output_name_full_, identif)
+    csv_name_full_ = data_util.uniq_str(csv_name_full_, (20, run_time))
+    exp_name_full_ = data_util.uniq_str(exp_name_full_, (20, run_time))
     
     ## load already explored drinks configurations
     try:
@@ -195,7 +204,7 @@ def main(argv):
     ### PERFORM TEST RUN   
     rec_gen(table, last_table, drink4table, hot4table, 0)
     
-    set_test(n_of_tests)
+    set_test(n_of_tests, run_time)
     
     try:
         with open(csv_name_full_, 'r', newline='') as csvfile:

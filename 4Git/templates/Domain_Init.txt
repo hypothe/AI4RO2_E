@@ -35,6 +35,7 @@
         ;Ordered condition
         ;ORDERED_BY_PH
         ;ORDERED_BISCUIT
+        
 
         ;FIXED :Table distances
         (= (distance bar table1) 2) 	(= (distance table1 bar) 2)

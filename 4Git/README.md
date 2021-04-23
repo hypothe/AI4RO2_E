@@ -36,12 +36,19 @@ by varying h and g weights of the used A* heuristic algorithm.
 If launched with no parameters a default run with the default test problem will be performed, and the results
 will be saved in a .txt file (by default in the _output_ folder)
 
+This script is where the magic happens: by passing `-M` as a command line flag the system will autonomously find what it
+assumes to be the best [hw,gw] (or, at least, the best values among a finite list it has). This result is obtained thanks
+to a Linear Regression smart agent trained on random configurations, for which it has a record of the quality of the solution
+for a set of [hw, gw] (_see_ `test_data.py` _and_ `correlation.py` _for more info_).
+The file to run is parsed in order to gather details on it's structure (_number of waiters, total drinks and hot drinks, metrics on their position_), which are then passed as input to the set of Linear Regression models in order to find an approximation of the quality of the solution for each weight couple [hw, gw]. The couple yielding the best expected quality is thus selected and used for the run.
+
 With the parameters is possible to set:
 - domain name and location
 - problem name and location
 - output file name and location
 - maximum time to run each instance for
 - h and g sets of weights
+- approximation of the best [hw, gw] values to start with
 
 ### parse.py
 
@@ -57,65 +64,53 @@ With the parameters is possible to set:
 - plots can be set to 3D view instead of the default 2D+color
 - LaTeX style can be adopted in those graphs (requires `sudo apt-get install texlive-full`)
 
+> This script should not be run directly from the end user ideally.
+
 ### test_data.py
 
 ```
-python3 test_data.py
+python3 test_data.py (--opt-args)
 ```
-
 Script that:
-1. generates a fixed number of problems among all possible problems with a maximum amount of drinks per table and total drinks ordered
+1. generates a fixed number of problems among all possible problems with a maximum amount of drinks per table and total drinks ordered; it avoids repetition of cases checked for in the past by looking at their rercord in the file `drinks_explored.pkl` under the folder `lib` (which is updated each time with the new ones)
 2. runs them all with a collection of hw, gw values
 3. parses the output of all runs for all problems and saves everything in a csv file
 
+The command line parameters can be used to set:
+- the number of random problems to generate and test
+- the timeout for each run
+
+> This script should not be run directly from the end user ideally (assuming a completely trained model).
+
+### correlation.py
+
+```
+python3 correlation.py
+```
+This script is the one that can be used to train a collection of Linear Regression models; two models are trained for each pair of [hw, gw], one learning to predict the solution's "Duration" and one the "Search Time" that the planner will take to find it.
+The dictionary of models is saved in a pickle file, `regr_model.pkl` under the folder `lib`, and is accessed by `run.py` when the flag `-M` is passed to it. Notice that, actually, what the model learns are the logarithms of such two metrics, a relation that was decided after inspecting the data trends for multiple runs (which can be plotted with an appropriate flag)
+
+Here the cmd parameters can be used to:
+- pass the path and name of the csv to read data from
+- toggle the plotting of the figures demonstrating the correlation between some of the problem's features
+- save such plots as pdf files
+- specify for which h,g values to plot data (default is [1.0, 1.0])
+
+> This script should not be run directly from the end user ideally (assuming a completely trained model)..
+
+### data_util.py
+
+```
+python3 data_util.py
+```
+
+This script simply contains some util functions.
 
 ---
-
-## Future possible changes in the python scripting
-
-Stuff to look into
-
-- sensibility analysis "by hand" of each parameter
-- create script to automatize the sensibility analysis for a range of values
-
-## ML implementation for "best (g, h) values" retrieval from problem data
-
-Two possible approaches to follow
-
-### Multilinear Regression
-
-Train a multilinear classifier on data such as
-(n-of-drinks, n-of-hot-drinks, drink-pos-avg, drink-pos-variance, h, g, solution-quality)
-
-then, for a given problem file:
-1. generate a list of, (h, g)
-2. evaluate the quality for the touple (problem-data, h, g) on the trained classifier
-3. find the (h, g) tuple that had the best quality
-
-pro: makes sense, a relation is surely in place
-cons: will have to iterate on different couples (h, g) for a problem
-
-### kNN Classifier
-
-Save, for each training problem, only the (h, g) couple which yield the best quality solution, as
-(n-of-drinks, n-of-hot-drinks, drink-pos-avg, drink-pos-variance, h, g)
-
-then, for a given problem file
-1. perform kNN classification, finding the closest (k-mode) training instance for everything (but h, g)
-2. take the (h, g) of that solution
-
-pro: easier to develop, no training phase required
-cons: needs A LOT of data (not a real problem tho, since even for 3 max drinks per table we can have a lot of variability),
-    maybe slower
 
 ## Dependencies
 
 Python3 is needed to launch those scripts.
-ENHSP-19 is also needed to solve the domain-problem couple. By default the position of the planner executable
-is assumed at `/root/ENHSP-Public/enhsp`, to change it open `run.py` and modify the `enigne_path` global variable.
+ENHSP-20 is also needed to solve the domain-problem couple. By default the position of the planner executable
+is assumed at `/root/enhsp-20`, to change it open `run.py` and modify the `engine_path` global variable.
 
----
-
-# Changes
-
--  pass from h,g to ratio, simplifying the plot and whatever

@@ -54,6 +54,7 @@
 		(fl-drink-consuming-len ?d - Drink)
 		(fl-order-len)
 		(fl-clean-len ?w - waiter)
+		(fl-drink-on-tray)
 	)
 	
 	;;;;;; BARISTA ORDER PREPARATION ;;;;;;;
@@ -97,7 +98,7 @@
 							(order-prepared ?d) (not (order-delivered ?d))
 							(> (fl-hot ?d) 0)
 						)
-		:effect			(decrease (fl-drink-cooling ?d) #t)
+		:effect			(decrease (fl-drink-cooling) #t)
 	)	;notice it will be stopped by the drink being delivered
 	
 	;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -122,20 +123,18 @@
 	(:action pick-up-order    
         :parameters  (?t - Bar ?w - waiter ?d - order)
         :precondition 	(and
-							;(not (tray-carried ?w))
 							(= (fl-tray-carried ?w) 0)
 							(at-waiter ?w ?t)
 							(order-ready ?d)
 							(hand-free ?w)
-							
 						)
-        :effect 		(and  
+       :effect 		(and  
 							(not(order-ready ?d))(not (hand-free ?w))
 							(order-carried ?d ?w)
 						)
 	)
 	(:action put-down-order    
-        :parameters  (?t - Table ?w - waiter ?d - order)
+        :parameters  (?t - place ?w - waiter ?d - order)
         :precondition 	(and 
 							(ordered ?d ?t)
 							;(not (tray-carried ?w))
@@ -282,91 +281,55 @@
 	;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 	;;;;;;;	TRAY	;;;;;;;;;
-	
-	(:action pick-2-tray   
-        :parameters		(?t - Bar ?w - waiter ?d1 - order ?d2 - order)
-        :precondition	(and 
-							(at-waiter ?w ?t)
-                            (not (equals ?d1 ?d2))
-							(hand-free ?w)(not (tray-taken))(tray-empty)
-							(order-ready ?d1)(order-ready ?d2)
+	(:action pick-tray
+        :parameters		(?t - Bar ?w - waiter)
+        :precondition	(and (at-waiter ?w ?t)
+							(hand-free ?w)(not (tray-taken))
 						)
-        :effect (and  (not(order-ready ?d1))(not(order-ready ?d2))
-						(not (hand-free ?w))(tray-taken)(not (tray-empty))
+        :effect (and  
+						(not (hand-free ?w))(tray-taken)
 						(assign (fl-tray-carried ?w) 1)
-						(order-carried ?d1 ?w) (order-carried ?d2 ?w)
-						(has2 ?w)
 				)
 	)
-	(:action pick-3-tray   
-        :parameters		(?t - Bar ?w - waiter ?d3 - order)
-        :precondition	(and 
-							(has2 ?w)
-							(at-waiter ?w ?t)
-							(order-ready ?d3)
+	(:action pick-order-on-tray
+        :parameters		(?t - Bar ?w - waiter ?d - order)
+        :precondition	(and (at-waiter ?w ?t)
+							(>= (fl-tray-carried ?w) 1)
+							(< (fl-drink-on-tray) 3)
+							(order-ready ?d)
 						)
-        :effect (and  (not(order-ready ?d3))
-						(order-carried ?d3 ?w)
-						(not (has2 ?w)) (has3 ?w)
+        :effect (and  (not(order-ready ?d))
+						(order-carried ?d ?w)
+						(increase (fl-drink-on-tray) 1)
 				)
 	)
 	
-	(:action put-down-3-drink   
-        :parameters		(?t - Table ?w - waiter ?d3 - order)
-        :precondition	(and (has3 ?w)(at-waiter ?w ?t)
+	(:action put-down-order-from-tray
+        :parameters		(?t - Table ?w - waiter ?d - order)
+        :precondition	(and (>= (fl-tray-carried ?w) 1)
+                            (at-waiter ?w ?t)
+							(ordered ?d ?t)
 							(serving ?w ?t)
-							(ordered ?d3 ?t)
-							(order-carried ?d3 ?w)
-							(>= (fl-drink-cooling ?d3) 0)
+							(order-carried ?d ?w)
+							(>= (fl-drink-cooling ?d) 0)
 						)
-        :effect (and  (not (order-carried ?d3 ?w))
-						(order-delivered ?d3)
-						(not (has3 ?w)) (has2 ?w)
-						(drink-consuming ?d3)
-						(assign (fl-drink-consuming-len ?d3) 4)
+        :effect (and  (not (order-carried ?d ?w))
+						(order-delivered ?d)
+						(drink-consuming ?d)
+						(decrease (fl-drink-on-tray) 1)
+						(assign (fl-drink-consuming-len ?d) 4)
 				)
 	)
 	
-	(:action put-down-2-drink   
-        :parameters		(?t - Table ?w - waiter ?d2 - order)
-        :precondition	(and (has2 ?w)(at-waiter ?w ?t)
-							(serving ?w ?t)
-							(ordered ?d2 ?t)
-							(order-carried ?d2 ?w)
-							(>= (fl-drink-cooling ?d2) 0)
-						)
-        :effect (and  (not (order-carried ?d2 ?w))
-						(order-delivered ?d2)
-						(not (has2 ?w)) (has1 ?w)
-						(drink-consuming ?d2)
-						(assign (fl-drink-consuming-len ?d2) 4)
-				)
-	)
-	(:action put-down-1-drink   
-        :parameters		(?t - Table ?w - waiter ?d1 - order)
-        :precondition	(and (has1 ?w)(at-waiter ?w ?t)
-							(serving ?w ?t)
-							(ordered ?d1 ?t)
-							(order-carried ?d1 ?w)
-							(>= (fl-drink-cooling ?d1) 0)
-						)
-        :effect (and  (not (order-carried ?d1 ?w))
-						(order-delivered ?d1)
-						(not (has1 ?w))
-						(tray-empty)
-						(drink-consuming ?d1)
-						(assign (fl-drink-consuming-len ?d1) 4)
-				)
-	)
 	(:action drop-tray   
         :parameters		(?t - Bar ?w - waiter)
         :precondition	(and 
-							;(tray-carried ?w)
-							(= (fl-tray-carried ?w) 1)
-							(tray-empty)(at-waiter ?w ?t)
+							(>= (fl-tray-carried ?w) 1)
+							(= (fl-drink-on-tray) 0)
+							;(tray-empty)
+							(at-waiter ?w ?t)
 						)
         :effect 		(and
-							;(not (tray-carried ?w))
 							(assign (fl-tray-carried ?w) 0)
 							(not (tray-taken))
 							(hand-free ?w)

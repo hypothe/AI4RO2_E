@@ -93,10 +93,12 @@ def parse_problem(problem_filename):
         
         drinks_str = re.findall("\(=\s+\(fl-hot\s+drink\w+\)\s+\d\)", problem)
         drink_dict = {}
-        table_dict = {}
         
         waiter_str = re.findall("\(free-waiter\s+w\d+\)", problem)
         n_waiters = len(waiter_str)
+        
+        table_str = re.search("table.*\s*-\s*Table", problem).group()
+        table_num = len(re.findall("table\d+", table_str))
         
         for drink in drinks_str:
             ## find name of the dirnk, eg "drinkA"
@@ -108,26 +110,28 @@ def parse_problem(problem_filename):
         order_str = re.findall("\(ordered\s+drink\w+\s+table\w+\s*\)", problem)
         #print("ORDER_STR".format(order_str))
         
+        table_orders = [list() for ii in range(0, table_num)]
+        
         for order in order_str:
             ## find number of the table
             t_id = int(re.sub("(^\(ordered\s+drink\w+\s+table|\s*\)$)", "", order))
             ## find name of the drink
             t_dr = re.sub("(^\(ordered\s+|\s+table\w+\s*\)$)", "", order)
             ## ducktaping a lot
-            
-            try:
-                table_dict[t_id]
-            except KeyError:
-                table_dict[t_id] = list()
-            finally:
-                table_dict[t_id].append(t_dr)
+            table_orders[t_id-1].append(t_dr)
+            #try:
+            #    table_dict[t_id]
+            #except KeyError:
+            #    table_dict[t_id] = list()
+            #finally:
+            #    table_dict[t_id].append(t_dr)
 
-        drink4table = [0 for ii in table_dict.keys()]
-        hot4table = [0 for ii in table_dict.keys()]
+        drink4table = [0 for ii in range(0, table_num)]
+        hot4table = [0 for ii in range(0, table_num)]
 
-        for t_id, d_list in table_dict.items():
-            drink4table[t_id-1] = len(d_list)
-            for drink in d_list:
+        for t_id in range(0, table_num):
+            drink4table[t_id-1] = len(table_orders[t_id-1])
+            for drink in table_orders[t_id-1]:
                 if drink_dict[drink] > 0:
                     hot4table[t_id-1] += 1
                     

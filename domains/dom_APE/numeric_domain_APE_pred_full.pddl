@@ -12,6 +12,7 @@
 		(at-waiter ?w - waiter ?t  - place)
 		(start-moving-to ?w - waiter ?to - place)
 		
+		(tray-carried ?w - waiter)
         (tray-taken)
 		(tray-empty)
 		(has3 ?w - waiter)(has2 ?w - waiter)(has1 ?w - waiter)
@@ -29,6 +30,7 @@
 		(order-delivered ?d - order)
 		
 		(drink-cooling ?d - order)
+		(drink-cold ?d - order)
 		(drink-consuming ?d - order)
 		
         (clean ?t - place)
@@ -90,16 +92,29 @@
 							(free-barista)
 						)
 	)
-		
+    
+	;;;;;;;;;;;;;;;;;;;;;;;;;;
+	
+	;;;;;	COOLING	;;;;;;
 	(:process 	p-drink-cooling
 		:parameters		(?d - Drink)
 		:precondition	(and
 							(order-prepared ?d) (not (order-delivered ?d))
-							(> (fl-hot ?d) 0)
+							(> (fl-hot ?d) 0) (not (drink-cold ?d))
 						)
 		:effect			(decrease (fl-drink-cooling ?d) #t)
 	)	;notice it will be stopped by the drink being delivered
-	
+	(:event		e-drink-cold
+		:parameters		(?d - Drink)
+		:precondition	(and
+							(order-prepared ?d) (not (order-delivered ?d))
+							(> (fl-hot ?d) 0) (not (drink-cold ?d))
+							(<= (fl-drink-cooling ?d) 0)
+						)
+		:effect			(and
+							(drink-cold ?d)
+						)
+	)
 	;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 	;;;;;	SERVING	;;;;;;
@@ -122,8 +137,8 @@
 	(:action pick-up-order    
         :parameters  (?t - Bar ?w - waiter ?d - order)
         :precondition 	(and
-							;(not (tray-carried ?w))
-							(= (fl-tray-carried ?w) 0)
+							(not (tray-carried ?w))
+							;(= (fl-tray-carried ?w) 0)
 							(at-waiter ?w ?t)
 							(order-ready ?d)
 							(hand-free ?w)
@@ -138,12 +153,13 @@
         :parameters  (?t - Table ?w - waiter ?d - order)
         :precondition 	(and 
 							(ordered ?d ?t)
-							;(not (tray-carried ?w))
-							(= (fl-tray-carried ?w) 0)
+							(not (tray-carried ?w))
+							(not (drink-cold ?d))
+							;(= (fl-tray-carried ?w) 0)
 							(at-waiter ?w ?t)
 							(order-carried ?d ?w)
 							(serving ?w ?t)
-							(>= (fl-drink-cooling ?d) 0)
+							;(>= (fl-drink-cooling ?d) 0)
 						)
         :effect 		(and
 							(not (order-carried ?d ?w))
@@ -293,6 +309,7 @@
 						)
         :effect (and  (not(order-ready ?d1))(not(order-ready ?d2))
 						(not (hand-free ?w))(tray-taken)(not (tray-empty))
+						(tray-carried ?w)
 						(assign (fl-tray-carried ?w) 1)
 						(order-carried ?d1 ?w) (order-carried ?d2 ?w)
 						(has2 ?w)
@@ -312,12 +329,13 @@
 	)
 	
 	(:action put-down-3-drink   
-        :parameters		(?t - Table ?w - waiter ?d3 - order)
+        :parameters		(?t - place ?w - waiter ?d3 - order)
         :precondition	(and (has3 ?w)(at-waiter ?w ?t)
 							(serving ?w ?t)
 							(ordered ?d3 ?t)
 							(order-carried ?d3 ?w)
-							(>= (fl-drink-cooling ?d3) 0)
+							;(>= (fl-drink-cooling ?d3) 0)
+							(not (drink-cold ?d3))
 						)
         :effect (and  (not (order-carried ?d3 ?w))
 						(order-delivered ?d3)
@@ -328,12 +346,13 @@
 	)
 	
 	(:action put-down-2-drink   
-        :parameters		(?t - Table ?w - waiter ?d2 - order)
+        :parameters		(?t - place ?w - waiter ?d2 - order)
         :precondition	(and (has2 ?w)(at-waiter ?w ?t)
 							(serving ?w ?t)
 							(ordered ?d2 ?t)
 							(order-carried ?d2 ?w)
-							(>= (fl-drink-cooling ?d2) 0)
+							;(>= (fl-drink-cooling ?d2) 0)
+							(not (drink-cold ?d2))
 						)
         :effect (and  (not (order-carried ?d2 ?w))
 						(order-delivered ?d2)
@@ -343,12 +362,13 @@
 				)
 	)
 	(:action put-down-1-drink   
-        :parameters		(?t - Table ?w - waiter ?d1 - order)
+        :parameters		(?t - place ?w - waiter ?d1 - order)
         :precondition	(and (has1 ?w)(at-waiter ?w ?t)
 							(serving ?w ?t)
 							(ordered ?d1 ?t)
 							(order-carried ?d1 ?w)
-							(>= (fl-drink-cooling ?d1) 0)
+							;(>= (fl-drink-cooling ?d1) 0)
+							(not (drink-cold ?d1))
 						)
         :effect (and  (not (order-carried ?d1 ?w))
 						(order-delivered ?d1)
@@ -361,8 +381,8 @@
 	(:action drop-tray   
         :parameters		(?t - Bar ?w - waiter)
         :precondition	(and 
-							;(tray-carried ?w)
-							(= (fl-tray-carried ?w) 1)
+							(tray-carried ?w)
+							;(= (fl-tray-carried ?w) 1)
 							(tray-empty)(at-waiter ?w ?t)
 						)
         :effect 		(and

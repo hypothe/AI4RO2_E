@@ -1,0 +1,13 @@
+H_VALUE: 1.0
+G_VALUE: 3.873
+SUCCESS: 1
+Duration:36.0
+Planning Time:34870
+Heuristic Time:33356
+Search Time:34339
+Expanded Nodes:4211
+States Evaluated:15136
+
+
+### ------------------ ###
+

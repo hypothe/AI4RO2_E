@@ -19,11 +19,13 @@ from itertools import compress
 import warnings
 import math
 
+import data_util
+
 warnings.filterwarnings('ignore')
 
-graphs_wd = "./root/AI4RO_II/AI4RO2_E/graphs" # directory to save the graphs in
+graphs_wd = data_util.graphs_wd # directory to save the graphs in
 ddd = False
-regr_name_full_ = "../lib/regr_model.pkl"
+regr_name_full_ = data_util.regr_name_full_
 
 
 def corrdot(*args, **kwargs):
@@ -225,7 +227,7 @@ def plot_graphs(k, par1, par2, j, h_val, g_val, save_fig=False):
 def main(argv):
     
     h_val = 1.0
-    g_val = 15.0
+    g_val = 1.0
     in_par1 = 'avg_x'
     in_par2 = 'avg_y'
     filename = ""
