@@ -2,7 +2,7 @@ import numpy as np
 
 #engine_path = "/root/ENHSP-Public/enhsp"
 #engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
-engine_path = "/root/enhsp-20/enhsp2.jar"
+engine_path = "/root/ENHSP-20/enhsp"
 
 graphs_wd = "../graphs"
 
@@ -14,6 +14,12 @@ csv_name_full_ = "../lib/hg_val_20.csv" ## the data gathered using enhsp-20
 exp_name_full_ = "../lib/drinks_explored_20.pkl" ## the data gathered using enhsp-20
 
 regr_name_full_ = "../lib/regr_model.pkl"
+
+duration_alias = "Elapsed Time"
+hw_flag = "-wh"
+gw_flag = "-wg"
+delta_val_flag = "-dv"
+delta_exec_flag = "-de"
 
 def avg_drink_pos(stuff4table):
     """

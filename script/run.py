@@ -33,16 +33,19 @@ output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
 cwd = os.getcwd()
 
 def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run_time=None, show_output=False):	
-    
+    hw_flag = data_util.hw_flag
+    gw_flag = data_util.gw_flag
+    delta_val_flag = data_util.delta_val_flag
+    delta_exec_flag = data_util.delta_exec_flag
     frm_result = ""
     flag = 0
     gh_str = "H_VALUE: " + str(h_val) + "\nG_VALUE: " + str(g_val) + "\n"
     run_output_file.write(gh_str)
     
     print("Running " + problem_full + " gw: " +str(g_val) + " hw: " + str(h_val))
-    with subprocess.Popen(["java", "-jar", engine_path, "-o", domain_full, "-f", problem_full,
-                                "-wh", str(h_val), "-wg", str(g_val),
-                                "-dv", str(delta), "-de", str(delta)
+    with subprocess.Popen([engine_path, "-o", domain_full, "-f", problem_full,
+                                hw_flag, str(h_val), gw_flag, str(g_val),
+                                delta_val_flag, str(delta), delta_exec_flag, str(delta)
                             ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid) as result:
         try:
             res, err = result.communicate(timeout=run_time)
@@ -68,7 +71,7 @@ def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run
         else:
             flag = 1
             frm_result = res.replace('\\n','\n')
-            frm_result = res.replace('Metric (Search)', 'Duration')
+            frm_result = res.replace(data_util.duration_alias, 'Duration')
             frm_result = trim_output(frm_result)
             
     if show_output:

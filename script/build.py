@@ -360,7 +360,7 @@ def main(argv):
         
     edit(waiter_number, drink4table, hot4table, problem_name_full) 
     
-    print("Generated " + problem_name_full + "with:\n" +
+    print("Generated " + problem_name_full + " with:\n" +
             "number_of_waiters:\t" + str(waiter_number) + "\n" +
             "tot_drinks_for_table:\t" + str(drink4table) + "\n" +
             "hot_drinks_for_table:\t" + str(hot4table) + "\n"
