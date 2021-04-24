@@ -23,8 +23,8 @@ Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choo
 Pddl_domain_ = data_util.domain_name_full_    # (str) Name of pddl domain file
 Optimizer = False        			# (Bool) Set to active for optimization process
 delta = 0.5
-g_values_ = [1, 2, 7, 10]    			# list of (int) g values to be run (active only if Optimizer == True)
-h_values_ = [1, 2, 7, 10]    			# list of (int) h values to be run (active only if Optimizer == True)
+#g_values_ = [1, 2, 7, 10]    			# list of (int) g values to be run (active only if Optimizer == True)
+#h_values_ = [1, 2, 7, 10]    			# list of (int) h values to be run (active only if Optimizer == True)
 
 max_run_time = 120			# (int) maximum running time in seconds before stopping the run of the planning engine
 output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
@@ -68,7 +68,7 @@ def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run
         else:
             flag = 1
             frm_result = res.replace('\\n','\n')
-            
+            frm_result = res.replace('Metric (Search)', 'Duration')
             frm_result = trim_output(frm_result)
             
     if show_output:
@@ -150,10 +150,12 @@ def main(argv):
     Pddl_problem = Pddl_problem_
     output_string = ""
     run_time = None #max_run_time ## None won't trigger a timeout
-    g_values = g_values_
-    h_values = h_values_
+    #g_values = g_values_
+    #h_values = h_values_
     ML = False
     show_output = True
+    g_values = [1.0]
+    h_values = [1.0]
     
     try:
         opts, args = getopt.getopt(argv[1:], "hf:o:p:n:t:Ms",
