@@ -21,6 +21,25 @@ The command line parameters can be used to set:
 
 > This script should not be run directly from the end user ideally (assuming a completely trained model).
 
+### build.py
+
+```
+python3 build.py (--opt-args)
+```
+This script is used to generate a problem file fully compatible with the domain "APE full"
+(aka using actions, processes and events implementing the full specifics of the assignment)
+by submitting few values, namely the number of waiters available and how many total and hot drinks
+are requested by each table.
+If launched with no parameters a default test problem will be generated.
+With the parameters is possible to set:
+- problem name and location
+- number of waiters
+- number of total drinks per table
+- number of hot drinks per table
+
+Notice it is also possible to insert those numeric values with a GUI by toggling that with
+the command line argument `-g`
+
 ### run.py
 
 ```
@@ -45,25 +64,6 @@ With the parameters is possible to set:
 - maximum time to run each instance for
 - h and g sets of weights
 - approximation of the best [hw, gw] values to start with
-
-### build.py
-
-```
-python3 build.py (--opt-args)
-```
-This script is used to generate a problem file fully compatible with the domain "APE full"
-(aka using actions, processes and events implementing the full specifics of the assignment)
-by submitting few values, namely the number of waiters available and how many total and hot drinks
-are requested by each table.
-If launched with no parameters a default test problem will be generated.
-With the parameters is possible to set:
-- problem name and location
-- number of waiters
-- number of total drinks per table
-- number of hot drinks per table
-
-Notice it is also possible to insert those numeric values with a GUI by toggling that with
-the command line argument `-g`
 
 ### parse.py
 
