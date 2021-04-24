@@ -42,7 +42,7 @@ def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run
     print("Running " + problem_full + " gw: " +str(g_val) + " hw: " + str(h_val))
     with subprocess.Popen(["java", "-jar", engine_path, "-o", domain_full, "-f", problem_full,
                                 "-wh", str(h_val), "-wg", str(g_val),
-                                "-delta_val", str(delta), "-delta_exec", str(delta)
+                                "-dv", str(delta), "-de", str(delta)
                             ], stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, preexec_fn=os.setsid) as result:
         try:
             res, err = result.communicate(timeout=run_time)
