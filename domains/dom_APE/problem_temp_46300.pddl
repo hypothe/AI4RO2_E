@@ -3,9 +3,8 @@
     (:objects
 		bar - Bar
 		table1 table2 table3 table4 - Table
-        drinkA drinkB drinkC drinkD  - Drink
-		drinkE drinkF  - Drink
-        biscuitA biscuitB biscuitC  - Biscuit
+        drinkA  - Drink
+        
         w1  - waiter
 	)
 
@@ -29,53 +28,33 @@
 		
 
 		;Identity condition for each drink
-		(equals drinkA drinkA)(equals drinkB drinkB)
-		(equals drinkC drinkC)(equals drinkD drinkD)
-		(equals drinkE drinkE)(equals drinkF drinkF)
-		
+		(equals drinkA drinkA)
 		
 		;Identity condition for each biscuit
-		(equals biscuitA biscuitA)(equals biscuitB biscuitB)
-		(equals biscuitC biscuitC)
+		
 
         ;Customers per table
-        (=(fl-customers table1) 2)
-		(=(fl-customers table2) 2)
+        (=(fl-customers table1) 0)
+		(=(fl-customers table2) 0)
 		(=(fl-customers table3) 1)
-		(=(fl-customers table4) 1)
+		(=(fl-customers table4) 0)
 		
 
         ;Hot drink flag
         (= (fl-hot drinkA) 1)
-		(= (fl-hot drinkB) 0)
-		(= (fl-hot drinkC) 0)
-		(= (fl-hot drinkD) 0)
-		(= (fl-hot drinkE) 1)
-		(= (fl-hot drinkF) 1)
 		
         
         ;Biscuit - Drink relation
-        (drink-for-biscuit drinkB biscuitA)
-		(drink-for-biscuit drinkC biscuitB)
-		(drink-for-biscuit drinkD biscuitC)
-		
+        
 
 		;Position of each waiter
 		(at-waiter w1 bar)
 		
 
         ;Ordered condition
-        (ordered drinkA table1 )
-		(ordered drinkB table1 )
-		(ordered drinkC table2 )
-		(ordered drinkD table2 )
-		(ordered drinkE table3 )
-		(ordered drinkF table4 )
+        (ordered drinkA table3 )
 		
-        (ordered biscuitA table1 )
-		(ordered biscuitB table2 )
-		(ordered biscuitC table2 )
-		
+        
         
 
         ;FIXED :Table distances
@@ -110,9 +89,8 @@
     )
 
 (:goal (and
-        (order-delivered drinkA) (order-delivered drinkB) (order-delivered drinkC) (order-delivered drinkD) 
-		(order-delivered drinkE) (order-delivered drinkF) 
-        (order-delivered biscuitA) (order-delivered biscuitB) (order-delivered biscuitC) 
+        (order-delivered drinkA) 
+        
 	    (clean table1)(clean table2)(clean table3)(clean table4)
 	    (at-waiter w1 bar)
 		

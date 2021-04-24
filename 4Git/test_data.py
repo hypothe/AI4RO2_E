@@ -65,7 +65,7 @@ def rec_gen(table, last_table, drink4table, hot4table, placed_drinks):
         ordered_drinks = sum(drink4table)
         ordered_hot = sum(hot4table)
         
-        for n_waiters in range(1, round(8/ordered_drinks)+1): 
+        for n_waiters in range(1, min(waiter_number_, int(8/ordered_drinks))+1):
         ## a sort of heuristic... didn't seem to work with more than 4 drinks for 2 waiters
             all_cases.append(copy.deepcopy((n_waiters, drink4table, hot4table)))
             n_comb[ordered_drinks][ordered_hot] += 1
@@ -190,8 +190,8 @@ def main(argv):
     
     problem_name_full_ = data_util.uniq_str(problem_name_full_, identif)
     output_name_full_ = data_util.uniq_str(output_name_full_, identif)
-    csv_name_full_ = data_util.uniq_str(csv_name_full_, (20, run_time))
-    exp_name_full_ = data_util.uniq_str(exp_name_full_, (20, run_time))
+    csv_name_full_ = data_util.uniq_str(csv_name_full_, [run_time])
+    exp_name_full_ = data_util.uniq_str(exp_name_full_, [run_time])
     
     ## load already explored drinks configurations
     try:
