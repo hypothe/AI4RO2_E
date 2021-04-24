@@ -1,8 +1,8 @@
-# Sensibility Analysis
+# Sensitivity Analysis
 
 ## Scripts
 
-Three scripts (at the moment) compose the workflow of the sensibility analysis, which need to be
+Three scripts (at the moment) compose the workflow of the sensitivity analysis, which need to be
 launched one after the other to perform the full evaluation, but can be used independently if need
 be (_see "build" for an example_).
 
@@ -40,7 +40,7 @@ This script is where the magic happens: by passing `-M` as a command line flag t
 assumes to be the best [hw,gw] (or, at least, the best values among a finite list it has). This result is obtained thanks
 to a Linear Regression smart agent trained on random configurations, for which it has a record of the quality of the solution
 for a set of [hw, gw] (_see_ `test_data.py` _and_ `correlation.py` _for more info_).
-The file to run is parsed in order to gather details on it's structure (_number of waiters, total drinks and hot drinks, metrics on their position_), which are then passed as input to the set of Linear Regression models in order to find an approximation of the quality of the solution for each weight couple [hw, gw]. The couple yielding the best expected quality is thus selected and used for the run.
+The file to run it is parsed in order to gather details on its structure (_number of waiters, total drinks and hot drinks, metrics on their position_), which are then passed as input to the set of Linear Regression models in order to find an approximation of the quality of the solution for each weight couple [hw, gw]. The couple yielding the best expected quality is thus selected and used for the run.
 
 With the parameters is possible to set:
 - domain name and location
