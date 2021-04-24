@@ -120,7 +120,7 @@ Required python libraries:
   - tertools
   - subprocess
   - statsmodels
-  - 
+
 ENHSP-20 compiled from source is also needed to solve the domain-problem couple. By default the position of the planner executable
 is assumed at `/root/ENHSP-20`, to change it open `run.py` and modify the `engine_path` global variable.
 Notice that the off-the-shelf compiled version was discarded due to it not managing to set hw, gw appropriately (despite passing them from command line)
