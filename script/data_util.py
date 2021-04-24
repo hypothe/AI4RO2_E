@@ -1,8 +1,8 @@
 import numpy as np
 
 #engine_path = "/root/ENHSP-Public/enhsp"
-#engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
-engine_path = "/root/ENHSP-20/enhsp"
+engine_path = "/root/AI4RO_II/ENHSP-Public/enhsp"
+#engine_path = "/root/ENHSP-20/enhsp"
 
 graphs_wd = "../graphs"
 

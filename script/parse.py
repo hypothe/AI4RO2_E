@@ -15,8 +15,8 @@ from mpl_toolkits.mplot3d import Axes3D
 
 
 #Set global variables
-problem_name = "temp_output_permTest_0121.pddl"    	# (str) Problem name, extension needed
-out_wd = "/root/AI4RO_II/AI4RO2_E/output"			# (str) Working directory
+problem_name = "output_AAA.txt"    			# (str) Problem name, extension needed
+out_wd = "/root/AI4RO_II/AI4RO2_E/output"		# (str) Working directory
 
 output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
                     'Search Time', 'Expanded Nodes', 'States Evaluated')	# list of (str): keywords for relevant outputs
@@ -159,8 +159,8 @@ def plot_hg(hg_val, ddd):
     plt.figure("corr")
     sns.set(font_scale=1.6)
     #Parameters for latexstyle plot
-    plt.rc('text', usetex=True)
-    plt.rc('font', family='serif')
+    #plt.rc('text', usetex=True)
+    #plt.rc('font', family='serif')
     g = sns.PairGrid(output_df, aspect=1.4, diag_sharey=False)
     g.map_lower(sns.regplot, lowess=True, ci=False, line_kws={'color': 'black'})
     g.map_diag(sns.distplot, kde_kws={'color': 'black'})
@@ -207,10 +207,11 @@ def corrdot(*args, **kwargs):
 
 
 def main(argv):
-    """ This function asks the user to insert the number of
-        customers for each table and to specify the number of 
-        hot drinks for each of them and it automatically generates
-        the problem file for the pddl planning engine
+    """ This function asks the user an output file of a enhsp run
+    	to extract the relevant pieces of information and produce 
+    	a summary of the output to be processed by the correlation.py
+    	script.
+    	Relevant data are also plotted.
     """
     
     usage = ("usage: pyhton3 " + argv[0] + "\n" +
@@ -241,7 +242,7 @@ def main(argv):
             plt.rc('text', usetex=True)
     
     if not output_string:
-        output_string = out_wd + "/" + problem_name[:-5] + ".txt"
+        output_string = out_wd + "/" + problem_name
     
     #Read the output file to detect the interesting keywords
     with open(output_string, "r") as read_run_output:
@@ -249,8 +250,6 @@ def main(argv):
         hg_val = parse(str_out)
    
     plot_hg(hg_val, ddd)     
-
-    #Output visualization
     
 
 if __name__ == '__main__':

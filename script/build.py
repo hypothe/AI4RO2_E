@@ -6,8 +6,6 @@ import PySimpleGUI as sg 	# disabled for multiple run on docker
 import os
 import subprocess
 import re
-#import plotly.express as px
-#import pandas as pd
 
 
 #Set global variables
@@ -42,6 +40,8 @@ def gui():
         [sg.Text('Table 2:', size=(15, 1)), sg.InputText('0'),sg.Text('Hot drinks:', size=(8, 1)), sg.InputText('0')],
         [sg.Text('Table 3:', size=(15, 1)), sg.InputText('0'),sg.Text('Hot drinks:', size=(8, 1)), sg.InputText('0')],
         [sg.Text('Table 4:', size=(15, 1)), sg.InputText('0'),sg.Text('Hot drinks:', size=(8, 1)), sg.InputText('0')],
+        [sg.Text('')],
+        [sg.Text('Problem Name:', size=(15, 1)), sg.InputText(problem_name)],
         [sg.Submit(), sg.Cancel()]
     ]
 
@@ -52,13 +52,19 @@ def gui():
     window = sg.Window('AI for Robotics II', layout)
     event, values = window.read()
     window.close()
-    # print(values)
     #Extract input from GUI
     waiters = int(values[2])
     drink4table = [int(values[3]), int(values[5]), int(values[7]), int(values[9])]
     hot4table = [int(values[4]), int(values[6]), int(values[8]), int(values[10])]
-
-    return(waiters, drink4table, hot4table)
+    prb_name = str(values[11])
+    
+    # domain file check
+    if prb_name[-5:] != ".pddl":
+        
+        print("Err: Invalid pddl domain file format.")
+        sys.exit()
+        
+    return(waiters, drink4table, hot4table, prb_name)
 
 
 def headgoal_edit(wait_num, drink_num, hot_num):
@@ -278,10 +284,6 @@ def metric_edit():
 def edit(waiter_number, drink4table, hot4table, problem_name_full):
     for ii in range(0, table_number_global):
         hot4table[ii] = min(drink4table[ii], hot4table[ii])
-        
-    #print(waiter_number)
-    #print(drink4table)
-    #print(hot4table)
 
     [header_new, goal_new] = headgoal_edit(waiter_number, sum(drink4table), sum(hot4table))
     init_new = init_edit(waiter_number, drink4table, hot4table)
@@ -294,6 +296,7 @@ def edit(waiter_number, drink4table, hot4table, problem_name_full):
        
 
 # Press the green button in the gutter to run the script.
+
 def main(argv):
     """ This function asks the user to insert the number of
         customers for each table and to specify the number of 
@@ -315,6 +318,7 @@ def main(argv):
     hot4table = hot4table_global
     
     gui_input = GUI_Input
+    
     problem_name_full = cwd + "/" + wd + "/"+ problem_name
             
     try:
@@ -356,7 +360,10 @@ def main(argv):
     #Input selector
     if gui_input:
         #Graphic user interface
-        [waiter_number, drink4table, hot4table] = gui()
+        [waiter_number, drink4table, hot4table, new_problem_name] = gui()
+        #Overwrite the problem file name
+        problem_name_full = wd + "/"+ new_problem_name
+        
         
     edit(waiter_number, drink4table, hot4table, problem_name_full) 
     

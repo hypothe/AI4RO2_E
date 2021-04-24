@@ -1,32 +1,30 @@
 #!/usr/bin/env python3
 
 import sys, getopt
-
 import signal
 import os
 import re
 import subprocess
-
 import data_util
 import pickle
 
-Pddl_problem_ = "../domains/dom_APE/Custom.pddl"    # (str) Problem name, extension needed
+Pddl_problem_ = "../domains/dom_APE/AAA.pddl"    	# (str) Problem name, extension needed
 regr_name_full_ = data_util.regr_name_full_
 
-run_wd = "../domains/dom_APE"			# (str) Working directory
+run_wd = "../domains/dom_APE"				# (str) Working directory
 out_wd = "../output"
 
 engine_path = data_util.engine_path
 
 
-Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
-Pddl_domain_ = data_util.domain_name_full_    # (str) Name of pddl domain file
-Optimizer = False        			# (Bool) Set to active for optimization process
+Plan_Engine = 'enhsp'      				# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
+Pddl_domain_ = data_util.domain_name_full_    		# (str) Name of pddl domain file
+Optimizer = False        				# (Bool) Set to active for optimization process
 delta = 0.5
-#g_values_ = [1, 2, 7, 10]    			# list of (int) g values to be run (active only if Optimizer == True)
-#h_values_ = [1, 2, 7, 10]    			# list of (int) h values to be run (active only if Optimizer == True)
+#g_values_ = [1, 2, 7, 10]    				# list of (int) g values to be run (active only if Optimizer == True)
+#h_values_ = [1, 2, 7, 10]    				# list of (int) h values to be run (active only if Optimizer == True)
 
-max_run_time = 120			# (int) maximum running time in seconds before stopping the run of the planning engine
+max_run_time = 120					# (int) maximum running time in seconds before stopping the run of the planning engine
 output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
                     'Search Time', 'Expanded Nodes', 'States Evaluated')# list of (str): keywords for relevant outputs
                        
@@ -235,9 +233,8 @@ def main(argv):
             h_values = [1.0]
             g_values = [1.0]         
         
-    #print(h_values)
-    #print(g_values)
-    #input()
+    print(output_string)
+    print("TRIM")
     with open(cwd + "/" + out_wd + "/"+ output_string, "w") as run_output_file:
         for g_value in g_values:
             for h_value in h_values:

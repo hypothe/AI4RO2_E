@@ -11,7 +11,6 @@ from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 import pandas as pd
-import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import RFE
@@ -24,8 +23,13 @@ import data_util
 warnings.filterwarnings('ignore')
 
 graphs_wd = data_util.graphs_wd # directory to save the graphs in
+graphs_wd = "/root/AI4RO_II/AI4RO2_E/graphs"
 ddd = False
 regr_name_full_ = data_util.regr_name_full_
+
+#Parameters for latexstyle plot
+plt.rc('text', usetex=True)
+plt.rc('font', family='serif')
 
 
 def corrdot(*args, **kwargs):
@@ -146,9 +150,6 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
             rfe = RFE(RFE_regressor, nof)
             X_rfe = rfe.fit_transform(X_arr, np.array(Y))
             RFE_regressor.fit(X_arr, np.array(Y))
-            #rr = linear_model.LinearRegression()  
-            #rr.fit(X_arr,pd.np.array(Y))   
-            #rr.predict(X_arr)
             
             regr[hg_key].append(RFE_regressor)
 
@@ -231,14 +232,16 @@ def main(argv):
     in_par1 = 'avg_x'
     in_par2 = 'avg_y'
     filename = ""
-    show_plot = False
-    save_fig = False
+    show_plot = True
+    save_fig = True
     
     usage = ("usage: pyhton3 " + argv[0] + "\n" +
              "(default values will be used in case options are not provided)\n" +
              "\t-c, --csv <arg>\t\tpath and name of the csv file to read (mandatory)\n" +
              "\t-d, --hg_val <arg>\tcouple of hw and gw [hw,gw]\n" +
              "\t-p, --plot\t\tenable plots\n" +
+             #"\t--3d\t\t\tgenerate 3D plots instead of 2D ones\n" +
+             #"\t--tex\t\t\tgenerate plots with LaTeX style\n" +             
              "\t-s, --save-figures\tsave all figures as pdf (in 'graphs' folder)\n" +
              "\t-h, --help\t\tdisplay this help\n"
             )
