@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 
 # Import dependencies
-
 import sys, getopt
 
 import os
@@ -25,9 +24,7 @@ graphs_wd = "../graphs" # directory to save the graphs in
 
 #Paramenters
 cwd = os.getcwd()
-#Parameters for latexstyle plot
-plt.rc('text', usetex=True)
-plt.rc('font', family='serif')
+
 
 def parse(str_out):
 
@@ -211,6 +208,7 @@ def main(argv):
             ddd = True
         elif opt in ("--tex"):
             plt.rc('text', usetex=True)
+            plt.rc('font', family='serif')
     
     if not output_string:
         output_string = out_wd + "/" + problem_name
