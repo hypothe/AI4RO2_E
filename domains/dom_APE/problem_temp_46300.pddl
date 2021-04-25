@@ -3,9 +3,8 @@
     (:objects
 		bar - Bar
 		table1 table2 table3 table4 - Table
-        drinkA drinkB drinkC drinkD  - Drink
-		drinkE drinkF  - Drink
-        biscuitA biscuitB  - Biscuit
+        drinkA  - Drink
+        biscuitA  - Biscuit
         w1  - waiter
 	)
 
@@ -29,34 +28,24 @@
 		
 
 		;Identity condition for each drink
-		(equals drinkA drinkA)(equals drinkB drinkB)
-		(equals drinkC drinkC)(equals drinkD drinkD)
-		(equals drinkE drinkE)(equals drinkF drinkF)
-		
+		(equals drinkA drinkA)
 		
 		;Identity condition for each biscuit
-		(equals biscuitA biscuitA)(equals biscuitB biscuitB)
-		
+		(equals biscuitA biscuitA)
 
         ;Customers per table
-        (=(fl-customers table1) 4)
-		(=(fl-customers table2) 0)
-		(=(fl-customers table3) 2)
+        (=(fl-customers table1) 0)
+		(=(fl-customers table2) 1)
+		(=(fl-customers table3) 0)
 		(=(fl-customers table4) 0)
 		
 
         ;Hot drink flag
-        (= (fl-hot drinkA) 1)
-		(= (fl-hot drinkB) 1)
-		(= (fl-hot drinkC) 1)
-		(= (fl-hot drinkD) 1)
-		(= (fl-hot drinkE) 0)
-		(= (fl-hot drinkF) 0)
+        (= (fl-hot drinkA) 0)
 		
         
         ;Biscuit - Drink relation
-        (drink-for-biscuit drinkE biscuitA)
-		(drink-for-biscuit drinkF biscuitB)
+        (drink-for-biscuit drinkA biscuitA)
 		
 
 		;Position of each waiter
@@ -64,15 +53,9 @@
 		
 
         ;Ordered condition
-        (ordered drinkA table1 )
-		(ordered drinkB table1 )
-		(ordered drinkC table1 )
-		(ordered drinkD table1 )
-		(ordered drinkE table3 )
-		(ordered drinkF table3 )
+        (ordered drinkA table2 )
 		
-        (ordered biscuitA table3 )
-		(ordered biscuitB table3 )
+        (ordered biscuitA table2 )
 		
         
 
@@ -108,9 +91,8 @@
     )
 
 (:goal (and
-        (order-delivered drinkA) (order-delivered drinkB) (order-delivered drinkC) (order-delivered drinkD) 
-		(order-delivered drinkE) (order-delivered drinkF) 
-        (order-delivered biscuitA) (order-delivered biscuitB) 
+        (order-delivered drinkA) 
+        (order-delivered biscuitA) 
 	    (clean table1)(clean table2)(clean table3)(clean table4)
 	    (at-waiter w1 bar)
 		

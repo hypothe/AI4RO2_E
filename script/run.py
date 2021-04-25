@@ -9,6 +9,7 @@ import subprocess
 
 import data_util
 import pickle
+import parse
 
 Pddl_problem_ = "../domains/dom_APE/Custom.pddl"    # (str) Problem name, extension needed
 regr_name_full_ = data_util.regr_name_full_

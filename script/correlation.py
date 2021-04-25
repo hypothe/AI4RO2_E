@@ -15,9 +15,12 @@ import numpy as np
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import RFE
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
 from itertools import compress
 import warnings
 import math
+import random
 
 import data_util
 
@@ -27,6 +30,7 @@ graphs_wd = data_util.graphs_wd # directory to save the graphs in
 ddd = False
 regr_name_full_ = data_util.regr_name_full_
 
+random.seed()
 
 def corrdot(*args, **kwargs):
     corr_r = args[0].corr(args[1], 'pearson')
@@ -115,40 +119,48 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
         z[hg_key]['Q2'] = Y2
         #Regression
         X_arr = np.array(X).T
-        
         regr[hg_key] = list()
+        print("Run: {} tot: {} fail: {}".format(hg_key, tot_run[hg_key], fail_run[hg_key]))
         
         for Y, des in zip([Y1, Y2], [des1, des2]):
             best_model = 0
             high_score = 0
             score_list = []
             nof = 0
-            top_score = 0
-            nof_list = np.arange(X_arr.shape[1])
+            top_score = -float('inf')
+            nof_list = np.arange(X_arr.shape[1]+1)
+            top_supp = []
+            #print("NOF_LIST {}".format(nof_list))
             
             for n in range(1,len(nof_list)):
                 X_train, X_test, y_train, y_test = train_test_split(X_arr, np.array(Y), test_size = 0.3, random_state = 0)
-                model = LinearRegression() 
-                rfe = RFE(model, nof_list[n]) 
+                #model = LinearRegression() 
+                model = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
+                
+                rfe = RFE(model, nof_list[n], importance_getter= 'named_steps.linear_regression.coef_')
                 X_train_rfe = rfe.fit_transform(X_train, y_train)
                 X_test_rfe = rfe.transform(X_test)   
                 model.fit(X_train_rfe, y_train)
-                score = model.score(X_test_rfe, y_test)  
+                score = model.score(X_test_rfe, y_test) 
+                #print("SCORE {}".format(score))
                 score_list.append(score) 
                 if score > high_score:
                     high_score = score
-                    top_coef = model.coef_
+                    top_coef = model.named_steps.linear_regression.coef_
                     nof = nof_list[n]
-                #print(">>SUPPORT: {}".format(rfe.support_))
-             
+                    top_supp = rfe.support_
+            
             #Detect best features
             RFE_regressor = LinearRegression()
-            rfe = RFE(RFE_regressor, nof)
-            X_rfe = rfe.fit_transform(X_arr, np.array(Y))
+            #rfe = RFE(RFE_regressor, nof)
+            
+            #RFE_regressor = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
+            #rfe = RFE(RFE_regressor, nof, importance_getter= 'named_steps.linear_regression.coef_')
+            
+            ## removed rfe here, since the info on it are already computed in the prev. loop
+            
+            #X_rfe = rfe.fit_transform(X_arr, np.array(Y))
             RFE_regressor.fit(X_arr, np.array(Y))
-            #rr = linear_model.LinearRegression()  
-            #rr.fit(X_arr,pd.np.array(Y))   
-            #rr.predict(X_arr)
             
             regr[hg_key].append(RFE_regressor)
 
@@ -162,7 +174,7 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
             print("Regression score:\t{}".format(RFE_regressor.score(X_arr, np.array(Y))))
             print("Optimum number of feature: %d" %nof)
             print("Score with %d features: %f" %(nof, high_score))
-            print("The most relevat features are: {}".format(list(compress(pars,rfe.support_))))
+            print("The most relevat features are: {}".format(list(compress(pars,top_supp))))
             print("##-------------##")
         print("#################")
     return x, z, regr
@@ -177,8 +189,6 @@ def plot_graphs(k, par1, par2, j, h_val, g_val, save_fig=False):
     plt.figure("corr")
     sns.set(font_scale=1.6)
     #Parameters for latexstyle plot
-    #plt.rc('text', usetex=True)
-    #plt.rc('font', family='serif')
     g = sns.PairGrid(output_df, aspect=1.4, diag_sharey=False)
     g.map_lower(sns.regplot, lowess=True, ci=False, line_kws={'color': 'black'})
     g.map_diag(sns.distplot, kde_kws={'color': 'black'})
