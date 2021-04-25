@@ -24,7 +24,7 @@ warnings.filterwarnings('ignore')
 
 graphs_wd = data_util.graphs_wd # directory to save the graphs in
 graphs_wd = "/root/AI4RO_II/AI4RO2_E/graphs"
-ddd = False
+ddd = True
 regr_name_full_ = data_util.regr_name_full_
 
 #Parameters for latexstyle plot
@@ -174,20 +174,20 @@ def plot_graphs(k, par1, par2, j, h_val, g_val, save_fig=False):
     x = k[(h_val, g_val)][par1]
     y = k[(h_val, g_val)][par2]
     z = j[(h_val, g_val)]
-    output_df = pd.DataFrame(z)
-    plt.figure("corr")
-    sns.set(font_scale=1.6)
-    #Parameters for latexstyle plot
-    #plt.rc('text', usetex=True)
-    #plt.rc('font', family='serif')
-    g = sns.PairGrid(output_df, aspect=1.4, diag_sharey=False)
-    g.map_lower(sns.regplot, lowess=True, ci=False, line_kws={'color': 'black'})
-    g.map_diag(sns.distplot, kde_kws={'color': 'black'})
-    g.map_upper(corrdot)
-    #Save figure   
-    if save_fig:
-        plt.savefig(graphs_wd+"/Correlation_Matrix.pdf")
-    plt.close("corr")
+    z_len = len(z['Duration'])
+    # Check to avoid error in case of one single run
+    if z_len > 1:
+        output_df = pd.DataFrame(z)
+        plt.figure("corr")
+        sns.set(font_scale=1.6)
+        g = sns.PairGrid(output_df, aspect=1.4, diag_sharey=False)
+        g.map_lower(sns.regplot, lowess=True, ci=False, line_kws={'color': 'black'})
+        g.map_diag(sns.distplot, kde_kws={'color': 'black'})
+        g.map_upper(corrdot)
+        #Save figure   
+        if save_fig:
+            plt.savefig(graphs_wd+"/Correlation_Matrix.pdf")
+        plt.close("corr")
                
     plot_num = 111
     ddd = True
@@ -271,7 +271,11 @@ def main(argv):
                 sys.exit()
             except IndexError:
                 print("Not enough arguments")
-                sys.exit()
+                sys.exit()        
+        elif opt in ("--3d"):
+            ddd = True
+        elif opt in ("--tex"):
+            plt.rc('text', usetex=True)
     
     if not filename:
         print("Missing mandatory argument '-c' <csv_filepath>")

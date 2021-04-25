@@ -10,8 +10,8 @@ domain_name_full_ = "../domains/dom_APE/numeric_domain_APE_full.pddl"
 problem_name_full_ = "../domains/dom_APE/problem_temp.pddl"
 output_name_full_ = "../output/temp_output.txt"
 
-csv_name_full_ = "../lib/hg_val_20.csv" ## the data gathered using enhsp-20
-exp_name_full_ = "../lib/drinks_explored_20.pkl" ## the data gathered using enhsp-20
+csv_name_full_ = "../lib/hg_val_20.csv" 		## the data gathered using enhsp-20
+exp_name_full_ = "../lib/drinks_explored_20.pkl" 	## the data gathered using enhsp-20
 
 regr_name_full_ = "../lib/regr_model.pkl"
 

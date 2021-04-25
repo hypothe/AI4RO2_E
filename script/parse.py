@@ -9,8 +9,6 @@ import re
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
-from matplotlib import cm
 from mpl_toolkits.mplot3d import Axes3D
 
 
@@ -21,8 +19,7 @@ out_wd = "/root/AI4RO_II/AI4RO2_E/output"		# (str) Working directory
 output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
                     'Search Time', 'Expanded Nodes', 'States Evaluated')	# list of (str): keywords for relevant outputs
 index_keywords = ('H_VALUE', 'G_VALUE', 'SUCCESS')
-three_D = True
-ratio = False
+three_D = False
 
 graphs_wd = "../graphs" # directory to save the graphs in
 
@@ -139,8 +136,8 @@ def parse_problem(problem_filename):
             
     
 def plot_hg(hg_val, ddd):
+
     plot_num = 111
-    #print(hg_val.keys())
 
     h = []
     g = []
@@ -154,20 +151,9 @@ def plot_hg(hg_val, ddd):
             for sub_key in hg_val[hg_key].keys():
                 z[sub_key].append(hg_val[hg_key][sub_key])
     
-    # Display correlation matrix of ther output
+    # Display correlation matrix of ther output       
     output_df = pd.DataFrame(z)
-    plt.figure("corr")
-    sns.set(font_scale=1.6)
-    #Parameters for latexstyle plot
-    #plt.rc('text', usetex=True)
-    #plt.rc('font', family='serif')
-    g = sns.PairGrid(output_df, aspect=1.4, diag_sharey=False)
-    g.map_lower(sns.regplot, lowess=True, ci=False, line_kws={'color': 'black'})
-    g.map_diag(sns.distplot, kde_kws={'color': 'black'})
-    g.map_upper(corrdot)
-    #Save figure   
-    plt.savefig(graphs_wd+"/Correlation_Matrix.pdf")
-    plt.close("corr")
+        
     # Plot the output
     for key in z:
         fig = plt.figure(key)
@@ -187,31 +173,16 @@ def plot_hg(hg_val, ddd):
             plt.ylabel(key)
         fig.colorbar(plot) 
 
-        #Save figure
-        plt.savefig(graphs_wd+"/"+key.replace(" ", "_")+".pdf")
+        #Save figures
+        plt.savefig(graphs_wd+"/"+ problem_name[7:-4]+ "_" +key.replace(" ", "_")+".pdf")
         plt.close(key)
-
-
-
-def corrdot(*args, **kwargs):
-    corr_r = args[0].corr(args[1], 'pearson')
-    corr_text = f"{corr_r:2.2f}".replace("0.", ".")
-    ax = plt.gca()
-    ax.set_axis_off()
-    marker_size = abs(corr_r) * 10000
-    ax.scatter([.5], [.5], marker_size, [corr_r], alpha=0.6, cmap="coolwarm",
-               vmin=-1, vmax=1, transform=ax.transAxes)
-    font_size = abs(corr_r) * 40 + 5
-    ax.annotate(corr_text, [.5, .5,],  xycoords="axes fraction",
-                ha='center', va='center', fontsize=font_size)
-
 
 def main(argv):
     """ This function asks the user an output file of a enhsp run
     	to extract the relevant pieces of information and produce 
     	a summary of the output to be processed by the correlation.py
     	script.
-    	Relevant data are also plotted.
+    	Relevant data can be also displayed and saved.
     """
     
     usage = ("usage: pyhton3 " + argv[0] + "\n" +
