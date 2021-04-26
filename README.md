@@ -7,12 +7,26 @@ Repo for group E project related to the 1st AI4RO2 assignment
 ```
 AI4RO2_E/
 	|
-	Metric-FF/
-		|
-		<stuff to compile>
 	domains/
 		|
-		<domain and problem files>
+		<pddl domain and problem files with fluents only for metric-ff solver (basic specifics of the assignment)>
+		dom_APE/
+		       |
+		       <pddl domain and problem files including actions, processes and events (full specifics of the assignment including extensions)>
+	lib/
+		|
+		<sensitivity analysis dataset containing the relevant pices of information and results for each problem run>
+	output/
+		|
+		<ouput file of solved pddl problems>
+	script/
+		|				
+		<python scripts for automatic generation, running and post-processing of pddl problems>
+		templates/
+			 |
+			 <templates of the pddl problem file components for the automatic generation of the problems>
+		
+						
 ```
 
 ### Domains
@@ -20,7 +34,15 @@ AI4RO2_E/
 Multiple domains are presented, from the original one up to the one having bothe the cooling and drink consumption
 extensions (as specified in the name).
 
-### Problems
+### lib
+
+The 4 problem files presented are those expressed in the assignment requirements.
+
+### output
+
+The 4 problem files presented are those expressed in the assignment requirements.
+
+### script
 
 The 4 problem files presented are those expressed in the assignment requirements.
 
