@@ -3,8 +3,9 @@
     (:objects
 		bar - Bar
 		table1 table2 table3 table4 - Table
-        drinkA  - Drink
-        biscuitA  - Biscuit
+        drinkA drinkB drinkC drinkD  - Drink
+		drinkE  - Drink
+        
         w1  - waiter
 	)
 
@@ -28,25 +29,30 @@
 		
 
 		;Identity condition for each drink
-		(equals drinkA drinkA)
+		(equals drinkA drinkA)(equals drinkB drinkB)
+		(equals drinkC drinkC)(equals drinkD drinkD)
+		(equals drinkE drinkE)
 		
 		;Identity condition for each biscuit
-		(equals biscuitA biscuitA)
+		
 
         ;Customers per table
         (=(fl-customers table1) 0)
 		(=(fl-customers table2) 1)
-		(=(fl-customers table3) 0)
-		(=(fl-customers table4) 0)
+		(=(fl-customers table3) 1)
+		(=(fl-customers table4) 3)
 		
 
         ;Hot drink flag
-        (= (fl-hot drinkA) 0)
+        (= (fl-hot drinkA) 1)
+		(= (fl-hot drinkB) 1)
+		(= (fl-hot drinkC) 1)
+		(= (fl-hot drinkD) 1)
+		(= (fl-hot drinkE) 1)
 		
         
         ;Biscuit - Drink relation
-        (drink-for-biscuit drinkA biscuitA)
-		
+        
 
 		;Position of each waiter
 		(at-waiter w1 bar)
@@ -54,9 +60,12 @@
 
         ;Ordered condition
         (ordered drinkA table2 )
+		(ordered drinkB table3 )
+		(ordered drinkC table4 )
+		(ordered drinkD table4 )
+		(ordered drinkE table4 )
 		
-        (ordered biscuitA table2 )
-		
+        
         
 
         ;FIXED :Table distances
@@ -91,8 +100,9 @@
     )
 
 (:goal (and
-        (order-delivered drinkA) 
-        (order-delivered biscuitA) 
+        (order-delivered drinkA) (order-delivered drinkB) (order-delivered drinkC) (order-delivered drinkD) 
+		(order-delivered drinkE) 
+        
 	    (clean table1)(clean table2)(clean table3)(clean table4)
 	    (at-waiter w1 bar)
 		
