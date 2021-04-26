@@ -126,7 +126,6 @@ def evaluate_corr(data_dict, h_val=None, g_val=None, save_fig=True):
         regr[hg_key] = list()
         nof_list = np.arange(X_arr.shape[1]) 
         explored_n = range(2,len(nof_list)+1,1)
-        
         for Y, des in zip([Y1, Y2], [des1, des2]):
         
             best_model = 0
@@ -180,13 +179,15 @@ def evaluate_corr(data_dict, h_val=None, g_val=None, save_fig=True):
             best_par = list(compress(pars,rfe.support_))
             
             if hg_key[0] == 1.0 and hg_key[1] == 1.0:
-                plot_trend(x, best_par[0], best_par[1], z, des, h, g, save_fig = save_fig) 
+                plot_trend(x, best_par, z, des, h, g, save_fig = save_fig) 
         
     return x, z, regr, best_par
     
-def plot_trend(k, par1, par2, j, des, h_val, g_val, save_fig=False):
+def plot_trend(k, best_params, j, des, h_val, g_val, save_fig=False):
 
     # Display the best fit of the output values.
+    par1 = best_params[0]
+    par2 = best_params[1]
     x = k[(h_val, g_val)][par1]
     y = k[(h_val, g_val)][par2]
     z = j[(h_val, g_val)]
@@ -243,8 +244,7 @@ def plot_trend(k, par1, par2, j, des, h_val, g_val, save_fig=False):
             
     plt.show(block=False)
         
-    input("Close open windows...")
-    plt.close('ALL')
+    input("Go on..")
 
     
 def plot_corr(k, j, h_val, g_val, save_fig=False):
