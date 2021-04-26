@@ -30,20 +30,37 @@ AI4RO2_E/
 
 ### Domains
 
-Multiple domains are presented, from the original one up to the one having bothe the cooling and drink consumption
-extensions (as specified in the name).
+Multiple domains and problems formulation are here presented.
+The files suitable for enhsp are stored in the folder **dom_APE** 
+The folder **dom_Metric** contains the pddl problems and 
 
 ### lib
 
-The 4 problem files presented are those expressed in the assignment requirements.
+This folder conteins the datasets for the sensityivity analysis of the problem to the main input parameters.
 
 ### output
 
-The 4 problem files presented are those expressed in the assignment requirements.
+This folder is intended for storing the ouptut files of the planning problems solved by the planning engine. 
 
 ### script
 
-The 4 problem files presented are those expressed in the assignment requirements.
+In this folder are stored the python scripts for performing an automatic run of a .
+
+## ENHSP
+
+The APE domains and problems generate via the python scripts are suitable to be tested with the ENHSP planning engine, which can be found 
+
+[here](https://gitlab.com/enricos83/ENHSP-Public/-/tree/enhsp-20).
+
+That planners has been tested on Ubuntu 18.04 and 20.04.
+
+Notice that, both the versions of enhsp 19 and 20 version have been tested but, due to performance reasons on most of the generate problems (not generalizable to any problem),
+the release 20 has been chosen in this specific application.
+
+### Compiling enhsp-20
+
+- Cloning the repository from the above mentioned link.
+- Pulling the "enhsp-20" branch
 
 ## Metric-FF
 
@@ -87,12 +104,7 @@ For example, to see all the fluents regarding the internal clock of the waiter w
 .../AI4RO2_E/domains/$ ff -o numeric_domain.pddl -f numeric_problem.pddl -O -s TIME-WAITER
 ```
 
-## ENHSP
 
-The domains and problems are suitable to be tested with the ENHSP planning engine, which can be found 
-[here](https://gitlab.com/enricos83/ENHSP-Public/-/tree/enhsp-19).
-That planners has been tested on Ubuntu 18.04 and 20.04.
-Notice that, while enhsp-20 version exists, it resulted in having almost half the performances of -19 version for the presented domain, as shown in the tables reported in the "considerations.md" file.
 
 ## TODO
 
