@@ -109,7 +109,7 @@ For example, to see all the fluents regarding the internal clock of the waiter w
 ## TODO
 
 - Why is problem APE3_full so much harder to deal with compared with AP2_full? Is it the fact that all 4 drinks are hot, or is it because they are spread between tables? Investigate.
-- Test APE_full domain substituting pick-N, drop-N with fluents
-- Python script for sensitivity analysis and ouput plot
+- Test APE_full domain substituting pick-N, drop-N with fluents (Testedby Marco and underperforming the case with 6  different actions)
+- Python script for sensitivity analysis and ouput plot (Implemented)
 - A lot of the efficiency depends on the gw value... is it possible to find a correlation between some problem variables and its "close-to-optimal" value? ... Some ML agent perhaps? Multi linear interpolation perhaps?
--   Add an option for ff command line that toggles the display of actions
+-   Add an option for ff command line that toggles the display of actions (abandoned)
