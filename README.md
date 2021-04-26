@@ -14,19 +14,18 @@ AI4RO2_E/
 		       |
 		       <pddl domain and problem files including actions, processes and events (full specifics of the assignment including extensions)>
 	lib/
-		|
-		<sensitivity analysis dataset containing the relevant pices of information and results for each problem run>
+	   |
+	   <sensitivity analysis dataset containing the relevant pices of information and results for each problem run>
 	output/
-		|
-		<ouput file of solved pddl problems>
+	      |
+	      <ouput file of solved pddl problems>
 	script/
-		|				
-		<python scripts for automatic generation, running and post-processing of pddl problems>
+	      |				
+	      <python scripts for automatic generation, running and post-processing of pddl problems>
 		templates/
 			 |
 			 <templates of the pddl problem file components for the automatic generation of the problems>
-		
-						
+								
 ```
 
 ### Domains
