@@ -21,6 +21,9 @@ gw_flag = "-wg"
 delta_val_flag = "-dv"
 delta_exec_flag = "-de"
 
+regr_goal1_ = 'dur'
+regr_goal2_ = 'search'
+
 def avg_drink_pos(stuff4table):
     """
     table1(-1,1)   table2(1,1)

@@ -3,10 +3,9 @@
     (:objects
 		bar - Bar
 		table1 table2 table3 table4 - Table
-        drinkA drinkB drinkC drinkD  - Drink
-		drinkE  - Drink
-        
-        w1  - waiter
+        drinkA  - Drink
+        biscuitA  - Biscuit
+        w1 w2  - waiter
 	)
 
 (:init
@@ -18,54 +17,50 @@
         
         ;Free waiter condition of each waiter
         (free-waiter w1)
+		(free-waiter w2)
 		
         
 		;Hand free condition for each waiter
 		(hand-free w1)
+		(hand-free w2)
 		
 
         ;Tray not carried by waiters
         (= (fl-tray-carried w1) 0)
+		(= (fl-tray-carried w2) 0)
 		
 
 		;Identity condition for each drink
-		(equals drinkA drinkA)(equals drinkB drinkB)
-		(equals drinkC drinkC)(equals drinkD drinkD)
-		(equals drinkE drinkE)
+		(equals drinkA drinkA)
 		
 		;Identity condition for each biscuit
-		
+		(equals biscuitA biscuitA)
 
         ;Customers per table
-        (=(fl-customers table1) 0)
-		(=(fl-customers table2) 1)
-		(=(fl-customers table3) 1)
-		(=(fl-customers table4) 3)
+        (=(fl-customers table1) 1)
+		(=(fl-customers table2) 0)
+		(=(fl-customers table3) 0)
+		(=(fl-customers table4) 0)
 		
 
         ;Hot drink flag
-        (= (fl-hot drinkA) 1)
-		(= (fl-hot drinkB) 1)
-		(= (fl-hot drinkC) 1)
-		(= (fl-hot drinkD) 1)
-		(= (fl-hot drinkE) 1)
+        (= (fl-hot drinkA) 0)
 		
         
         ;Biscuit - Drink relation
-        
+        (drink-for-biscuit drinkA biscuitA)
+		
 
 		;Position of each waiter
 		(at-waiter w1 bar)
+		(at-waiter w2 table1)
 		
 
         ;Ordered condition
-        (ordered drinkA table2 )
-		(ordered drinkB table3 )
-		(ordered drinkC table4 )
-		(ordered drinkD table4 )
-		(ordered drinkE table4 )
+        (ordered drinkA table1 )
 		
-        
+        (ordered biscuitA table1 )
+		
         
 
         ;FIXED :Table distances
@@ -90,7 +85,6 @@
 		(= (fl-table-size table4) 1)
 		
 		;Places free at start
-		(place-free table1)
 		(place-free table2)
 		(place-free table3)
 		(place-free table4)
@@ -100,11 +94,11 @@
     )
 
 (:goal (and
-        (order-delivered drinkA) (order-delivered drinkB) (order-delivered drinkC) (order-delivered drinkD) 
-		(order-delivered drinkE) 
-        
+        (order-delivered drinkA) 
+        (order-delivered biscuitA) 
 	    (clean table1)(clean table2)(clean table3)(clean table4)
 	    (at-waiter w1 bar)
+		(at-waiter w2 table1)
 		
 	    (not(tray-taken))
 	    )
