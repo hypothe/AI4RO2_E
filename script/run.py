@@ -120,7 +120,9 @@ def get_best_hg(regr_dict, problem_filename):
     exp_out = list()
     for hg_key, regr_list in regr_dict.items():
         for regr in regr_list:
-            exp_out.append(sum([a_i*par_i for par_i, a_i in zip(params, regr.coef_)]) + regr.intercept_)
+            #exp_out.append(sum([a_i*par_i for par_i, a_i in zip(params, regr.coef_)]) + regr.intercept_)
+            prediction = regr.predict([params])
+            exp_out.append(prediction)
             
         Q_fact = sum(exp_out)/len(exp_out)
         print("[H: {:6}\tG: {:6}]\t->Q: {}".format(hg_key[0], hg_key[1], Q_fact))   
