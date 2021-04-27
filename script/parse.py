@@ -7,15 +7,11 @@ import sys, getopt
 import os
 import re
 import pandas as pd
-import matplotlib.pyplot as plt
 import numpy as np
-import seaborn as sns
-from matplotlib import cm
-from mpl_toolkits.mplot3d import Axes3D
 
 
 #Set global variables
-problem_name = "temp_output_permTest_0121.pddl"    	# (str) Problem name, extension needed
+problem_name = "output_Custom.pddl"    	# (str) Problem name, extension needed
 out_wd = "/root/AI4RO_II/AI4RO2_E/output"			# (str) Working directory
 
 output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
@@ -28,9 +24,6 @@ graphs_wd = "../graphs" # directory to save the graphs in
 
 #Paramenters
 cwd = os.getcwd()
-#Parameters for latexstyle plot
-plt.rc('text', usetex=True)
-plt.rc('font', family='serif')
 
 def parse(str_out):
 
@@ -137,75 +130,6 @@ def parse_problem(problem_filename):
                     
         return n_waiters, drink4table, hot4table
             
-    
-def plot_hg(hg_val, ddd):
-    plot_num = 111
-    #print(hg_val.keys())
-
-    h = []
-    g = []
-    z = {key:[] for key in output_keywords}    
-    
-    for hg_key in hg_val.keys(): 
-        h.append(int(hg_key[0]))
-        g.append(int(hg_key[1]))
-        
-        if plot_num == 111:
-            for sub_key in hg_val[hg_key].keys():
-                z[sub_key].append(hg_val[hg_key][sub_key])
-    
-    # Display correlation matrix of ther output
-    output_df = pd.DataFrame(z)
-    plt.figure("corr")
-    sns.set(font_scale=1.6)
-    #Parameters for latexstyle plot
-    plt.rc('text', usetex=True)
-    plt.rc('font', family='serif')
-    g = sns.PairGrid(output_df, aspect=1.4, diag_sharey=False)
-    g.map_lower(sns.regplot, lowess=True, ci=False, line_kws={'color': 'black'})
-    g.map_diag(sns.distplot, kde_kws={'color': 'black'})
-    g.map_upper(corrdot)
-    #Save figure   
-    plt.savefig(graphs_wd+"/Correlation_Matrix.pdf")
-    plt.close("corr")
-    # Plot the output
-    for key in z:
-        fig = plt.figure(key)
-        
-        if ddd:      
-            ax = fig.add_subplot(plot_num, projection='3d')     
-            plot = ax.scatter(h, g, z[key], cmap = 'rainbow', c=z[key])            
-            ax.set_xlim(0,1.1*max(h))
-            ax.set_ylim(0,1.1*max(g)) 
-            ax.set_zlim(0.9*min(z[key]), 1.1*max(z[key]))
-            ax.set_xlabel('h')
-            ax.set_ylabel('g')                       
-            ax.set_title(key)
-        else:
-            plot = plt.scatter(np.true_divide(np.array(h), np.array(g)), z[key], c=z[key], cmap = 'rainbow')
-            plt.xlabel(r"$ \frac{w_h}{w_g}$")
-            plt.ylabel(key)
-        fig.colorbar(plot) 
-
-        #Save figure
-        plt.savefig(graphs_wd+"/"+key.replace(" ", "_")+".pdf")
-        plt.close(key)
-
-
-
-def corrdot(*args, **kwargs):
-    corr_r = args[0].corr(args[1], 'pearson')
-    corr_text = f"{corr_r:2.2f}".replace("0.", ".")
-    ax = plt.gca()
-    ax.set_axis_off()
-    marker_size = abs(corr_r) * 10000
-    ax.scatter([.5], [.5], marker_size, [corr_r], alpha=0.6, cmap="coolwarm",
-               vmin=-1, vmax=1, transform=ax.transAxes)
-    font_size = abs(corr_r) * 40 + 5
-    ax.annotate(corr_text, [.5, .5,],  xycoords="axes fraction",
-                ha='center', va='center', fontsize=font_size)
-
-
 def main(argv):
     """ This function asks the user to insert the number of
         customers for each table and to specify the number of 
@@ -216,8 +140,6 @@ def main(argv):
     usage = ("usage: pyhton3 " + argv[0] + "\n" +
              "(default values will be used in case options are not provided)\n"
              "\t-n, --output-path <arg>\tpath and name of the output file\n" +
-             "\t--3d\t\t\tgenerate 3D plots instead of 2D ones\n" +
-             "\t--tex\t\t\tgenerate plots with LaTeX style\n" +
              "\t-h, --help\t\tdisplay this help\n"
             )
     output_string = ""
@@ -235,10 +157,6 @@ def main(argv):
             sys.exit()
         elif opt in ("-n", "--output-name"):
             output_string = arg
-        elif opt in ("--3d"):
-            ddd = True
-        elif opt in ("--tex"):
-            plt.rc('text', usetex=True)
     
     if not output_string:
         output_string = out_wd + "/" + problem_name[:-5] + ".txt"
@@ -247,11 +165,7 @@ def main(argv):
     with open(output_string, "r") as read_run_output:
         str_out = read_run_output.read()
         hg_val = parse(str_out)
-   
-    plot_hg(hg_val, ddd)     
-
-    #Output visualization
-    
+     
 
 if __name__ == '__main__':
     main(sys.argv)
