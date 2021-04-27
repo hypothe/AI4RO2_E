@@ -1,9 +1,11 @@
-# Sensitivity Analysis
+# Sensitivity Analysis and Automatic Pddl Problem Solving Tools
 
 ## Scripts
 
-Three scripts (at the moment) compose the workflow of the sensitivity analysis, which need to be
-launched one after the other to perform the full evaluation, but can be used independently if needed (_see "build" for an example_).
+Four scripts compose the workflow for the automatic generation and run of pddl problems
+and its relative sensitivity analysis for the identification of the optimal wA* parameters.
+The scripts can be launched sequentially to perform the full evaluation of a single or multiple problems,
+but can also be used independently if need.
 
 ### test_data.py
 
@@ -26,27 +28,27 @@ The command line parameters can be used to set:
 ```
 python3 build.py (--opt-args)
 ```
-This script is used to generate a problem file fully compatible with the domain "APE full"
-(aka using actions, processes and events implementing the full specifics of the assignment)
-by submitting few values, namely the number of waiters available and how many total and hot drinks
-are requested by each table.
-If launched with no parameters a default test problem will be generated.
-With the parameters is possible to set:
-- problem name and location
-- number of waiters
-- number of total drinks per table
-- number of hot drinks per table
+This script can be used to generate a pddl problem file fully compatible with the "APE full" domain
+(aka using actions, processes and events implementing the full specifics of the assignment).
 
-Notice it is also possible to insert those numeric values with a GUI by toggling that with
-the command line argument `-g`
+The optinal input arguments of this script are:
+- *-f*: problem name and path        
+- *-w*: number of waiters                 
+- *-d*: number of total drinks per table
+- *-t*: number of hot drinks per table
+- *-g*: GUI trigger for a user friendy inputs insertion 
+
+If launched with no parameters, the scripts generate a default test problem.
 
 ### run.py
 
 ```
 python3 run.py (--opt-args)
 ```
-This scripts allows to automatically run multiple instances of a problem under a domain with enhsp solver
-by varying h and g weights of the used A* heuristic algorithm.
+This scripts automatically runs multiple instances of a specified .pdd problem with the
+"APE full" domain via the enhsp solver.
+The problem is solved consigering a series of different values of the h and g weights 
+for the used A* heuristic algorithm.
 
 If launched with no parameters a default run with the default test problem will be performed, and the results
 will be saved in a .txt file (by default in the _output_ folder)
@@ -55,9 +57,9 @@ This script is where the magic happens: by passing `-M` as a command line flag t
 assumes to be the best [hw,gw] (or, at least, the best values among a finite list it has). This result is obtained thanks
 to a Linear Regression smart agent trained on random configurations, for which it has a record of the quality of the solution
 for a set of [hw, gw] (_see_ `test_data.py` _and_ `correlation.py` _for more info_).
-The file to run it is parsed in order to gather the details on its structure (_number of waiters, total drinks and hot drinks, metrics on their position_), which are then passed as input to the set of Linear Regression models in order to find an approximation of the quality of the solution for each weight couple [hw, gw]. The couple yielding the best expected quality is thus selected and used for the run.
+The file to run is parsed in order to gather details on it's structure (_number of waiters, total drinks and hot drinks, metrics on their position_), which are then passed as input to the set of Linear Regression models in order to find an approximation of the quality of the solution for each weight couple [hw, gw]. The couple yielding the best expected quality is thus selected and used for the run.
 
-With the parameters is possible to set:
+With the input parameters is possible to set:
 - domain name and location
 - problem name and location
 - output file name and location
