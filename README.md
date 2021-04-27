@@ -28,7 +28,7 @@ AI4RO2_E/
 								
 ```
 
-### Domains
+### domains
 
 Multiple domains and problems formulation are here presented.
 The files suitable for enhsp are stored in the folder **dom_APE** 
