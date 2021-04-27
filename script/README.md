@@ -2,7 +2,7 @@
 
 ## Scripts
 
-XXX(Insert number) scripts compose the workflow for the automatic generation and run of pddl problems
+Four scripts compose the workflow for the automatic generation and run of pddl problems
 and its relative sensitivity analysis for the identification of the optimal wA* parameters.
 The scripts can be launched sequentially to perform the full evaluation of a single or multiple problems,
 but can also be used independently if need.
@@ -45,8 +45,10 @@ If launched with no parameters, the scripts generate a default test problem.
 ```
 python3 run.py (--opt-args)
 ```
-This scripts allows to automatically run multiple instances of a problem under a domain using the enhsp solver
-cosigering a series of different values of the h and g weights of the used A* heuristic algorithm.
+This scripts automatically runs multiple instances of a specified .pdd problem with the
+"APE full" domain via the enhsp solver.
+The problem is solved cosigering a series of different values of the h and g weights 
+of the used A* heuristic algorithm.
 
 If launched with no parameters a default run with the default test problem will be performed, and the results
 will be saved in a .txt file (by default in the _output_ folder)
@@ -103,14 +105,15 @@ Here the cmd parameters can be used to:
 python3 data_util.py
 ```
 
-This script simply contains some util functions.
+This script contains utility functions needed for the correct exectuion of the previously presended python scripts.
 
 ---
 
 ## Dependencies
 
 Python3 is needed to launch those scripts.
-ENHSP-20 compiled from source is also needed to solve the domain-problem couple. By default the position of the planner executable
-is assumed at `/root/ENHSP-20`, to change it open `run.py` and modify the `engine_path` global variable.
-Notice that the off-the-shelf compiled version was discarded due to it not managing to set hw, gw appropriately (despite passing them from command line)
+
+ENHSP-20 compiled from source is also needed to solve the domain-problem couple. 
+By default the position of the planner executable is assumed at `/root/ENHSP-20`, to change it open `run.py` and modify the `engine_path` global variable.
+
 
