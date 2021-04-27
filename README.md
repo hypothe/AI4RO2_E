@@ -79,6 +79,7 @@ The planner can be then executed from the root folder using the following comman
 
 DA VALUTARE SE TENERE O MENO
 
+{::comment}
 
 ### Compiling Metric-FF
 
@@ -119,6 +120,7 @@ For example, to see all the fluents regarding the internal clock of the waiter w
 ```
 .../AI4RO2_E/domains/$ ff -o numeric_domain.pddl -f numeric_problem.pddl -O -s TIME-WAITER
 ```
+{:/comment}
 
 ## TODO
 
