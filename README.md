@@ -54,8 +54,10 @@ The APE domains and problems generated via the python scripts are suitable to be
 
 That planners has been tested on Ubuntu 18.04 and 20.04 and different .
 
-Notice that, both the versions of enhsp 19 and 20 version have been tested but, due to performance reasons on most of the generate problems (not generalizable to any problem),
+Note: 
+- both the versions of enhsp 19 and 20 version have been tested but, due to performance reasons on most of the generate problems (not generalizable to any problem),
 the release 20 has been chosen in this specific application.
+- the off-the-shelf compiled version was discarded due to it not managing to set hw, gw appropriately (despite passing them from command line)
 
 ### Compiling enhsp-20
 
@@ -73,8 +75,10 @@ The planner can be then executed from the root folder using the following comman
 ```
 ./enhsp -o <domain_file> -f <problem_file> -planner <string> (main options: sat, aibr, opt, lm_opt)
 ```
-
 ## Metric-FF
+
+DA VALUTARE SE TENERE O MENO
+
 
 ### Compiling Metric-FF
 
