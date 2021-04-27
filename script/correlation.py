@@ -54,7 +54,6 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
     pars = ['waiter','tot', 'avg_x', 'avg_y', 'hot_tot', 'hot_avg_x', 'hot_avg_y']
     
     x = {}# each element is {in_par:list() for in_par in pars}
-    #des = "log(dur) + log(search/1000)"
     des1 = data_util.regr_goal1_ #'dur'
     des2 =  data_util.regr_goal2_ #'search'  
     
@@ -131,21 +130,18 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
             nof = 2
             X_train = X_arr
             y_train = np.array(Y)
-            ### model = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
-            model = Pipeline([('linear_regression', LinearRegression(normalize=True))])
+            model = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
+            #### model = Pipeline([('linear_regression', LinearRegression(normalize=True))])
         
             rfe = RFE(model, nof, importance_getter = 'named_steps.linear_regression.coef_')
             X_train_rfe = rfe.fit_transform(X_train, y_train)
             
             
             nof_score = cross_val_score(model, X_train_rfe, y_train, cv=5)
-            #print("CV SCORES 2 {}, {}".format(lr_scores, lr_scores.mean()))
             model.fit(X_train_rfe, y_train)
             
             
-            ### nof_score = model.score(X_test_rfe, y_test) 
             nof_coef = model.named_steps.linear_regression.coef_
-                #    nof = nof_list[n]
             nof_supp = list(compress(pars, rfe.support_))
             
             ## coef of the nof most impacting features
@@ -154,16 +150,9 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
             setattr(nof_regr_approx[hg_key][des], "pars", nof_supp)
 
             #Detect best features
-            ### lin_regressor = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
-            lin_regressor = Pipeline([('linear_regression', LinearRegression(normalize=True))])
-            #rfe = RFE(RFE_regressor, nof)
+            lin_regressor = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
+            #### lin_regressor = Pipeline([('linear_regression', LinearRegression(normalize=True))])
             
-            #RFE_regressor = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
-            #rfe = RFE(RFE_regressor, nof, importance_getter= 'named_steps.linear_regression.coef_')
-            
-            ## removed rfe here, since the info on it are already computed in the prev. loop
-            
-            #X_rfe = rfe.fit_transform(X_arr, np.array(Y))
             lr_score = cross_val_score(lin_regressor, X_train, y_train, cv=5)
             
             
@@ -179,7 +168,6 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
             print("Regression coefficients:\t{}".format(lin_regressor.named_steps.linear_regression.coef_)) #(top_coef))
             print("Regression intercept:\t{}".format(lin_regressor.named_steps.linear_regression.intercept_))
             print("Regression score:\t{}[{}]".format(lr_score.mean(), lr_score.std()))
-            #print("Optimum number of feature: %d" %nof)
             print("Score with %d features {}[{}]".format(nof_score.mean(), nof_score.std()))
             print("The {} most relevat features are: {}".format(nof, nof_supp))
             print("##-------------##")
@@ -213,9 +201,6 @@ def lim_u(u):
     return 1.1*u if u>0 else 0.9*u
 
 def delog_out(model, x, y):
-    #print(pipe_params)
-    #input()
-    #model = Pipeline(pipe_params)
     return math.exp(model.predict([[x,y]]))
     
 predict_approx = np.vectorize(delog_out, excluded=[0])
@@ -242,33 +227,18 @@ def plot_graphs(k,j, nof_regr_approx, save_fig=False):
             x = k[hg_key][pars[0]]
             y = k[hg_key][pars[1]]
             
-            #cx = nof_regr_approx[hg_key][name][pars[0]]
-            #cy = nof_regr_approx[hg_key][name][pars[1]]
-            #ipt = nof_regr_approx[hg_key][name]['intercept']
-            
-            #cc = den_coeffs[name]
-            
             figname = name + str(hg_key)
             fig = plt.figure(figname)
             filename = graphs_wd+"/"+figname.replace(" ", "_")+".pdf"
-            #z_approx = [cc*math.exp(xx*nof_regr_approx[hg_key][name][pars[0]] + yy*nof_regr_approx[hg_key][name][pars[1]])
-                                #for xx, yy in zip(x, y)]
             if ddd:
                 ax = fig.add_subplot(plot_num, projection='3d')     
                 plot = ax.scatter(x, y, z_val, cmap = 'rainbow', c=z_val)
                 
                 X, Y = np.meshgrid(np.linspace(lim_d(min(x)), lim_u(max(x)), 30), np.linspace(lim_d(min(y)), lim_u(max(y)), 30))
                 
-                #xxx = np.linspace(lim_d(min(x)), lim_u(max(x)), 30)
-                #yyy = np.linspace(lim_d(min(y)), lim_u(max(y)), 30)
-                
-                #sx = scaler.inverse_transform([xxx, yyy])
-                #sy = scaler.inverse_transform()
-                
-                #sX, sY = np.meshgrid(sx, sy)
                 z_approx = predict_approx(nof_regr_approx[hg_key][name], X, Y)
                 
-                ax.plot_wireframe(X, Y, z_approx)
+                ax.plot_wireframe(X, Y, z_approx, alpha=0.3)
                 
                 ax.set_xlim(lim_d(min(x)),lim_u(max(x)))
                 ax.set_ylim(lim_d(min(y)),lim_u(max(y)))
