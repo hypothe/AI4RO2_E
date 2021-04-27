@@ -17,6 +17,25 @@ This script:
 2. generated problems are run for different values of hw, gw
 3. parses the output of all runs for all problems and saves everything in a csv file.
 
+Scripts logic:
+```plantuml
+!define ICONURL https://raw.githubusercontent.com/tupadr3/plantuml-icon-font-sprites/v2.1.0
+skinparam defaultTextAlignment center
+!include ICONURL/common.puml
+!include ICONURL/font-awesome-5/running.puml
+!include ICONURL/font-awesome-5/java.puml
+!include ICONURL/font-awesome-5/rocket.puml
+!include ICONURL/font-awesome/newspaper_o.puml
+FA_NEWSPAPER_O(news,test_data.py,node) #White {
+FA5_GITLAB(gitlab,GitLab.com,node) #White
+FA5_JAVA(java,PlantUML,node) #White
+FA5_ROCKET(rocket,Integrated,node) #White
+}
+build ..> run
+run ..> parse
+parse ..> correlation
+```
+
 The command line parameters can be used to set:
 - the number of random problems to generate and test
 - the timeout for each run
