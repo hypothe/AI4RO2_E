@@ -12,11 +12,11 @@ from mpl_toolkits.mplot3d import Axes3D
 import seaborn as sns
 import pandas as pd
 import numpy as np
-from sklearn.linear_model import LinearRegression
+from sklearn.linear_model import LinearRegression, Ridge
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.feature_selection import RFE
 from sklearn.pipeline import Pipeline
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from itertools import compress
 import warnings
 import math
@@ -54,14 +54,12 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
     pars = ['waiter','tot', 'avg_x', 'avg_y', 'hot_tot', 'hot_avg_x', 'hot_avg_y']
     
     x = {}# each element is {in_par:list() for in_par in pars}
-    des1 = data_util.regr_goal1_ #'dur'
-    des2 =  data_util.regr_goal2_ #'search'  
+    des = data_util.regr_goals_ #'dur', 'search'  
     
     tot_run = {}
     fail_run = {}
      
     for row in data_dict:
-        #print(row.values())
         
         h = float(row['hw'])
         g = float(row['gw'])
@@ -113,24 +111,24 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
     
     for hg_key in x.keys():        
         X = pd.DataFrame(x[hg_key].values())
+        Y = {key:list() for key in des}
         ### log chosen since from graphs an exp like behaviour seems to emerge
-        Y1 = [ math.log(oo) for oo in z[hg_key][des1] ]
-        Y2 = [ math.log(oo) for oo in z[hg_key][des2] ]  #1/1000 to pass into seconds from ms
-        
-        z[hg_key]['Q1'] = Y1
-        z[hg_key]['Q2'] = Y2
+        for dd in des:
+            Y[dd] = [ math.log(oo) for oo in z[hg_key][dd] ]
+            z[hg_key]['Q_'+dd] = Y[dd]
+            
         #Regression
         X_arr = np.array(X).T
         regr[hg_key] = list()
-        nof_regr_approx[hg_key] = {}#{key:{} for key in [des1, des2]}
+        nof_regr_approx[hg_key] = {}
         print("Run: {} tot: {} fail: {}".format(hg_key, tot_run[hg_key], fail_run[hg_key]))
         
-        for Y, des in zip([Y1, Y2], [des1, des2]):
-            
+        for dd, yy in Y.items():
             nof = 2
             X_train = X_arr
-            y_train = np.array(Y)
-            model = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
+            y_train = np.array(yy)
+            model = Pipeline([('scaler', StandardScaler()), ('linear_regression', Ridge())])
+            #### model = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
             #### model = Pipeline([('linear_regression', LinearRegression(normalize=True))])
         
             rfe = RFE(model, nof, importance_getter = 'named_steps.linear_regression.coef_')
@@ -145,30 +143,31 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
             nof_supp = list(compress(pars, rfe.support_))
             
             ## coef of the nof most impacting features
-            nof_regr_approx[hg_key][des] = model
+            nof_regr_approx[hg_key][dd] = model
            
-            setattr(nof_regr_approx[hg_key][des], "pars", nof_supp)
+            setattr(nof_regr_approx[hg_key][dd], "pars", nof_supp)
 
             #Detect best features
-            lin_regressor = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
+            lin_regressor = Pipeline([('scaler', StandardScaler()), ('linear_regression', Ridge())])
+            ####lin_regressor = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
             #### lin_regressor = Pipeline([('linear_regression', LinearRegression(normalize=True))])
             
             lr_score = cross_val_score(lin_regressor, X_train, y_train, cv=5)
             
             
-            lin_regressor.fit(X_arr, np.array(Y))
-            
+            lin_regressor.fit(X_train, y_train)
+            #### if lr_score.mean() > 0.5:
             regr[hg_key].append(lin_regressor)
 
             #Display regression output
             print("Hw: {}\tGw: {}".format(hg_key[0], hg_key[1]))
             print("Ratio of successful run:\t{}".format((tot_run[hg_key]-fail_run[hg_key])/tot_run[(hg_key)]))
             print("Regression INPUT:\t{}".format(pars))
-            print("Regression OUTPUT:\t[{}]".format(des))
+            print("Regression OUTPUT:\t[{}]".format(dd))
             print("Regression coefficients:\t{}".format(lin_regressor.named_steps.linear_regression.coef_)) #(top_coef))
             print("Regression intercept:\t{}".format(lin_regressor.named_steps.linear_regression.intercept_))
             print("Regression score:\t{}[{}]".format(lr_score.mean(), lr_score.std()))
-            print("Score with %d features {}[{}]".format(nof_score.mean(), nof_score.std()))
+            print("Score with {} features {}[{}]".format(nof, nof_score.mean(), nof_score.std()))
             print("The {} most relevat features are: {}".format(nof, nof_supp))
             print("##-------------##")
         print("#################")
@@ -200,16 +199,15 @@ def lim_d(d):
 def lim_u(u):
     return 1.1*u if u>0 else 0.9*u
 
-def delog_out(model, x, y):
+def delog_predict(model, x, y):
     return math.exp(model.predict([[x,y]]))
     
-predict_approx = np.vectorize(delog_out, excluded=[0])
+predict_approx = np.vectorize(delog_predict, excluded=[0])
    
     
 def plot_graphs(k,j, nof_regr_approx, save_fig=False):
     # Display correlation matrix of ther output
-    goals = (data_util.regr_goal1_, data_util.regr_goal2_)
-    den_coeffs = {goals[0]:1, goals[1]:1000}
+    goals = data_util.regr_goals_
 
     for hg_key in nof_regr_approx.keys():
         

@@ -10,6 +10,7 @@ import subprocess
 import data_util
 import pickle
 import parse
+from correlation import delog_predict
 
 Pddl_problem_ = "../domains/dom_APE/Custom.pddl"    # (str) Problem name, extension needed
 regr_name_full_ = data_util.regr_name_full_
@@ -100,9 +101,6 @@ def trim_output(tot_out):
     
 def get_best_hg(regr_dict, problem_filename):
 
-    #print(regr_dict)
-    #input()
-
     best_out = float('inf')
     ## Parse problem file
     n_waiters, drink4table, hot4table = parse.parse_problem(problem_filename)
@@ -115,17 +113,20 @@ def get_best_hg(regr_dict, problem_filename):
     ## Apply linear regression coefficien to estimate the Y function for all (h,g) values
     
     ## load already explored drinks configurations
-    
+    goals = data_util.regr_goals_
       
     exp_out = list()
+    pred_goals = {}
+    
     for hg_key, regr_list in regr_dict.items():
-        for regr in regr_list:
+        for regr, goal in zip(regr_list, goals):
             #exp_out.append(sum([a_i*par_i for par_i, a_i in zip(params, regr.coef_)]) + regr.intercept_)
             prediction = regr.predict([params])
+            pred_goals[goal] = math.exp(prediction)
             exp_out.append(prediction)
             
         Q_fact = sum(exp_out)/len(exp_out)
-        print("[H: {:6}\tG: {:6}]\t->Q: {}".format(hg_key[0], hg_key[1], Q_fact))   
+        print("[H: {:6}\tG: {:6}]\t->Q: {}\t{}".format(hg_key[0], hg_key[1], Q_fact, pred_goals))
         
         if Q_fact < best_out:
             best_out = Q_fact
