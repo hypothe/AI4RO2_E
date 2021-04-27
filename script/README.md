@@ -31,19 +31,14 @@ python3 build.py (--opt-args)
 This script can be used to generate a pddl problem file fully compatible with the "APE full" domain
 (aka using actions, processes and events implementing the full specifics of the assignment).
 
-The required input varaibles for this script are:
-- the number of available waiters.
-- the number of drinks per table.
-- the number of hot drinks per table.
-
-If launched with no parameters, the scripts generate a default test problem.
-
-Optional arguments:
+The optinal input arguments of this script are:
 - *-f*: problem name and path        
 - *-w*: number of waiters                 
 - *-d*: number of total drinks per table
 - *-t*: number of hot drinks per table
 - *-g*: GUI trigger for a user friendy inputs insertion 
+
+If launched with no parameters, the scripts generate a default test problem.
 
 ### run.py
 
