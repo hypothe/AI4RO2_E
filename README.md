@@ -48,11 +48,11 @@ In this folder are stored the python scripts for performing an automatic run of 
 
 ## ENHSP
 
-The APE domains and problems generate via the python scripts are suitable to be tested with the ENHSP planning engine, which can be found 
+The APE domains and problems generated via the python scripts are suitable to be tested with the ENHSP planning engine, which can be found 
 
 [here](https://gitlab.com/enricos83/ENHSP-Public/-/tree/enhsp-20).
 
-That planners has been tested on Ubuntu 18.04 and 20.04.
+That planners has been tested on Ubuntu 18.04 and 20.04 and different .
 
 Notice that, both the versions of enhsp 19 and 20 version have been tested but, due to performance reasons on most of the generate problems (not generalizable to any problem),
 the release 20 has been chosen in this specific application.
@@ -61,6 +61,18 @@ the release 20 has been chosen in this specific application.
 
 - Cloning the repository from the above mentioned link.
 - Pulling the "enhsp-20" branch
+- Install the dependencies 
+```
+$ sudo apt-get install openjdk-8-jdk
+$ sudo apt-get update
+```
+- Run the "compile" and the "install" script
+- Add the "enhsp" path in the ".bashrc" file 
+
+The planner can be then executed from the root folder using the following command:
+```
+./enhsp -o <domain_file> -f <problem_file> -planner <string> (main options: sat, aibr, opt, lm_opt)
+```
 
 ## Metric-FF
 
@@ -104,12 +116,8 @@ For example, to see all the fluents regarding the internal clock of the waiter w
 .../AI4RO2_E/domains/$ ff -o numeric_domain.pddl -f numeric_problem.pddl -O -s TIME-WAITER
 ```
 
-
-
 ## TODO
 
 - Why is problem APE3_full so much harder to deal with compared with AP2_full? Is it the fact that all 4 drinks are hot, or is it because they are spread between tables? Investigate.
-- Test APE_full domain substituting pick-N, drop-N with fluents (Testedby Marco and underperforming the case with 6  different actions)
-- Python script for sensitivity analysis and ouput plot (Implemented)
+- Test APE_full domain substituting pick-N, drop-N with fluents (Tested by Marco and underperforming the case with 2  different dedicated actions for picking up and dropping more than one drink/bisquit)
 - A lot of the efficiency depends on the gw value... is it possible to find a correlation between some problem variables and its "close-to-optimal" value? ... Some ML agent perhaps? Multi linear interpolation perhaps?
--   Add an option for ff command line that toggles the display of actions (abandoned)
