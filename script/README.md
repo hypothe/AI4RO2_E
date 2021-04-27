@@ -1,37 +1,57 @@
-# Sensibility Analysis
+# Sensitivity Analysis
 
 ## Scripts
 
-Three scripts (at the moment) compose the workflow of the sensibility analysis, which need to be
-launched one after the other to perform the full evaluation, but can be used independently if need
-be (_see "build" for an example_).
+XXX(Insert number) scripts compose the workflow for the automatic generation and run of pddl problems
+and its relative sensitivity analysis for the identification of the optimal wA* parameters.
+The scripts can be launched sequentially to perform the full evaluation of a single or multiple problems,
+but can also be used independently if need.
+
+### test_data.py
+
+```
+python3 test_data.py (--opt-args)
+```
+This script:
+1. generates a fixed number of problems among all possible problems with a maximum amount of drinks per table and total drinks ordered; it avoids repetition of cases checked for in the past by looking at their rercord in the file `drinks_explored.pkl` under the folder `lib`. Those files are automatically updated with new entries every time that a new ploblem is run
+2. generated problems are run for different values of hw, gw
+3. parses the output of all runs for all problems and saves everything in a csv file.
+
+The command line parameters can be used to set:
+- the number of random problems to generate and test
+- the timeout for each run
+
+> This script should not be run directly from the end user ideally (assuming a completely trained model).
 
 ### build.py
 
 ```
 python3 build.py (--opt-args)
 ```
-This script can be used to generate a problem file fully compatible with the domain "APE full"
-(aka using actions, processes and events implementing the full specifics of the assignment)
-by submitting few values, namely the number of waiters available and how many total and hot drinks
-are requested by each table.
-If launched with no parameters a default test problem will be generated.
-With the parameters is possible to set:
-- problem name and location
-- number of waiters
-- number of total drinks per table
-- number of hot drinks per table
+This script can be used to generate a pddl problem file fully compatible with the "APE full" domain
+(aka using actions, processes and events implementing the full specifics of the assignment).
 
-Notice it is also possible to insert those numeric values with a GUI by toggling that with
-the command line argument `-g`
+The required input varaibles for this script are:
+- the number of available waiters.
+- the number of drinks per table.
+- the number of hot drinks per table.
+
+If launched with no parameters, the scripts generate a default test problem.
+
+Optional arguments:
+*-f*: problem name and path        
+*-w*: number of waiters                 
+*-d*: number of total drinks per table
+*-t*: number of hot drinks per table
+*-g*: GUI for a user friendy inputs insertion 
 
 ### run.py
 
 ```
 python3 run.py (--opt-args)
 ```
-This scripts allows to automatically run multiple instances of a problem under a domain with enhsp solver
-by varying h and g weights of the used A* heuristic algorithm.
+This scripts allows to automatically run multiple instances of a problem under a domain using the enhsp solver
+cosigering a series of different values of the h and g weights of the used A* heuristic algorithm.
 
 If launched with no parameters a default run with the default test problem will be performed, and the results
 will be saved in a .txt file (by default in the _output_ folder)
@@ -65,22 +85,6 @@ With the parameters is possible to set:
 - LaTeX style can be adopted in those graphs (requires `sudo apt-get install texlive-full`)
 
 > This script should not be run directly from the end user ideally.
-
-### test_data.py
-
-```
-python3 test_data.py (--opt-args)
-```
-Script that:
-1. generates a fixed number of problems among all possible problems with a maximum amount of drinks per table and total drinks ordered; it avoids repetition of cases checked for in the past by looking at their rercord in the file `drinks_explored.pkl` under the folder `lib` (which is updated each time with the new ones)
-2. runs them all with a collection of hw, gw values
-3. parses the output of all runs for all problems and saves everything in a csv file
-
-The command line parameters can be used to set:
-- the number of random problems to generate and test
-- the timeout for each run
-
-> This script should not be run directly from the end user ideally (assuming a completely trained model).
 
 ### correlation.py
 
