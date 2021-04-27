@@ -32,11 +32,11 @@ This script can be used to generate a pddl problem file fully compatible with th
 (aka using actions, processes and events implementing the full specifics of the assignment).
 
 The optional input arguments of this script are:
-- *-f*: problem path and name (with extension)      
-- *-w*: number of waiters                 
-- *-d*: number of total drinks per table
-- *-t*: number of hot drinks per table
-- *-g*: GUI trigger for a user friendy inputs insertion 
+- *-f* : problem path and name (with extension)      
+- *-w* : number of waiters                 
+- *-d* : number of total drinks per table
+- *-t* : number of hot drinks per table
+- *-g* : GUI trigger for a user friendy inputs insertion 
 
 If launched with no parameters, the scripts generate a default test problem.
 
@@ -54,19 +54,19 @@ If launched with no parameters a default run with the default test problem will 
 will be saved in a .txt file (by default in the _output_ folder)
 
 The optional input arguents of this script are:
-- *-f*: pddl problem file name (with .pddl extension) 
-- *-n*: name and path of the output file
-- *-o*: pddl domain file name (with p.ddl extension)
-- *-p*: pddl location folder path
-- *-t*: maximum allowed running time (default value = 120 seconds)
-- *-s*: if invoked the output of each run does not show up on the terminal
-- *-M*: ML approach to automaticalyi select from a pretrained multi-linear regression model the optimal A* heuristic and gradient weights [hw, gw]
-- *--gw*: list of investigated gradient weights ([gw1, gw2, ...] as list of floats)
-- *--hw*: list of investigated heuristic weights ([gw1, gw2, ...] as list of floats)
+- *-f* : pddl problem file name (with .pddl extension) 
+- *-n* : name and path of the output file
+- *-o* : pddl domain file name (with p.ddl extension)
+- *-p* : pddl location folder path
+- *-t* : maximum allowed running time (default value = 120 seconds)
+- *-s* : if invoked the output of each run does not show up on the terminal
+- *-M* : ML approach to automaticalyi select from a pretrained linear regression model the optimal A* heuristic and gradient weights [hw, gw]
+- *--gw* : list of investigated gradient weights ([gw1, gw2, ...] as list of floats)
+- *--hw* : list of investigated heuristic weights ([gw1, gw2, ...] as list of floats)
 
-This script is where the magic happens: by passing `-M` as a command line flag the system will autonomously find what it
-assumes to be the best [hw,gw] (or, at least, the best values among a finite list it has). This result is obtained thanks
-to a Linear Regression smart agent trained on random configurations, for which it has a record of the quality of the solution
+This script is where the magic happens: by passing the argument `-M` as a command line flag the system will autonomously find what it
+assumes to be the best [hw,gw] (or, at least, the best values among a finite list it has). 
+This result is obtained thanks to a Linear Regression smart agent pre-trained on several random configurations for which it has stored the quality of the solution
 for a set of [hw, gw] (_see_ `test_data.py` _and_ `correlation.py` _for more info_).
 The file to run is parsed in order to gather details on it's structure (_number of waiters, total drinks and hot drinks, metrics on their position_), which are then passed as input to the set of Linear Regression models in order to find an approximation of the quality of the solution for each weight couple [hw, gw]. The couple yielding the best expected quality is thus selected and used for the run.
 
