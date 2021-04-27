@@ -39,11 +39,11 @@ The required input varaibles for this script are:
 If launched with no parameters, the scripts generate a default test problem.
 
 Optional arguments:
-*-f*: problem name and path        
-*-w*: number of waiters                 
-*-d*: number of total drinks per table
-*-t*: number of hot drinks per table
-*-g*: GUI for a user friendy inputs insertion 
+- *-f*: problem name and path        
+- *-w*: number of waiters                 
+- *-d*: number of total drinks per table
+- *-t*: number of hot drinks per table
+- *-g*: GUI trigger for a user friendy inputs insertion 
 
 ### run.py
 
