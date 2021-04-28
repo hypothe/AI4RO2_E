@@ -21,6 +21,7 @@ from itertools import compress
 import warnings
 import math
 import random
+import copy
 
 import data_util
 
@@ -46,7 +47,6 @@ def corrdot(*args, **kwargs):
                 ha='center', va='center', fontsize=font_size)
 
 def evaluate_corr(data_dict, h_val=None, g_val=None):
-    global scaler
     ## Make this find a regression model for all (h,g) couples
 
     z = {}# each element is {key:list() for key in ('dur', 'pltime', 'heur', 'search', 'ex_nod', 'ev_stat')}
@@ -119,57 +119,71 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
             
         #Regression
         X_arr = np.array(X).T
-        regr[hg_key] = list()
+        #regr[hg_key] = list()
         nof_regr_approx[hg_key] = {}
         print("Run: {} tot: {} fail: {}".format(hg_key, tot_run[hg_key], fail_run[hg_key]))
         
+        lin_regressor = {}
+        lr_score = {}
+        
         for dd, yy in Y.items():
-            nof = 2
+            plot_nof = 2
+            num_params = X_arr.shape[1]
+            
             X_train = X_arr
             y_train = np.array(yy)
-            model = Pipeline([('scaler', StandardScaler()), ('linear_regression', Ridge())])
-            #### model = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
-            #### model = Pipeline([('linear_regression', LinearRegression(normalize=True))])
-        
-            rfe = RFE(model, nof, importance_getter = 'named_steps.linear_regression.coef_')
-            X_train_rfe = rfe.fit_transform(X_train, y_train)
             
+            top_score = -float('inf')
             
-            nof_score = cross_val_score(model, X_train_rfe, y_train, cv=5)
-            model.fit(X_train_rfe, y_train)
-            
-            
-            nof_coef = model.named_steps.linear_regression.coef_
-            nof_supp = list(compress(pars, rfe.support_))
-            
-            ## coef of the nof most impacting features
-            nof_regr_approx[hg_key][dd] = model
-           
-            setattr(nof_regr_approx[hg_key][dd], "pars", nof_supp)
+            for nof in range(1, num_params+1):
+                model = Pipeline([('scaler', StandardScaler()), ('linear_regression', Ridge())])
+                
+                ## Recursive Feature Elimination, generate a model getting as imput only the 'nof' most impacting
+                ## features, keep the better performing one
+                rfe = RFE(model, nof, importance_getter = 'named_steps.linear_regression.coef_')
+                
+                nof_score = cross_val_score(rfe, X_train, y_train, cv=5)
+                
+                if nof_score.mean() > top_score:
+                    lin_regressor[dd] = copy.deepcopy(rfe)
+                    lin_regressor[dd].fit(X_train, y_train)
+                    top_score = nof_score.mean()
+                ## keep the model with 2 feats in any case, it will be used for plotting
+                if nof == 2:
+                    rfe.fit(X_train, y_train)
+                    nof_coef = rfe.estimator_.named_steps.linear_regression.coef_
+                    nof_supp = list(compress(pars, rfe.support_))
+                    
+                    ## coef of the nof most impacting features
+                    nof_regr_approx[hg_key][dd] = rfe.estimator_
+                   
+                    setattr(nof_regr_approx[hg_key][dd], "pars", nof_supp)
 
-            #Detect best features
-            lin_regressor = Pipeline([('scaler', StandardScaler()), ('linear_regression', Ridge())])
-            ####lin_regressor = Pipeline([('scaler', StandardScaler()), ('linear_regression', LinearRegression())])
-            #### lin_regressor = Pipeline([('linear_regression', LinearRegression(normalize=True))])
+            lr_score[dd] = cross_val_score(lin_regressor[dd], X_train, y_train, cv=5)
             
-            lr_score = cross_val_score(lin_regressor, X_train, y_train, cv=5)
-            
-            
-            lin_regressor.fit(X_train, y_train)
-            #### if lr_score.mean() > 0.5:
-            regr[hg_key].append(lin_regressor)
+            ### TODO: for the moment, if a model is deemed unable to provide trustworthy results
+            ######### (here evaluated thanks to r^2) it is simply ignored
+            ######### In the future would be interesting to perhaps make this value impact the quality
+            ######### of the solution found in 'run.py'
 
             #Display regression output
             print("Hw: {}\tGw: {}".format(hg_key[0], hg_key[1]))
             print("Ratio of successful run:\t{}".format((tot_run[hg_key]-fail_run[hg_key])/tot_run[(hg_key)]))
             print("Regression INPUT:\t{}".format(pars))
             print("Regression OUTPUT:\t[{}]".format(dd))
-            print("Regression coefficients:\t{}".format(lin_regressor.named_steps.linear_regression.coef_)) #(top_coef))
-            print("Regression intercept:\t{}".format(lin_regressor.named_steps.linear_regression.intercept_))
-            print("Regression score:\t{}[{}]".format(lr_score.mean(), lr_score.std()))
+            print("Regression coefficients:\t{}".format(lin_regressor[dd].estimator_.named_steps.linear_regression.coef_)) #(top_coef))
+            print("Regression intercept:\t{}".format(lin_regressor[dd].estimator_.named_steps.linear_regression.intercept_))
+            print("Regression score:\t{}[{}]".format(lr_score[dd].mean(), lr_score[dd].std()))
             print("Score with {} features {}[{}]".format(nof, nof_score.mean(), nof_score.std()))
-            print("The {} most relevat features are: {}".format(nof, nof_supp))
+            print("The {} most relevat features are: {}".format(lin_regressor[dd].n_features_,
+                                                                list(compress(pars, lin_regressor[dd].support_))))
             print("##-------------##")
+            
+        #print(lr_score)
+        #input()
+        if all(val.mean() > 0.5 for val in lr_score.values()):
+            regr[hg_key] = {des:regr for des,regr in lin_regressor.items()}
+            
         print("#################")
     return x, z, regr, nof_regr_approx
     

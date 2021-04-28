@@ -10,6 +10,7 @@ import subprocess
 import data_util
 import pickle
 import parse
+import math
 from correlation import delog_predict
 
 Pddl_problem_ = "../domains/dom_APE/Custom.pddl"    # (str) Problem name, extension needed
@@ -114,18 +115,21 @@ def get_best_hg(regr_dict, problem_filename):
     
     ## load already explored drinks configurations
     goals = data_util.regr_goals_
+    Q_weights = data_util.Q_weights_
       
-    exp_out = list()
     pred_goals = {}
     
     for hg_key, regr_list in regr_dict.items():
-        for regr, goal in zip(regr_list, goals):
-            #exp_out.append(sum([a_i*par_i for par_i, a_i in zip(params, regr.coef_)]) + regr.intercept_)
+        exp_out = list()
+        for goal, regr in regr_list.items():
             prediction = regr.predict([params])
-            pred_goals[goal] = math.exp(prediction)
-            exp_out.append(prediction)
-            
-        Q_fact = sum(exp_out)/len(exp_out)
+            pred_goals[goal] = round(math.exp(prediction))
+            print(goal)
+            print(prediction)
+            exp_out.append(Q_weights[goal]*prediction)
+            ## Log scale chosen
+            # exp_out.append(Q_weights[goal]*pred_goals[goal])
+        Q_fact = sum(exp_out)/sum(Q_weights.values())
         print("[H: {:6}\tG: {:6}]\t->Q: {}\t{}".format(hg_key[0], hg_key[1], Q_fact, pred_goals))
         
         if Q_fact < best_out:
@@ -210,10 +214,7 @@ def main(argv):
             except ValueError:
                 print("h values should be float")
                 sys.exit()
-      
-    #if not usr_wd:
-    #    usr_wd = run_wd
-    
+       
     domain_string = usr_wd  + Pddl_domain
     problem_string = usr_wd + Pddl_problem
     
@@ -229,6 +230,7 @@ def main(argv):
             with open(regr_name_full_, 'rb') as f:
                 regr_dict = pickle.load(f)
                 h_values, g_values = get_best_hg(regr_dict, problem_string)
+                input("Press Enter to launch the solver with those values...")
                 
         except FileNotFoundError:
             #pass #in this case do nothing, explored_cases is already an empty list

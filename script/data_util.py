@@ -22,6 +22,8 @@ delta_val_flag = "-dv"
 delta_exec_flag = "-de"
 
 regr_goals_ = ('dur', 'search')
+### Coeffs found by trial and error
+Q_weights_ = {'dur':5.0, 'search':1.0} #for log scale
 
 def avg_drink_pos(stuff4table):
     """
