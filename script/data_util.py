@@ -4,6 +4,8 @@ import numpy as np
 #engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
 engine_path = "/root/ENHSP-20/enhsp"
 
+domains_wd = "../domains/dom_APE"
+out_wd = "../output"
 graphs_wd = "../graphs"
 
 domain_name_full_ = "../domains/dom_APE/numeric_domain_APE_full.pddl"
@@ -12,14 +14,17 @@ output_name_full_ = "../output/temp_output.txt"
 
 csv_name_full_ = "../lib/hg_val_20.csv" ## the data gathered using enhsp-20
 exp_name_full_ = "../lib/drinks_explored_20.pkl" ## the data gathered using enhsp-20
-
 regr_name_full_ = "../lib/regr_model.pkl"
 
+output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
+                    'Search Time', 'Expanded Nodes', 'States Evaluated')	# list of (str): keywords for relevant outputs
 duration_alias = "Elapsed Time"
+
 hw_flag = "-wh"
 gw_flag = "-wg"
 delta_val_flag = "-dv"
 delta_exec_flag = "-de"
+delta_val = 0.5
 
 regr_goals_ = ('dur', 'search')
 ### Coeffs found by trial and error
@@ -27,9 +32,27 @@ Q_weights_ = {'dur':5.0, 'search':1.0} #for log scale
 
 def avg_drink_pos(stuff4table):
     """
+    Return the avg position of (hot) drinks
+    distributed over the four tables.
+    
+    The four tables are imagined to be positoned
+    as:
     table1(-1,1)   table2(1,1)
     table3(-1,-1)  table4(1,-1)
+    
+    Args:
+        stuff4table (list(int)):
+                            (hot) drink per table
+                            
+    Returns:
+        tot (int):          total number of drinks
+        avg_x (float):      average x position
+        avg_y (float):      average y position
+        lambda_ (list(float()):
+                            eigenvalues of the
+                            covariance matrix
     """
+    
     x_sign = (-1, 1, -1, 1)
     y_sign = (1, 1, -1, -1)
     
@@ -42,17 +65,12 @@ def avg_drink_pos(stuff4table):
 
     x_d = []
     y_d = []
-    #print(stuff4table)
-    #print(x_sign)
-    #print(y_sign)
     for i in range(0, len(x_sign)):
         if stuff4table[i] != 0: 
             for k in range(0, stuff4table[i]):
                 x_d.append(x_sign[i])
                 y_d.append(y_sign[i])
 
-    #print(x_d)
-    #print(y_d)
     cov = np.cov(x_d, y_d)
     lambda_sq_, v = np.linalg.eig(cov)
     lambda_ = np.sqrt(lambda_sq_)
@@ -62,13 +80,19 @@ def avg_drink_pos(stuff4table):
     ## xi and yi will yield always 1, since they're either 1 or -1 squared
     std_x = np.std(x_d)
     std_y = np.std(y_d)
-    #std_x = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_x, 2)
-    #std_y = sum([pow(i, 2) for i in stuff4table]) / pow(tot,2) - pow(avg_y, 2)
     
-    #print("FROM {}: TOT {} AVG_X {} AVG_Y {} eig_1 {} eig_2 {}".format(stuff4table, tot, avg_x, avg_y, lambda_[0], lambda_[1]))
     return (tot, avg_x, avg_y, lambda_[0], lambda_[1])
          
 def round_dec(val, dec):
+    """
+    Round decimal numbers to given precision
+    
+    Args:
+        val (float):    original value
+        dec (int):      number of positions
+                        after the comma
+    """
+    
     res = val
     try:
          res = round(val * 10**dec)/(10**dec)
@@ -77,7 +101,17 @@ def round_dec(val, dec):
     return res
     
 def uniq_str(file_name, prop):
-
+    """
+    Add a unique identifier to a name
+    
+    Args:
+        file_name (str):    file name to modify
+        prop (str):         list of suffixes to add
+        
+    Returns:
+        ss (str):           complete filename
+    """
+    
     l = file_name.rfind(".")
     ss = file_name[0:l] + '_'
     for ii in prop:
@@ -88,7 +122,6 @@ def uniq_str(file_name, prop):
             ss = ss + str(ii)
             
     ss = ss + file_name[l:]
-    # print(ss)
     return ss
  
  

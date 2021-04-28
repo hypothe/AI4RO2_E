@@ -20,21 +20,23 @@ from sklearn.preprocessing import StandardScaler, PolynomialFeatures
 from itertools import compress
 import warnings
 import math
-import random
 import copy
 
 import data_util
 
+# Necessary due to old packages
 warnings.filterwarnings('ignore')
 
 graphs_wd = data_util.graphs_wd # directory to save the graphs in
 ddd = False
 regr_name_full_ = data_util.regr_name_full_
 
-random.seed()
 
 
 def corrdot(*args, **kwargs):
+    """
+    Generate correlation matix graphs and plots it
+    """
     corr_r = args[0].corr(args[1], 'pearson')
     corr_text = f"{corr_r:2.2f}".replace("0.", ".")
     ax = plt.gca()
@@ -47,15 +49,49 @@ def corrdot(*args, **kwargs):
                 ha='center', va='center', fontsize=font_size)
 
 def evaluate_corr(data_dict, h_val=None, g_val=None):
-    ## Make this find a regression model for all (h,g) couples
+    """
+    Function to generate and train the linear regressor models
+    on the saved dataset
+    
+    Data is gathered from a dictionary (in this case a csv)
+    containing the results of multiple pl.eng. runs on various
+    problem instances, each performed for a collection of tuplse
+    (hw,gw).
+    Data rows are splitted depending on the (hw,gw); for each
+    of the goals ('Duration', 'Search Time') a number of features
+    is selected using an RFE for any number of features - from 1
+    to all the available ones - choosing the model with the best
+    r^2 score over 5-fold cross-validation.
+    
+    Args:
+        data_dict (dict):   dictionary containing test data
+        h_val (float):      restrict the search to only one
+                            value of hw
+                            (default=None, consider all entries)
+        g_val (float):      restrict the search to only one
+                            value of gw
+                            (default=None, consider all entries)
+                            
+    Returns:
+        x, z, regr, nof_regr_approx
+        x (dict):           collection of input features
+        z (dict):           collection of output features
+        regr (dict):        collection of all the trained models
+        nof_regr_approx (dict):
+                            collection of the models trained only
+                            on the 2 most important features for
+                            each (hw,gw)x(goal), which are then
+                            used for plotting
+        
+    """
 
-    z = {}# each element is {key:list() for key in ('dur', 'pltime', 'heur', 'search', 'ex_nod', 'ev_stat')}
+    
 
     pars = ['waiter','tot', 'avg_x', 'avg_y', 'hot_tot', 'hot_avg_x', 'hot_avg_y']
     
-    x = {}# each element is {in_par:list() for in_par in pars}
     des = data_util.regr_goals_ #'dur', 'search'  
-    
+    z = {}# each element is {key:list() for key in ('dur', 'pltime', 'heur', 'search', 'ex_nod', 'ev_stat')}
+    x = {}# each element is {in_par:list() for in_par in pars}
     tot_run = {}
     fail_run = {}
      
@@ -83,7 +119,6 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
                 break
         ## if h_val or g_val are not explicitly passed they'll be None, thus alway matching
         if not skip and h_val in (h, None) and g_val in (g, None):
-            
             try:
                 x[(h, g)]
             except KeyError:
@@ -136,8 +171,8 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
             top_score = -float('inf')
             
             for nof in range(1, num_params+1):
+            
                 model = Pipeline([('scaler', StandardScaler()), ('linear_regression', Ridge())])
-                
                 ## Recursive Feature Elimination, generate a model getting as imput only the 'nof' most impacting
                 ## features, keep the better performing one
                 rfe = RFE(model, nof, importance_getter = 'named_steps.linear_regression.coef_')
@@ -171,16 +206,14 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
             print("Ratio of successful run:\t{}".format((tot_run[hg_key]-fail_run[hg_key])/tot_run[(hg_key)]))
             print("Regression INPUT:\t{}".format(pars))
             print("Regression OUTPUT:\t[{}]".format(dd))
-            print("Regression coefficients:\t{}".format(lin_regressor[dd].estimator_.named_steps.linear_regression.coef_)) #(top_coef))
+            print("Regression coefficients:\t{}".format(lin_regressor[dd].estimator_.named_steps.linear_regression.coef_))
             print("Regression intercept:\t{}".format(lin_regressor[dd].estimator_.named_steps.linear_regression.intercept_))
-            print("Regression score:\t{}[{}]".format(lr_score[dd].mean(), lr_score[dd].std()))
-            print("Score with {} features {}[{}]".format(nof, nof_score.mean(), nof_score.std()))
+            print("Regression score:\t{} [{}]".format(lr_score[dd].mean(), lr_score[dd].std()))
+            print("Score with {} features {} [{}]".format(nof, nof_score.mean(), nof_score.std()))
             print("The {} most relevat features are: {}".format(lin_regressor[dd].n_features_,
                                                                 list(compress(pars, lin_regressor[dd].support_))))
             print("##-------------##")
             
-        #print(lr_score)
-        #input()
         if all(val.mean() > 0.5 for val in lr_score.values()):
             regr[hg_key] = {des:regr for des,regr in lin_regressor.items()}
             
@@ -209,9 +242,11 @@ def plot_corr(z_dict, save_fig=False):
     plt.close('ALL')
     
 def lim_d(d):
-    return 1.1*d if d<0 else 0.9*d
+    md = min(d)
+    return 1.1*md if md<0 else 0.9*md
 def lim_u(u):
-    return 1.1*u if u>0 else 0.9*u
+    mu = max(u)
+    return 1.1*mu if mu>0 else 0.9*mu
 
 def delog_predict(model, x, y):
     return math.exp(model.predict([[x,y]]))
@@ -222,15 +257,12 @@ predict_approx = np.vectorize(delog_predict, excluded=[0])
 def plot_graphs(k,j, nof_regr_approx, save_fig=False):
     # Display correlation matrix of ther output
     goals = data_util.regr_goals_
-
+    plot_num = 111
+    
     for hg_key in nof_regr_approx.keys():
         
         z = {key:val for key, val in j[hg_key].items() if key in goals}
         z_approx = {}
-        
-            
-        plot_num = 111
-        ddd = True
         h_val = hg_key[0]
         g_val = hg_key[1]
         
@@ -242,32 +274,27 @@ def plot_graphs(k,j, nof_regr_approx, save_fig=False):
             figname = name + str(hg_key)
             fig = plt.figure(figname)
             filename = graphs_wd+"/"+figname.replace(" ", "_")+".pdf"
-            if ddd:
-                ax = fig.add_subplot(plot_num, projection='3d')     
-                plot = ax.scatter(x, y, z_val, cmap = 'rainbow', c=z_val)
+            
+            ax = fig.add_subplot(plot_num, projection='3d')     
+            plot = ax.scatter(x, y, z_val, cmap = 'rainbow', c=z_val)
                 
-                X, Y = np.meshgrid(np.linspace(lim_d(min(x)), lim_u(max(x)), 30), np.linspace(lim_d(min(y)), lim_u(max(y)), 30))
+            X, Y = np.meshgrid(np.linspace(lim_d(x), lim_u(x), 30), np.linspace(lim_d(y), lim_u(y), 30))
                 
-                z_approx = predict_approx(nof_regr_approx[hg_key][name], X, Y)
+            z_approx = predict_approx(nof_regr_approx[hg_key][name], X, Y)
                 
-                ax.plot_wireframe(X, Y, z_approx, alpha=0.3)
+            ax.plot_wireframe(X, Y, z_approx, alpha=0.3)
                 
-                ax.set_xlim(lim_d(min(x)),lim_u(max(x)))
-                ax.set_ylim(lim_d(min(y)),lim_u(max(y)))
-                ax.set_zlim(lim_d(min(z_val)), lim_u(max(z_val)))
-                ax.set_xlabel(pars[0])
-                ax.set_ylabel(pars[1])                       
-                ax.set_title(name)
-                for xx, yy, zz in zip(x, y, z_val):
-                    ax.plot([xx, xx], [yy, yy], [0.9*min(z_val),zz], 'k--', alpha=0.5, linewidth=0.5)
-                    
-                ax.view_init(azim=-110, elev=20)
-                    
-            else:
-                plot = plt.scatter(x, y, c=z_val, cmap = 'rainbow')
-                plt.xlabel(par1)
-                plt.ylabel(par2)
-                plt.title(name)
+            ax.set_xlim(lim_d(x),lim_u(x))
+            ax.set_ylim(lim_d(y),lim_u(y))
+            ax.set_zlim(lim_d(z_val), lim_u(z_val))
+            ax.set_xlabel(pars[0])
+            ax.set_ylabel(pars[1])                       
+            ax.set_title(name)
+            # lines projection of points
+            for xx, yy, zz in zip(x, y, z_val):
+                ax.plot([xx, xx], [yy, yy], [lim_d(z_val),zz], 'k--', alpha=0.5, linewidth=0.5)
+                   
+            ax.view_init(azim=-110, elev=20)
                     
             fig.colorbar(plot)
             if save_fig:

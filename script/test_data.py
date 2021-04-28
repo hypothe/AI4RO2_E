@@ -107,7 +107,7 @@ def test(n_waiters, drink4table, hot4table, run_time=None):
             else:
                 h_value = 1.0
                 g_value = data_util.round_dec(gg, 3)   
-            res = run.run(domain_name_full_, problem_name_full_, False, g_value, h_value, run_output_file, run_time)
+            res = run.run(domain_name_full_, problem_name_full_, g_value, h_value, run_output_file, run_time)
             if res:
                 print("Succesful run")
             else:

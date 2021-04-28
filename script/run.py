@@ -13,29 +13,53 @@ import parse
 import math
 from correlation import delog_predict
 
-Pddl_problem_ = "../domains/dom_APE/Custom.pddl"    # (str) Problem name, extension needed
+Pddl_problem_ = "../domains/dom_APE/Custom.pddl"    # (str) Default problem name, extension needed
 regr_name_full_ = data_util.regr_name_full_
 
-run_wd = "../domains/dom_APE"			# (str) Working directory
-out_wd = "../output"
+run_wd = data_util.domains_wd			# (str) Working directory
+out_wd = data_util.out_wd
 
 engine_path = data_util.engine_path
 
 
 Plan_Engine = 'enhsp'      			# (str) Define the planning engine to be use, choose between 'ff' or 'enhsp'
 Pddl_domain_ = data_util.domain_name_full_    # (str) Name of pddl domain file
-Optimizer = False        			# (Bool) Set to active for optimization process
-delta = 0.5
-#g_values_ = [1, 2, 7, 10]    			# list of (int) g values to be run (active only if Optimizer == True)
-#h_values_ = [1, 2, 7, 10]    			# list of (int) h values to be run (active only if Optimizer == True)
+delta = data_util.delta_val
 
-max_run_time = 120			# (int) maximum running time in seconds before stopping the run of the planning engine
-output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
-                    'Search Time', 'Expanded Nodes', 'States Evaluated')# list of (str): keywords for relevant outputs
+output_keywords = data_util.output_keywords # list of (str): keywords for relevant outputs
                        
 cwd = os.getcwd()
 
-def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run_time=None, show_output=False):	
+def run(domain_full, problem_full, g_val, h_val, run_output_file, run_time=None, show_output=False):
+    """
+    Function that calls enhsp-20 to plan over a (domain,problem)
+    
+    Some parameters are passed to the run, in order to tweak
+    its behaviour. The results obtained, in terms of the
+    metrics presented in 'output_keywords', are saved in a
+    text file.
+    
+    Args:
+        domain_full (str):  path/to/domain_file
+        problem_full (str): path/to/problem_file
+        g_val (float):      weight of g() function in A*
+        h_val (float):      weight of h() function in A*
+        run_output_file (file):
+                            open file to write trimmed
+                            results on
+        run_time (int):     timeout for the planner execution.
+                            The planner will be stopped if no
+                            sulution is found in time.
+                            (default None -> no timeout)
+        show_output (bool): whether to display the enhsp full
+                            output on console or not at the
+                            end of the run.
+                            (default False)
+                        
+    Returns:
+        flag (int):         codes the success of the run
+    """
+
     hw_flag = data_util.hw_flag
     gw_flag = data_util.gw_flag
     delta_val_flag = data_util.delta_val_flag
@@ -54,19 +78,18 @@ def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run
             res, err = result.communicate(timeout=run_time)
             if result.returncode:
                 raise subprocess.CalledProcessError(cmd=result.args, returncode=result.returncode)
-            #extract output and error and put them in formatted form
             
         except (subprocess.TimeoutExpired):
-            ###
+            ### A group of processes is generated in order to kill the java subprocesses
+            ### spawned in turn by enhsp (they'd remain zombies and eat computational resources
+            ### otherwise in case of a run interrupted by timeout
             group_pid = os.getpgid(result.pid)
             os.killpg(group_pid, signal.SIGINT)
             ###
-            #run_output_file.write("SUCCESS: " + str(flag) + "\n")
             fail_str = 'Solution not found for ' + problem_full + 'in  ' + str(run_time) + ' seconds'
             print(fail_str)
             
         except (subprocess.CalledProcessError):
-            #run_output_file.write("SUCCESS: " + str(flag) + "\n")
             fail_str = 'Error found during the solution of ' + problem_full
             print(fail_str)
             print(err.replace('\\n', '\n'))
@@ -87,7 +110,18 @@ def run(domain_full, problem_full, Optimizer, g_val, h_val, run_output_file, run
     return flag
     
 def trim_output(tot_out):
-
+    """
+    This functions keeps only the metrics we are interested in
+    from the enhsp output log
+    
+    Args:
+        tot_out (str):  enhsp whole log of a succesful run
+    
+    Returns:
+        trim_out (str): trimmed log presenting only the metrics
+                        of interested (those in 'output_keywords')
+    """
+    
     trim_out = ""
     
     for k in output_keywords:
@@ -101,7 +135,39 @@ def trim_output(tot_out):
     return trim_out
     
 def get_best_hg(regr_dict, problem_filename):
-
+    """
+    This functions retrieves the best wg and wh based on
+    a problem configuration
+    
+    Information such as number of waiters and drink
+    distribution were used to train a sequence of
+    LinearRegression models on two solution parameters,
+    'Duration' and 'Search Time', in order to predict
+    the quality of the solution expected for each of
+    the (hw,gw) couples the training was performed on.
+    The (hw,gw) couple yielding the best expected
+    performance (the lower weighted sum of the two predictd
+    metrics) is selected.
+    *   Notice that the predicted values are actually the
+        log() of those two solution parameters.
+    
+    Args:
+        regr_dict (dict):
+                        collection of all LinearRegression
+                        models trained, indexed as
+                        (hw,gw)x(goal_metric)
+        problem_filename (str):
+                        path/to/problem_file to run
+    
+    Returns:
+        [hw] (list(float)):
+                        optimal predicted h weight (returned as
+                        a singleton list for compatibility)
+        [gw] (list(float)):
+                        optimal predicted g weight (returned as
+                        a singleton list for compatibility)
+    """
+    
     best_out = float('inf')
     ## Parse problem file
     n_waiters, drink4table, hot4table = parse.parse_problem(problem_filename)
@@ -129,6 +195,7 @@ def get_best_hg(regr_dict, problem_filename):
             exp_out.append(Q_weights[goal]*prediction)
             ## Log scale chosen
             # exp_out.append(Q_weights[goal]*pred_goals[goal])
+            
         Q_fact = sum(exp_out)/sum(Q_weights.values())
         print("[H: {:6}\tG: {:6}]\t->Q: {}\t{}".format(hg_key[0], hg_key[1], Q_fact, pred_goals))
         
@@ -141,7 +208,15 @@ def get_best_hg(regr_dict, problem_filename):
     return [h_val], [g_val]
 
 def main(argv):
-
+    """
+    Script to run a (domain, problem) file using enhsp solver.
+    
+    It's possible to run them using the couple of (hw,gw)
+    autonomously predicted to have the better results
+    (among a finite list of such couples) thanks to a small
+    machine learning model.
+    """
+    
     usage = ("usage: pyhton3 " + argv[0] + "\n" +
              "(default values will be used in case options are not provided)\n" +
              "\t-f, --problem <arg>\tPDDL problem file\n" +
@@ -160,9 +235,7 @@ def main(argv):
     Pddl_domain = Pddl_domain_
     Pddl_problem = Pddl_problem_
     output_string = ""
-    run_time = None #max_run_time ## None won't trigger a timeout
-    #g_values = g_values_
-    #h_values = h_values_
+    run_time = None ## None won't trigger a timeout
     ML = False
     show_output = True
     g_values = [1.0]
@@ -241,16 +314,12 @@ def main(argv):
             h_values = [1.0]
             g_values = [1.0]         
         
-    #print(h_values)
-    #print(g_values)
-    #input()
     with open(cwd + "/" + out_wd + "/"+ output_string, "w") as run_output_file:
         for g_value in g_values:
             for h_value in h_values:
                 if h_value == g_value != 1:
                     continue
-                run_script = run(domain_string,  problem_string, 
-                                Optimizer, g_value, h_value,
+                run_script = run(domain_string,  problem_string, g_value, h_value,
                                 run_output_file, run_time=run_time, show_output = show_output)
                 res_run_str = problem_trim_name + " with hw = " + str(h_value) + " gw = " + str(g_value)
                 if run_script:
