@@ -28,7 +28,6 @@ import data_util
 warnings.filterwarnings('ignore')
 
 graphs_wd = data_util.graphs_wd # directory to save the graphs in
-ddd = False
 regr_name_full_ = data_util.regr_name_full_
 
 
@@ -219,13 +218,15 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
         
     return x, z, regr, nof_regr_approx
     
-def plot_corr(z_dict, save_fig=False, show_fig=False):
+def plot_corr(z_dict, tex_font=False ,save_fig=False, show_fig=False):
     """
     Plot the correlation matrix graphs between the output
     features
     
     Args:
         z_dict (dict):      collection of output features
+        tex_font (bool):    wheather to use the latex font
+        		     in plots
         save_fig (bool):    wheter to save the plots (as pdf)
                             or not
         show_fig (bool):    wheter to show the plots (as pdf)
@@ -233,12 +234,23 @@ def plot_corr(z_dict, save_fig=False, show_fig=False):
     """
     
     print("Generating correlation figures, please wait...")
+        
     for hg_key, z in z_dict.items():
     
         plotname = "corr " + str(hg_key)
         output_df = pd.DataFrame(z)
         sns.set(font_scale=1.6)
-        #Parameters for latexstyle plot
+        print(output_df.columns)
+        if tex_font:
+            plt.rc('text', usetex=True)
+            plt.rc('font', family='serif')
+            colname_new = []
+            [colname_new.append(tex_trans(colname_old))for colname_old in output_df.columns]
+            print(colname_new)    
+            col_replace = {key: value for (key,value) in zip(output_df.columns, colname_new)}         
+            output_df.rename(columns = col_replace, inplace = True)
+            print(output_df.columns)
+               
         g = sns.PairGrid(output_df, aspect=1.4, diag_sharey=False)
         g.map_lower(sns.regplot, lowess=True, ci=False, line_kws={'color': 'black'})
         g.map_diag(sns.distplot, kde_kws={'color': 'black'})
@@ -271,12 +283,25 @@ def delog_predict(model, x, y):
     Get the predicted value given 2 input features
     """
     return math.exp(model.predict([[x,y]]))
+    
+def tex_trans(string):
+    """
+    Transform a string in LaTex interpretable ones
+    """    
+    if "_" in string:
+        count = string.count("_")
+        string = string.replace("_", "_{")
+        for i in range(count):
+            string = string + "}" 
+    string = "$" + string + "$"
+    
+    return string
 
 ### Vectorization of the prediction function    
 predict_approx = np.vectorize(delog_predict, excluded=[0])
 
     
-def plot_graphs(k,j, nof_regr_approx, save_fig=False, show_fig=False):
+def plot_graphs(k,j, nof_regr_approx, tex_font=False, save_fig=False, show_fig=False):
     """
     Plot the goal prediction graphs
     
@@ -288,6 +313,8 @@ def plot_graphs(k,j, nof_regr_approx, save_fig=False, show_fig=False):
     Args:
         k (dict):           collection of input features
         j (dict):           collection of output features
+        tex_font (bool):    wheather to use the latex font
+        		     in plots 
         save_fig (bool):    wheter to save the plots (as pdf)
                             or not
         show_fig (bool):    wheter to show the plots (as pdf)
@@ -297,6 +324,10 @@ def plot_graphs(k,j, nof_regr_approx, save_fig=False, show_fig=False):
     # Display correlation matrix of ther output
     goals = data_util.regr_goals_
     plot_num = 111
+    
+    if tex_font:
+        plt.rc('text', usetex=True)
+        plt.rc('font', family='serif')
     
     for hg_key in nof_regr_approx.keys():
         
@@ -326,9 +357,17 @@ def plot_graphs(k,j, nof_regr_approx, save_fig=False, show_fig=False):
             ax.set_xlim(lim_d(x),lim_u(x))
             ax.set_ylim(lim_d(y),lim_u(y))
             ax.set_zlim(lim_d(z_val), lim_u(z_val))
-            ax.set_xlabel(pars[0])
-            ax.set_ylabel(pars[1])                       
-            ax.set_title(name)
+            if not tex_font:
+                ax.set_xlabel(pars[0])
+                ax.set_ylabel(pars[1])                       
+                ax.set_title(name)
+            else:
+                tex_par0 = tex_trans(pars[0])
+                tex_par1 = tex_trans(pars[1])
+                tex_name = tex_trans(name)
+                ax.set_xlabel(tex_par0)
+                ax.set_ylabel(tex_par1)                       
+                ax.set_title(tex_name)            
             # lines projection of points
             for xx, yy, zz in zip(x, y, z_val):
                 ax.plot([xx, xx], [yy, yy], [lim_d(z_val),zz], 'k--', alpha=0.5, linewidth=0.5)
@@ -359,22 +398,25 @@ def main(argv):
     show_goal_plot = False
     show_corr_plot = False
     save_fig = False
+    tex_font = False    
     
     usage = ("usage: pyhton3 " + argv[0] + "\n" +
              "(default values will be used in case options are not provided)\n" +
              "\t-c, --csv <arg>\t\tpath and name of the csv file to read (mandatory)\n" +
              "\t-d, --hg_val <arg>\tcouple of hw and gw [hw,gw]\n" +
-             "\t-p, --corr-plot\t\tenable correlation matrices plots\n" +
              "\t-g, --goal-plot\t\tenable goals plots\n" +
+             "\t-p, --corr-plot\t\tenable correlation matrices plots\n" +             
+             "\t-x, --tex-plot\t\tgenerate plots with LaTeX style\n" +
              "\t-s, --save-figures\tsave all figures as pdf (in 'graphs' folder)\n" +
              "\t-h, --help\t\tdisplay this help\n"
             )
     try:
-        opts, args = getopt.getopt(argv[1:], "hc:d:gps", ["help","csv=", "hg_val=", "goal-plot", "corr-plot", "save-figures"])
+        opts, args = getopt.getopt(argv[1:], "hc:d:gpxs", ["help","csv=", "hg_val=", "goal-plot", "corr-plot", "tex-plot", "save-figures"])
+        print(opts)
     except getopt.GetoptError:
         print(usage)
         sys.exit(1)
-        
+       
     for opt, arg in opts:
         if opt in ("-h", "--help"):
             print(usage)
@@ -385,6 +427,8 @@ def main(argv):
             show_goal_plot = True
         elif opt in ("-p", "--corr-plot"):
             show_corr_plot = True
+        elif opt in ("-x", "--tex-plot"):
+            tex_font = True
         elif opt in ("-s", "--save-figures"):
             save_fig = True
         elif opt in ("-d", "--hg_val"):
@@ -414,9 +458,9 @@ def main(argv):
             
         ### SAVE REGR WITH PICKLE
         if show_corr_plot or save_fig:    
-            plot_corr(z, save_fig = save_fig, show_fig = show_corr_plot)
+            plot_corr(z, tex_font = tex_font, save_fig = save_fig, show_fig = show_corr_plot)
         if show_goal_plot or save_fig:    
-            plot_graphs(k, z, nof_regr_approx, save_fig = save_fig, show_fig = show_goal_plot)    
+            plot_graphs(k, z, nof_regr_approx, tex_font = tex_font, save_fig = save_fig, show_fig = show_goal_plot)    
              
         ## save regression model
         with open(regr_name_full_, 'wb') as f:
