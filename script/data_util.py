@@ -7,6 +7,7 @@ engine_path = "/root/ENHSP-20/enhsp"
 domains_wd = "../domains/dom_APE"
 out_wd = "../output"
 graphs_wd = "../graphs"
+template_wd = "templates"
 
 domain_name_full_ = "../domains/dom_APE/numeric_domain_APE_full.pddl"
 problem_name_full_ = "../domains/dom_APE/problem_temp.pddl"

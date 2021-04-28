@@ -6,17 +6,16 @@ import PySimpleGUI as sg 	# disabled for multiple run on docker
 import os
 import subprocess
 import re
-#import plotly.express as px
-#import pandas as pd
+import data_util
 
 
 #Set global variables
 
 GUI_Input = False               # (Bool) Activate the GUI for the setting of the problem conditions
 problem_name = "Custom.pddl"    # (str) Problem name, extension needed
-wd = "../domains/dom_APE"			# (str) Working directory
+wd = data_util.domains_wd			# (str) Working directory
 
-# Input variables if no gui active
+# Input default variables if no gui active
 waiter_number_global = 1            # (int) Number of waiters
 drink4table_global = [0, 2, 0, 0]   # list of (int) Drinks ordered for each table
 hot4table_global = [0, 0, 0, 0]     # list of (int) Hot drinks for table
@@ -24,10 +23,24 @@ table_number_global = 4             # number of tables present
 
 #Paramenters
 cwd = os.getcwd()
-template_wd = "templates"
+template_wd = data_util.template_wd
 
 def gui():
-
+    """
+    Simple text GUI to insert problem data
+    
+    Returns:
+        waiters (int):  number of waiters inserted
+        drink4table (list(int)):
+                        number of drinks for each table
+                        inserted
+        hot4table (list(int)):
+                        number of hot drinks for each
+                        table inserted
+        prb_name (string):
+                        path/to/problem_file inserted            
+    """
+    
     #GUI theme
     sg.theme('Topanga')  # Add some color to the window
 
@@ -46,7 +59,6 @@ def gui():
         [sg.Text('Problem Name:', size=(15, 1)), sg.InputText(problem_name)],
         [sg.Submit(), sg.Cancel()]
     ]
-
     # ----- Full layout -----
     layout = [[sg.Column(images_col, element_justification='c'), sg.VSeperator(),
                sg.Column(layout_input, element_justification='l')]]
@@ -63,7 +75,6 @@ def gui():
 
     # domain file check
     if prb_name[-5:] != ".pddl":
-
         print("Err: Invalid pddl domain file format.")
         sys.exit()
 
@@ -71,10 +82,19 @@ def gui():
 
 
 def headgoal_edit(wait_num, drink_num, hot_num):
-    """ This function reads the header and the goal templates and it fills it with the
-        required information received from the GUI"""
+    """
+    Generate headgoal text from template and
+    arguments
+    
+    Args:
+        wait_num (int):     number of waiters
+        drink_num (int):    total number of drinks
+        hot_num (int):      total number of hot drinks
+    Returns:
+        new_header (str):   edited header
+        new_goal (str):   edited goal
+    """
 
-    "Open the header and the goal txt file"
     header_name = "Domain_Header.txt"
     goal_name = "Domain_Goal.txt"
     header_file = open(cwd + "/" + template_wd + "/" + header_name, "r")
@@ -82,9 +102,7 @@ def headgoal_edit(wait_num, drink_num, hot_num):
     header_txt = header_file.read()
     goal_txt = goal_file.read()
 
-    "Look for placeholder 'drink'"
-
-    "Number of drinks and waiters required"
+    ### Look for placeholder 'drink'
     drinks = drink_num
     waiters = wait_num
     
@@ -139,11 +157,20 @@ def headgoal_edit(wait_num, drink_num, hot_num):
     return(new_header, new_goal)
 
 def init_edit(wait_num, d4t, h4t):
-    """ This function reads the init templates and it fills it with the
-        required information received from the GUI
-        """
+    """
+    Generate init text from template and
+    arguments
+    
+    Args:
+        wait_num (int):     number of waiters
+        d4t (list(int)):    total number of drinks for
+                            each table
+        h4t (int):          total number of hot drinks
+                            for each table
+    Returns:
+        init_txt (str):     edited init
+    """
 
-    "Open the header and the goal txt file"
     init_name = "Domain_Init.txt"
     init_file = open(cwd + "/" + template_wd + "/" + init_name, "r")
     init_txt = init_file.read()
@@ -155,38 +182,35 @@ def init_edit(wait_num, d4t, h4t):
     hot_4_table = h4t
 
     # Creates the required new strings for the init block
-        #waiter strings
+    ## waiter strings
     waiter_free_init = ""
     hand_free_init = ""
     waiter_init_pos = ""
-        #Drink strings
+    ## Drink strings
     drink_identity = ""
     
     ordered_by = ""
     hot_drink_string = ""
-        #Customers per table
+    ## Customers per table
     customers = ""
-        # place initially free
+    ## place initially free
     place_free_init = ""
-        # tray initially not carried by any waiter
+    ## tray initially not carried by any waiter
     tray_carried_init = ""
-        # A biscuit for each cold drink
+    ## A biscuit for each cold drink
     drink4biscuit_init = ""
-        # 
+    ## 
     biscuit_identity = ""
     ordered_biscuit = ""
 
     #Waiter predicates
     for wait_id in range(1, waiters+1):
-        #waiter time
-        #waiter_time_init = waiter_time_init + "(= (time-waiter w" + str(wait_id) + ") 0) \n"
         #waiter hand-free condition
         hand_free_init = hand_free_init + "(hand-free w" + str(wait_id) + ")\n\t\t"
         #waiter free condition
         waiter_free_init = waiter_free_init + "(free-waiter w" + str(wait_id) + ")\n\t\t"
         #tray not carried by waiter fluent
         tray_carried_init = tray_carried_init + "(= (fl-tray-carried w"+ str(wait_id) + ") 0)\n\t\t"
-        
         #waiter initial position
         if wait_id == 1:
             waiter_init_pos = waiter_init_pos + "(at-waiter w1 bar)\n\t\t"
@@ -202,21 +226,17 @@ def init_edit(wait_num, d4t, h4t):
         drink_id = 0
         biscuit_id  = 0
     for table_id in range(1, len(drink_4_table)+1):
-
         # Last delivered and empty time
         drinkspertable = drink_4_table[table_id-1]
 
         if drinkspertable != 0:
-            
             # Drinks predicates
             # Flag for hot drinks disabled
             hot_id = 0
 
             for ii in range(0, drinkspertable):
-
                 #Hot drinks per table
                 hot_drinks = hot_4_table[table_id - 1]
-
                 drink_id = drink_id + 1
                 # Identity
                 drink_identity = drink_identity + "(equals drink" + chr(64 + drink_id) + " drink" + chr(
@@ -250,47 +270,67 @@ def init_edit(wait_num, d4t, h4t):
     # Find the placeholders strings in the templates and replace it with the generated string
 
     init_txt = init_txt.replace(';WAITER_INITIAL_POS_PH', waiter_init_pos)
-        #waiter hand-free condition
+    ## waiter hand-free condition
     init_txt = init_txt.replace(';HAND_FREE', hand_free_init)
-        #waiter free condition
+    ## waiter free condition
     init_txt = init_txt.replace(';WAITER_FREE', waiter_free_init)
-        #tray not carried fluent
+    ## tray not carried fluent
     init_txt = init_txt.replace(';TRAY_NOT_CARRIED', tray_carried_init)
-        #drink identity
+    ## drink identity
     init_txt = init_txt.replace(';DRINK_IDENTITY_PH', drink_identity)
-        #biscuit identity
+    ## biscuit identity
     init_txt = init_txt.replace(';BISCUIT_IDENTITY_PH', biscuit_identity)
-        #places free at start
+    ## places free at start
     init_txt = init_txt.replace(';PLACE_FREE', place_free_init)
-        #customers per table
+    ## customers per table
     init_txt = init_txt.replace(';CUSTOMERS_PER_TABLE', customers)
-        #ordered by
+    ## ordered by
     init_txt = init_txt.replace(';ORDERED_BY_PH', ordered_by)
-        #ordered by
+    ## ordered by
     init_txt = init_txt.replace(';ORDERED_BISCUIT', ordered_biscuit)
-        #hot drinks
+    ## hot drinks
     init_txt = init_txt.replace(';HOT_FLAG', hot_drink_string)
-        #biscuit identity
+    ## biscuit identity
     init_txt = init_txt.replace(';DRINK_FOR_BISCUIT', drink4biscuit_init)
-        #
-
-    return(init_txt)
+    #
+    return init_txt
 
 def metric_edit():
-
-    "Read the metric txt file"
+    """
+    Edit metric
+    
+    For the moment it simply retrieves the
+    template one and returns it
+    
+    Returns:
+        metric_txt (str):   (un) edited metric
+    """
+    
     metric_name = "Domain_Metric.txt"
     metric_file = open(cwd + "/" + template_wd + "/" + metric_name, "r")
     metric_txt = metric_file.read()
-    return(metric_txt)
+    return metric_txt
 
 def edit(waiter_number, drink4table, hot4table, problem_name_full):
+    """
+    Wrapper for the various edit functions
+    
+    Args:
+        waiter_number (int):
+                            number of waiters
+        drink4table (list(int)):
+                            total number of drinks for
+                            each table
+        hot4table (list(int)):
+                            total number of hot drinks
+                            for each table
+        problem_name_full (str):
+                            path/to/problem_file to
+                            generate
+    """
+
     for ii in range(0, table_number_global):
         hot4table[ii] = min(drink4table[ii], hot4table[ii])
-        
-    #print(waiter_number)
-    #print(drink4table)
-    #print(hot4table)
 
     [header_new, goal_new] = headgoal_edit(waiter_number, sum(drink4table), sum(hot4table))
     init_new = init_edit(waiter_number, drink4table, hot4table)
@@ -304,11 +344,14 @@ def edit(waiter_number, drink4table, hot4table, problem_name_full):
 
 # Press the green button in the gutter to run the script.
 def main(argv):
-    """ This function asks the user to insert the number of
-        customers for each table and to specify the number of 
-        hot drinks for each of them and it automatically generates
-        the problem file for the pddl planning engine
     """
+    Generate a problem file compliant with our
+    domain from few user inputs
+    
+    Inputs can be passed either by command line
+    or GUI
+    """
+    
     usage = ("usage: pyhton3 " + argv[0] + "\n" +
              "(default values will be used in case options are not provided)\n" +
              "\t-f, --problem <arg>\tthe path and name of the PDDL problem file to generate\n" +

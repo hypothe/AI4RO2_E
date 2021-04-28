@@ -220,7 +220,18 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
     return x, z, regr, nof_regr_approx
     
 def plot_corr(z_dict, save_fig=False, show_fig=False):
-
+    """
+    Plot the correlation matrix graphs between the output
+    features
+    
+    Args:
+        z_dict (dict):      collection of output features
+        save_fig (bool):    wheter to save the plots (as pdf)
+                            or not
+        show_fig (bool):    wheter to show the plots (as pdf)
+                            or not
+    """
+    
     print("Generating correlation figures, please wait...")
     for hg_key, z in z_dict.items():
     
@@ -243,19 +254,45 @@ def plot_corr(z_dict, save_fig=False, show_fig=False):
         plt.close('ALL')
     
 def lim_d(d):
+    """
+    Lower axis extrema
+    """
     md = min(d)
     return 1.1*md if md<0 else 0.9*md
 def lim_u(u):
+    """
+    Upper axis extrema
+    """
     mu = max(u)
     return 1.1*mu if mu>0 else 0.9*mu
 
 def delog_predict(model, x, y):
+    """
+    Get the predicted value given 2 input features
+    """
     return math.exp(model.predict([[x,y]]))
-    
+
+### Vectorization of the prediction function    
 predict_approx = np.vectorize(delog_predict, excluded=[0])
-   
+
     
 def plot_graphs(k,j, nof_regr_approx, save_fig=False, show_fig=False):
+    """
+    Plot the goal prediction graphs
+    
+    The x and y axes represent the 2 most important features
+    for the 2-features RFE model, while the z axis shows real
+    data as colored points and the regression curve generated
+    by the model.
+    
+    Args:
+        k (dict):           collection of input features
+        j (dict):           collection of output features
+        save_fig (bool):    wheter to save the plots (as pdf)
+                            or not
+        show_fig (bool):    wheter to show the plots (as pdf)
+                            or not
+    """
     print("Generating goal graphs, please wait...")
     # Display correlation matrix of ther output
     goals = data_util.regr_goals_
@@ -309,6 +346,10 @@ def plot_graphs(k,j, nof_regr_approx, save_fig=False, show_fig=False):
 
 
 def main(argv):
+    """
+    Script to perform regression and check correlation between data
+    on the results of multiple planning engin run, collected in a csv.
+    """
     
     h_val = 1.0
     g_val = 1.0
