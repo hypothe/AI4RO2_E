@@ -188,18 +188,12 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
                     rfe.fit(X_train, y_train)
                     nof_coef = rfe.estimator_.named_steps.linear_regression.coef_
                     nof_supp = list(compress(pars, rfe.support_))
-                    
                     ## coef of the nof most impacting features
                     nof_regr_approx[hg_key][dd] = rfe.estimator_
-                   
                     setattr(nof_regr_approx[hg_key][dd], "pars", nof_supp)
 
             lr_score[dd] = cross_val_score(lin_regressor[dd], X_train, y_train, cv=5)
             
-            ### TODO: for the moment, if a model is deemed unable to provide trustworthy results
-            ######### (here evaluated thanks to r^2) it is simply ignored
-            ######### In the future would be interesting to perhaps make this value impact the quality
-            ######### of the solution found in 'run.py'
 
             #Display regression output
             print("Hw: {}\tGw: {}".format(hg_key[0], hg_key[1]))
@@ -213,15 +207,21 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
             print("The {} most relevat features are: {}".format(lin_regressor[dd].n_features_,
                                                                 list(compress(pars, lin_regressor[dd].support_))))
             print("##-------------##")
-            
+        
+        ### TODO: for the moment, if a model is deemed unable to provide trustworthy results
+        ######### (here evaluated thanks to r^2) it is simply ignored
+        ######### In the future would be interesting to perhaps make this value impact the quality
+        ######### of the solution found in 'run.py'    
         if all(val.mean() > 0.5 for val in lr_score.values()):
             regr[hg_key] = {des:regr for des,regr in lin_regressor.items()}
             
         print("#################")
+        
     return x, z, regr, nof_regr_approx
     
-def plot_corr(z_dict, save_fig=False):
-    print("Plotting correlation figures, please wait...")
+def plot_corr(z_dict, save_fig=False, show_fig=False):
+
+    print("Generating correlation figures, please wait...")
     for hg_key, z in z_dict.items():
     
         plotname = "corr " + str(hg_key)
@@ -235,11 +235,12 @@ def plot_corr(z_dict, save_fig=False):
         g.fig.canvas.set_window_title(plotname)
         #Save figure   
         if save_fig:
-            plt.savefig(graphs_wd+"/Correlation_Matrix" + str(hg_key) + ".pdf")
+            plt.savefig(graphs_wd+"/Correlation_Matrix_"+str(hg_key[0])+"_"+str(hg_key[1]) + ".pdf")
             
-    plt.show(block=False)       
-    input("Close open correlation matrix windows...")
-    plt.close('ALL')
+    if show_fig:        
+        plt.show(block=False)       
+        input("Close open correlation matrix windows...")
+        plt.close('ALL')
     
 def lim_d(d):
     md = min(d)
@@ -254,7 +255,8 @@ def delog_predict(model, x, y):
 predict_approx = np.vectorize(delog_predict, excluded=[0])
    
     
-def plot_graphs(k,j, nof_regr_approx, save_fig=False):
+def plot_graphs(k,j, nof_regr_approx, save_fig=False, show_fig=False):
+    print("Generating goal graphs, please wait...")
     # Display correlation matrix of ther output
     goals = data_util.regr_goals_
     plot_num = 111
@@ -271,7 +273,7 @@ def plot_graphs(k,j, nof_regr_approx, save_fig=False):
             x = k[hg_key][pars[0]]
             y = k[hg_key][pars[1]]
             
-            figname = name + str(hg_key)
+            figname = name + "_" + str(hg_key[0])+"_"+str(hg_key[1]) 
             fig = plt.figure(figname)
             filename = graphs_wd+"/"+figname.replace(" ", "_")+".pdf"
             
@@ -299,11 +301,11 @@ def plot_graphs(k,j, nof_regr_approx, save_fig=False):
             fig.colorbar(plot)
             if save_fig:
                 plt.savefig(filename)
-            
-    plt.show(block=False)
-        
-    input("Close open windows...")
-    plt.close('ALL')
+                
+    if show_fig:        
+        plt.show(block=False)
+        input("Close open windows...")
+        plt.close('ALL')
 
 
 def main(argv):
@@ -370,10 +372,10 @@ def main(argv):
             ## load already explored drinks configurations
             
         ### SAVE REGR WITH PICKLE
-        if show_corr_plot:    
-            plot_corr(z, save_fig = save_fig)
-        if show_goal_plot:    
-            plot_graphs(k, z, nof_regr_approx, save_fig = save_fig)    
+        if show_corr_plot or save_fig:    
+            plot_corr(z, save_fig = save_fig, show_fig = show_corr_plot)
+        if show_goal_plot or save_fig:    
+            plot_graphs(k, z, nof_regr_approx, save_fig = save_fig, show_fig = show_goal_plot)    
              
         ## save regression model
         with open(regr_name_full_, 'wb') as f:
