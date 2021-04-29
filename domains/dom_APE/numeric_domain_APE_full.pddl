@@ -90,6 +90,10 @@
 							(free-barista)
 						)
 	)
+	
+	; fl-drink-cooling will decrease only for hot drinks
+	; and will remain 4 for cold drinks, despite what the
+	; name might suggest.
 		
 	(:process 	p-drink-cooling
 		:parameters		(?d - Drink)
@@ -98,8 +102,14 @@
 							(> (fl-hot ?d) 0)
 						)
 		:effect			(decrease (fl-drink-cooling ?d) #t)
-	)	;notice it will be stopped by the drink being delivered
+	)
 	
+	; This process models the cooling a hot drink is affected by
+	; from the moment it is produced up until its consumption.
+	; The value of fl-drink-cooling will be checked in when
+	; attempting to deliver a drink, making it impossible to
+	; deliver a cold-down hot drink .
+	; Notice it will be stopped by the drink being delivered
 	;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 	;;;;;	SERVING	;;;;;;
@@ -115,6 +125,10 @@
 						)
 	)
 	
+	; To model the fact each table is served by one
+	; and only one waiter. A waiter must have "booked"
+	; a table before serving it, and such choice is not
+	; modifiable later on.
 	;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 	;;;;;	DELIVERY	;;;;;;
@@ -154,6 +168,12 @@
 						)
 	)
 	
+	; Notice that a hot drink must not have cooled down
+	; before reaching a table (>= (fl-drink-cooling ?d) 0)
+	; (see "p-drink-cooling")
+	; Furthermore, as soon as the drink is delivered it's
+	; assigned a "consumption length" which will be decreased
+	; in order to model it being drunk by a customer.
 	;;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 	;;;;;	MOVE WAITER	;;;;;
@@ -250,7 +270,10 @@
 							(decrease (fl-customers ?t) 1)
 						)
 	)
-	
+	; As soon as the drink is delivered it starts being
+	; consumed by a customer. Once 4 time units have
+	; passed the event will be triggered, removing
+	; the customer from the table.
 	;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 	;;;;;;;	BISCUIT	;;;;;;;;;
@@ -276,9 +299,28 @@
 							(drink-for-biscuit ?d ?b)
 						)
 		:effect			(decrease (fl-drink-cooling ?b) #t)
-						;(assign (fl-drink-cooling ?b) (* 1 (fl-drink-consuming-len ?d)))
 	)
-	
+	; A Biscuit is an "order" item too, so it can be
+	; served in the same way a Drink is. Each biscuit
+	; needs to be directly modeled in the problem file
+	; not unlike drinks are, and needs also to be
+	; associated to a cold drink.
+	; A biscuit is demanded as soon as its associated
+	; drink is served and start thus being consumed
+	; (the drink is assumed to correctly be defined as
+	; cold in the problem fiel, but not enforced here as
+	; the specifics did not forbid, theoretically, to
+	; associate a biscuit to a hot drink).
+	;
+	; In order to model the fact each biscuit needs
+	; to be delivered before the relative drink is
+	; completely consumed and the client removed
+	; a process updates the "remaining time" for a
+	; biscuit, with an abuse of notation using
+	; fl-drink-cooling predicate, so that it would
+	; automatically not qualify as "deliverable"
+	; by a waiter in the same way a cold-down drink
+	; would be treated.
 	;;;;;;;;;;;;;;;;;;;;;;;;;
 	
 	;;;;;;;	TRAY	;;;;;;;;;
@@ -288,8 +330,8 @@
         :precondition	(and 
 							(at-waiter ?w ?t)
                             (not (equals ?d1 ?d2))
-							(hand-free ?w)(not (tray-taken))(tray-empty)
 							(order-ready ?d1)(order-ready ?d2)
+							(hand-free ?w)(not (tray-taken))(tray-empty)
 						)
         :effect (and  (not(order-ready ?d1))(not(order-ready ?d2))
 						(not (hand-free ?w))(tray-taken)(not (tray-empty))
@@ -372,7 +414,29 @@
 							(hand-free ?w)
 						)
 	)
-	
+	; Notice that picking and removing orders
+	; from the tray has been modeled explicitly
+	; using a sequence of actions (eg. remove the
+	; third, remove the second, remove the first).
+	; A solution modeling the number of drinks on
+	; the tray with a fluent and using a single
+	; action for picking and one for delivering
+	; was developed but did not improve in the
+	; performances of the planning engine and
+	; was discarded (but can still be found
+	; among the variations files).
+	;
+	; An inquisitive reader will notice that no
+	; "pick-1-tray" is present: there's no reason
+	; for a waiter to pick a tray for one individual
+	; drink, since it would slow them down with
+	; respect to simply using their hands. Hence,
+	; the tray is collected only when two orders
+	; are present at the same time at the bar.
+	; This slightly enlarges the grounding space
+	; for the action, fact which is partially
+	; compensated by forcing the action to occour
+	; only at the Bar (a singleton type).
 	;;;;;;;;;;;;;;;;;;;;;;;;;
 )
        
