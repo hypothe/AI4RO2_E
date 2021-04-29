@@ -171,7 +171,6 @@ def get_best_hg(regr_dict, problem_filename):
     best_out = float('inf')
     ## Parse problem file
     n_waiters, drink4table, hot4table = parse.parse_problem(problem_filename)
-    print(drink4table)
     
     tot, avg_x, avg_y, _, _ = data_util.avg_drink_pos(drink4table)
     hot_tot, hot_avg_x, hot_avg_y, _, _ = data_util.avg_drink_pos(hot4table)
@@ -190,8 +189,6 @@ def get_best_hg(regr_dict, problem_filename):
         for goal, regr in regr_list.items():
             prediction = regr.predict([params])
             pred_goals[goal] = round(math.exp(prediction))
-            print(goal)
-            print(prediction)
             exp_out.append(Q_weights[goal]*prediction)
             ## Log scale chosen
             # exp_out.append(Q_weights[goal]*pred_goals[goal])
