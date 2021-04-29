@@ -77,7 +77,7 @@ $ sudo apt-get install openjdk-8-jdk
 $ sudo apt-get update
 ```
 - Run the "compile" and the "install" script
-- Add the "enhsp" path in the ".bashrc" file
+- (Add the "enhsp" path in the ".bashrc" file if you want to be able to launch it from everywhere on your system)
 
 The planner can be then executed from the root folder using the following command:
 ```
