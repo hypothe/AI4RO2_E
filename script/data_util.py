@@ -1,8 +1,6 @@
 import numpy as np
 
-#engine_path = "/root/ENHSP-Public/enhsp"
-#engine_path = "/root/AI4RO_II/ENHSP-public/enhsp"
-engine_path = "/root/ENHSP-20/enhsp"
+engine_path = "/root/ENHSP-Public/enhsp"
 
 domains_wd = "../domains/dom_APE"
 out_wd = "../output"

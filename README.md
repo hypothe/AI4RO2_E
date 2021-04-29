@@ -66,8 +66,11 @@ the release 20 has been chosen for this specific application.
 
 ### Compiling enhsp-20
 
-- Cloning the repository from the above mentioned link.
-- Pulling the "enhsp-20" branch
+- Cloning the repository from the above mentioned link (place it in the `root/` directory or modify the variable `enigne_path` in `data_util.py` to match the path to enhsp executable in your machine).
+- Pulling the "enhsp-20" branch and executing the checkout
+```
+$ root/ENHSP-Public/$ git checkout enhsp-20
+```
 - Install the java 1.8 dependencies
 ```
 $ sudo apt-get install openjdk-8-jdk
@@ -80,4 +83,6 @@ The planner can be then executed from the root folder using the following comman
 ```
 ./enhsp -o <domain_file> -f <problem_file> -planner <string> (main options: sat, aibr, opt, lm_opt)
 ```
+
+> Note: installation steps might differ depending on your system or higher Java version could be needed. Instructions should be easily found online but in case you were still unable to download it, reach out to us and we'll see what we can do!
 

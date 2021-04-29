@@ -162,10 +162,10 @@ Required python libraries:
   - tertools
 
 ENHSP-20 compiled from source is also needed to solve the domain-problem couple. By default the position of the planner executable
-is assumed at `/root/ENHSP-20`, to change it open `run.py` and modify the `engine_path` global variable.
+is assumed at `/root/ENHSP-Public`, to change it open `run.py` and modify the `engine_path` global variable.
 Notice that the off-the-shelf ENHSP-20 compiled version was discarded due to it not managing to set hw, gw appropriately (despite passing them from command line)
 
-To display the plots in latex style a texlive full version has to be installed
+To display the plots in latex style (option by default disabled) a texlive full version has to be installed
 ```
 sudo apt-get install texlive-full
 ```
