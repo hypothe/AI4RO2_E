@@ -127,7 +127,7 @@ python3 build.py -g
 ```
 Input in the GUI the desired problem features and press submit.
 
-![Image](hypothe/AI4RO2_E/scripts/Group_E.png?raw=true)
+![Image](../hypothe/AI4RO2_E/scripts/Group_E.png?raw=true)
 
 It generates a "Group_E.pddl" problem in the deafult folder "../AI4RO2_E/domains/dom_APE".
 
