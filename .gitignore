@@ -57,6 +57,7 @@ __pycache__
 
 ## Temp Files
 temp_output*
+problem_temp_*
 
 ## Graphs
 *.pdf
