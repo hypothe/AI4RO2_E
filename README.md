@@ -52,7 +52,7 @@ The APE domains and problems generated via the python scripts are suitable to be
 
 [here](https://gitlab.com/enricos83/ENHSP-Public/-/tree/enhsp-20).
 
-That planners has been tested on Ubuntu 18.04 and 20.04 and different planning engines have been  tested as well.
+That planners has been tested on Ubuntu 18.04 and 20.04 and different planning engines have been evaluated as well.
 
 Note: 
 - both the enhsp 19 and 20 have been tested but, due to performance reasons on most of the generate problems (not generalizable to any problem),
