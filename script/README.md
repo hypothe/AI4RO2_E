@@ -2,28 +2,14 @@
 
 ## Scripts
 
-The *script* folder contains the five scripts used to handle the workflow for the automatic generation and run of pddl problems.
-CHECK QUA
-
-A further script has been introduced to perfor a sensitivity analysis for the identification of the optimal wA* parameters.
-The scripts can be launched sequentially to perform the full evaluation of a single or multiple problems,
+The *script* folder contains the scripts used to handle the workflow for the automatic generation and run of pddl problems.
+The scripts can be used separately and launched sequentially to perform the full evaluation of a single or multiple problems,
 but can also be used independently if need.
 
-### test_data.py
+The *test_data.py* script instead, can be used to perform a batch of runs and collect the information about the planning engine performance.
+Data have been stored and processed di the *correlation.py* script for training a linear regression model aimed to identify the optimal wA* parameters.
 
-```
-python3 test_data.py (--opt-args)
-```
-Script that:
-1. generates a fixed number of problems among all possible problems with a maximum amount of drinks per table and total drinks ordered; it avoids repetition of cases checked for in the past by looking at their rercord in the file `drinks_explored.pkl` under the folder `lib` (which is updated each time with the new ones)
-2. runs them all with a collection of hw, gw values
-3. parses the output of all runs for all problems and saves everything in a csv file
-
-The command line parameters can be used to set:
-- the number of random problems to generate and test
-- the timeout for each run
-
-> This script should not be run directly from the end user ideally (assuming a completely trained model).
+Below is reported a main description of the implemented scripts together with a example case workflow for the generation, run and analysis of a generic problem.
 
 ### build.py
 
@@ -34,11 +20,11 @@ This script can be used to generate a pddl problem file fully compatible with th
 (aka using actions, processes and events implementing the full specifics of the assignment).
 
 The optional input arguments of this script are:
-- *-f* : problem path and name (with extension)      
-- *-w* : number of waiters                 
+- *-f* : problem path and name (with extension)     
+- *-w* : number of waiters                
 - *-d* : number of total drinks per table
 - *-t* : number of hot drinks per table
-- *-g* : GUI trigger for a user friendy inputs insertion 
+- *-g* : GUI trigger for a user friendly inputs insertion
 
 If launched with no parameters, the scripts generate a default test problem.
 
@@ -49,25 +35,25 @@ python3 run.py (--opt-args)
 ```
 This scripts automatically runs multiple instances of a specified .pdd problem with the
 "APE full" domain via the enhsp solver.
-The problem is solved consigering a series of different values of the h and g weights 
+The problem is solved considering a series of different values of the h and g weights
 for the used A* heuristic algorithm.
 
 If launched with no parameters a default run with the default test problem will be performed, and the results
 will be saved in a .txt file (by default in the _output_ folder)
 
-The optional input arguents of this script are:
-- *-f* : pddl problem file name (with .pddl extension) 
+The optional input arguments of this script are:
+- *-f* : pddl problem file name (with .pddl extension)
 - *-n* : name and path of the output file
 - *-o* : pddl domain file name (with p.ddl extension)
 - *-p* : pddl location folder path
 - *-t* : maximum allowed running time (default value = 120 seconds)
 - *-s* : if invoked the output of each run does not show up on the terminal
-- *-M* : ML approach to automaticalyi select from a pretrained linear regression model the optimal A* heuristic and gradient weights [hw, gw]
+- *-M* : ML approach to automatically select from a pre-trained linear regression model the optimal A* heuristic and gradient weights [hw, gw]
 - *--gw* : list of investigated gradient weights ([gw1, gw2, ...] as list of floats)
 - *--hw* : list of investigated heuristic weights ([gw1, gw2, ...] as list of floats)
 
 This script is where the magic happens: by passing the argument `-M` as a command line flag the system will autonomously find what it
-assumes to be the best [hw,gw] (or, at least, the best values among a finite list it has). 
+assumes to be the best [hw,gw] (or, at least, the best values among a finite list it has).
 This result is obtained thanks to a Linear Regression smart agent pre-trained on several random configurations for which it has stored the quality of the solution
 for a set of [hw, gw] (_see_ `test_data.py` _and_ `correlation.py` _for more info_).
 The file to run is parsed in order to gather details on it's structure (_number of waiters, total drinks and hot drinks, metrics on their position_), which are then passed as input to the set of Linear Regression models in order to find an approximation of the quality of the solution for each weight couple [hw, gw]. The couple yielding the best expected quality is thus selected and used for the run.
@@ -77,14 +63,13 @@ The file to run is parsed in order to gather details on it's structure (_number 
 ```
 python3 parse.py (--opt-args)
 ```
-With this script it's possibile to parse an output file generated by `run.py`, composing a dictionary that
+With this script it's possible to parse an output file generated by `run.py`, composing a dictionary that
 stores, for each "interesting" parameter of the solution, the values obtained for it by varying **h** and **g**.
-That relation is thus plotted and saved as pdf in the folder _graphs_.
 
 With the parameters is possible to set:
-- name and location of the file to be parsed
-- plots can be set to 3D view instead of the default 2D+color
-- LaTeX style can be adopted in those graphs (requires `sudo apt-get install texlive-full`)
+- *-n* : name and location of the file to be parsed
+
+the script is also automatically invoked by the *run.py* one to immediately read the obtained results.
 
 > This script should not be run directly from the end user ideally.
 
@@ -93,16 +78,34 @@ With the parameters is possible to set:
 ```
 python3 correlation.py
 ```
-This script is the one that can be used to train a collection of Linear Regression models; two models are trained for each pair of [hw, gw], one learning to predict the solution's "Duration" and one the "Search Time" that the planner will take to find it.
-The dictionary of models is saved in a pickle file, `regr_model.pkl` under the folder `lib`, and is accessed by `run.py` when the flag `-M` is passed to it. Notice that, actually, what the model learns are the logarithms of such two metrics, a relation that was decided after inspecting the data trends for multiple runs (which can be plotted with an appropriate flag)
+This script is the one that can be used to train a collection of Linear Regression models; two models are trained for each pair of [hw, gw], one learning model to predict the solution's "Duration" and one the "Search Time" that the planner will take to find it.
+The dictionary of models is saved in a pickle file, `regr_model.pkl` under the folder `lib`, and is accessed by `run.py` when the flag `-M` is passed to it.
+It is worth to note that the model is trained on the logarithms of such two metrics. This relation has been defined after inspecting the data trends for multiple runs (which can be displayed with an appropriate flag).
 
-Here the cmd parameters can be used to:
-- pass the path and name of the csv to read data from
-- toggle the plotting of the figures demonstrating the correlation between some of the problem's features
-- save such plots as pdf files
-- specify for which h,g values to plot data (default is [1.0, 1.0])
+Here the command parameters that can be used:
+- *-c* : pass the path and name of the csv to read data from
+- *-d* : a couple of heuristic and gradient weights (default is [1.0, 1.0])
+- *-g* : to visualize the output metrics
+- *-p* : to visualize the correlation matrix of the outputs
+- *-x* : LaTeX style can be adopted in those graphs (requires `sudo apt-get install texlive-full`)
+- *-s* : save the plots in pdf files
+ 
+### test_data.py
 
-> This script should not be run directly from the end user ideally (assuming a completely trained model)..
+```
+python3 test_data.py (--opt-args)
+```
+
+Script that:
+1. generates a fixed number of problems among all possible problems with a maximum amount of drinks per table and total drinks ordered; it avoids repetition of cases checked for in the past by looking at their rercord in the file `drinks_explored.pkl` under the folder `lib` (which is updated each time with the new ones)
+2. runs them all with a collection of hw, gw values
+3. parses the output of all runs for all problems and saves everything in a csv file
+
+The command line parameters for this script are:
+- *-n* : the number of random problems to generate and test
+- *-t* : the timeout for each run
+
+> This script should not be run directly from the end user ideally (assuming a completely trained model).
 
 ### data_util.py
 
@@ -116,7 +119,7 @@ This script simply contains some util functions and variables to coordinate the 
 
 # Example
 
-As example, here below, are listed the actions needeed to generate and solve a pddl problem via the GUI.
+As example, here below, are listed the actions needed to generate and solve a pddl problem using the GUI.
 
 ```
 cd ../AI4RO2_E/scripts/
@@ -124,32 +127,25 @@ python3 build.py -g
 ```
 Input in the GUI the desired problem features and press submit.
 
-IMAGE HERE!!!!
+![Image](..//script/Group_E.png?raw=true)
 
-It generates a "Group_E.pddl" problem in the deafult folder "../AI4RO2_E/domains/dom_APE" folder
-
-```
-python3 run.py -f ../AI4RO2_E/domains/dom_APE/Group_E.pddl -o ../AI4RO2_E/domains/dom_APE/numeric_domain_APE_full.pddl --hw [1] --gw [1, 3]  
-```
-It runs the "Group_E.pddl" problem with the compatible "numeric_domain_APE_full.pddl" domain and it generates the output file "output_Group_E.txt" in the  
-default output folder "../AI4RO2_E/output".
-The plan is searched for all the possbile combinaton of the heuristc weights [1] and the gradient weight [1, 3].
-Alternatively, if the -M is 
-To extract the relveant pieces of information the "parse.py" script is executed by the "run.py" script.
-
-Once that several analyses have been solved (or not) and the results stored in the 
-the correlation.py script can be run to read from the summary output file "../AI4RO_2/lib/hg_val_20_300.csv" to read the results and display the goal values (-g) and the correlation matrix of the runs (-p). Graphs are finally saved (-s option).
+It generates a "Group_E.pddl" problem in the default folder "../AI4RO2_E/domains/dom_APE".
 
 ```
-python3 correlation.py -c ../AI4RO_2/lib/hg_val_20_300.csv -g -p -s
+python3 run.py -f ../AI4RO2_E/domains/dom_APE/Group_E.pddl -o ../AI4RO2_E/domains/dom_APE/numeric_domain_APE_full.pddl --hw [1] --gw [1, 3] -t 120
 ```
+This command runs the "Group_E.pddl" problem with the compatible "numeric_domain_APE_full.pddl" domain and it generates the output file "output_Group_E.txt" in the 
+default output folder "../AI4RO2_E/output"; a cut of running time for reaching a plan has also been set to 120 seconds.
+The plan is searched for all the possible combination of the heuristic weights [1] and the gradient weight [1, 3].
+Alternatively, if the -M is
+To extract the relevant pieces of information the "parse.py" script is executed by the "run.py" script.
  
 ## Dependencies
 
 Python3 is needed to launch those scripts.
 
 Required python libraries:
-  
+ 
   - itertools
   - math
   - matplotlib
@@ -160,7 +156,7 @@ Required python libraries:
   - re
   - seaborn
   - signal
-  - sklearn  
+  - sklearn 
   - statsmodels
   - subprocess
   - tertools
@@ -168,3 +164,9 @@ Required python libraries:
 ENHSP-20 compiled from source is also needed to solve the domain-problem couple. By default the position of the planner executable
 is assumed at `/root/ENHSP-20`, to change it open `run.py` and modify the `engine_path` global variable.
 Notice that the off-the-shelf ENHSP-20 compiled version was discarded due to it not managing to set hw, gw appropriately (despite passing them from command line)
+
+To display the plots in latex style a texlive full version has to be installed
+```
+sudo apt-get install texlive-full
+```
+
