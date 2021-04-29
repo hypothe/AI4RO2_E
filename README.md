@@ -52,12 +52,14 @@ The APE domains and problems generated via the python scripts are suitable to be
 
 [here](https://gitlab.com/enricos83/ENHSP-Public/-/tree/enhsp-20).
 
-That planners has been tested on Ubuntu 18.04 and 20.04 and different .
+That planners has been tested on Ubuntu 18.04 and 20.04 and different planning engines have been  tested as well.
 
 Note: 
-- both the versions of enhsp 19 and 20 version have been tested but, due to performance reasons on most of the generate problems (not generalizable to any problem),
-the release 20 has been chosen in this specific application.
-- the off-the-shelf compiled version was discarded due to it not managing to set hw, gw appropriately (despite passing them from command line)
+- both the enhsp 19 and 20 have been tested but, due to performance reasons on most of the generate problems (not generalizable to any problem),
+the release 20 has been chosen for this specific application.
+- the off-the-shelf compiled version was discarded due to it not managing to set hw, gw appropriately (despite passing them from command line).
+- metric-ff has been used for a numeric like description of the problem but, due to difficultie in teh implementation of the second waiter extension, this 
+  planning engine has been abondoned.
 
 ### Compiling enhsp-20
 
@@ -75,9 +77,3 @@ The planner can be then executed from the root folder using the following comman
 ```
 ./enhsp -o <domain_file> -f <problem_file> -planner <string> (main options: sat, aibr, opt, lm_opt)
 ```
-
-## TODO
-
-- Why is problem APE3_full so much harder to deal with compared with AP2_full? Is it the fact that all 4 drinks are hot, or is it because they are spread between tables? Investigate.
-- Test APE_full domain substituting pick-N, drop-N with fluents (Tested by Marco and underperforming the case with 2  different dedicated actions for picking up and dropping more than one drink/bisquit)
-- A lot of the efficiency depends on the gw value... is it possible to find a correlation between some problem variables and its "close-to-optimal" value? ... Some ML agent perhaps? Multi linear interpolation perhaps?
