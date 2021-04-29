@@ -2,12 +2,14 @@
 
 ## Scripts
 
-The *script* folder contains the five scripts used to handle the workflow for the automatic generation and run of pddl problems.
-CHECK QUA
-
-A further script has been introduced to perfor a sensitivity analysis for the identification of the optimal wA* parameters.
-The scripts can be launched sequentially to perform the full evaluation of a single or multiple problems,
+The *script* folder contains the scripts used to handle the workflow for the automatic generation and run of pddl problems.
+The scripts can be used separately and launched sequentially to perform the full evaluation of a single or multiple problems,
 but can also be used independently if need.
+
+The *test_data.py* script instead, can be used to perform a batch of runs and collect the information about the planning engine performance.
+Data have been stored and processd di the *correlation.py* script for training a linear regression model aimed to identify the optimal wA* parameters.
+
+Below is reported a main description of the implemneted scripts together with a example case workflow for the generation, run and analysis of a generic problem. 
 
 ### build.py
 
@@ -76,17 +78,17 @@ the script is also atumatically invoked by the *run.py* one to immediately read 
 ```
 python3 correlation.py
 ```
-This script is the one that can be used to train a collection of Linear Regression models; two models are trained for each pair of [hw, gw], one learning to predict the solution's "Duration" and one the "Search Time" that the planner will take to find it.
-The dictionary of models is saved in a pickle file, `regr_model.pkl` under the folder `lib`, and is accessed by `run.py` when the flag `-M` is passed to it. Notice that, actually, what the model learns are the logarithms of such two metrics, a relation that was decided after inspecting the data trends for multiple runs (which can be plotted with an appropriate flag)
+This script is the one that can be used to train a collection of Linear Regression models; two models are trained for each pair of [hw, gw], one learning model to predict the solution's "Duration" and one the "Search Time" that the planner will take to find it.
+The dictionary of models is saved in a pickle file, `regr_model.pkl` under the folder `lib`, and is accessed by `run.py` when the flag `-M` is passed to it. 
+It is woth to nota that the model is trained on the logarithms of such two metrics. This relation has been defined after inspecting the data trends for multiple runs (which can be displayed with an appropriate flag).
 
-Here the cmd parameters can be used to:
-- pass the path and name of the csv to read data from
-- toggle the plotting of the figures demonstrating the correlation between some of the problem's features
-- save such plots as pdf files
-- specify for which h,g values to plot data (default is [1.0, 1.0])
-- plots can be set to 3D view instead of the default 2D+color
-- LaTeX style can be adopted in those graphs (requires `sudo apt-get install texlive-full`)
-
+Here the command parameters that can be used:
+- *-c* : cpass the path and name of the csv to read data from 
+- *-d* : a couple of heuristic and greadinet weights (default is [1.0, 1.0])
+- *-g* : to vilualize the output metrics
+- *-p* : to vislualize the correlation matrix of the outputs
+- *-x* : LaTeX style can be adopted in those graphs (requires `sudo apt-get install texlive-full`)
+- *-s* : save the plots in pdf files
  
 ### test_data.py
 
@@ -137,13 +139,6 @@ default output folder "../AI4RO2_E/output"; a cut of running time for reaching a
 The plan is searched for all the possbile combinaton of the heuristc weights [1] and the gradient weight [1, 3].
 Alternatively, if the -M is 
 To extract the relveant pieces of information the "parse.py" script is executed by the "run.py" script.
-
-Once that several analyses have been solved (or not) and the results stored in the 
-the correlation.py script can be run to read from the summary output file "../AI4RO_2/lib/hg_val_20_300.csv" to read the results and display the goal values (-g) and the correlation matrix of the runs (-p). Graphs are finally saved (-s option).
-
-```
-python3 correlation.py -c ../AI4RO_2/lib/hg_val_20_300.csv -g -p -s
-```
  
 ## Dependencies
 
@@ -169,3 +164,8 @@ Required python libraries:
 ENHSP-20 compiled from source is also needed to solve the domain-problem couple. By default the position of the planner executable
 is assumed at `/root/ENHSP-20`, to change it open `run.py` and modify the `engine_path` global variable.
 Notice that the off-the-shelf ENHSP-20 compiled version was discarded due to it not managing to set hw, gw appropriately (despite passing them from command line)
+
+To display the plots in latex style a texlive full version has to be installed
+```
+sudo apt-get install texlive-full
+```
