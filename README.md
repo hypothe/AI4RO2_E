@@ -15,7 +15,7 @@ AI4RO2_E/
                <pddl domain and problem files including actions, processes and events (full specifics of the assignment including extensions)>
         dom_numeric/
                |
-               <pddl domain and problem files including fluents, compatible with metric-ff (full specifics of the assignment, not including the two waiters and the buiscut                     extensions)>
+               <pddl domain and problem files including fluents, compatible with metric-ff (full specifics of the assignment, not including the two waiters and the buiscut extensions)>
     lib/
        |
        <sensitivity analysis dataset containing the relevant pieces of information and results for each problem run>
