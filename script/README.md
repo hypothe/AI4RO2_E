@@ -117,7 +117,7 @@ This script simply contains some util functions and variables to coordinate the 
 
 # Example
 
-As example, here below, are listed the actions needeed to generate and solve a pddl problem via the GUI.
+As example, here below, are listed the actions needeed to generate and solve a pddl problem using the GUI.
 
 ```
 cd ../AI4RO2_E/scripts/
