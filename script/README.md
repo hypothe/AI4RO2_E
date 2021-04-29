@@ -2,8 +2,10 @@
 
 ## Scripts
 
-Four scripts compose the workflow for the automatic generation and run of pddl problems
-and its relative sensitivity analysis for the identification of the optimal wA* parameters.
+The *script* folder contains the five scripts used to handle the workflow for the automatic generation and run of pddl problems.
+CHECK QUA
+
+A further script has been introduced to perfor a sensitivity analysis for the identification of the optimal wA* parameters.
 The scripts can be launched sequentially to perform the full evaluation of a single or multiple problems,
 but can also be used independently if need.
 
@@ -108,27 +110,61 @@ Here the cmd parameters can be used to:
 python3 data_util.py
 ```
 
-This script simply contains some util functions.
+This script simply contains some util functions and variables to coordinate the workflow.
 
 ---
 
+# Example
+
+As example, here below, are listed the actions needeed to generate and solve a pddl problem via the GUI.
+
+```
+cd ../AI4RO2_E/scripts/
+python3 build.py -g
+```
+Input in the GUI the desired problem features and press submit.
+
+IMAGE HERE!!!!
+
+It generates a "Group_E.pddl" problem in the deafult folder "../AI4RO2_E/domains/dom_APE" folder
+
+```
+python3 run.py -f ../AI4RO2_E/domains/dom_APE/Group_E.pddl -o ../AI4RO2_E/domains/dom_APE/numeric_domain_APE_full.pddl --hw [1] --gw [1, 3]  
+```
+It runs the "Group_E.pddl" problem with the compatible "numeric_domain_APE_full.pddl" domain and it generates the output file "output_Group_E.txt" in the  
+default output folder "../AI4RO2_E/output".
+The plan is searched for all the possbile combinaton of the heuristc weights [1] and the gradient weight [1, 3].
+Alternatively, if the -M is 
+To extract the relveant pieces of information the "parse.py" script is executed by the "run.py" script.
+
+Once that several analyses have been solved (or not) and the results stored in the 
+the correlation.py script can be run to read from the summary output file "../AI4RO_2/lib/hg_val_20_300.csv" to read the results and display the goal values (-g) and the correlation matrix of the runs (-p). Graphs are finally saved (-s option).
+
+```
+python3 correlation.py -c ../AI4RO_2/lib/hg_val_20_300.csv -g -p -s
+```
+ 
 ## Dependencies
 
 Python3 is needed to launch those scripts.
+
 Required python libraries:
+  
+  - itertools
+  - math
+  - matplotlib
+  - mpl_toolskits
   - numpy
   - pandas
-  - matplotlib
-  - seaborn
-  - sklearn
-  - tertools
-  - subprocess
-  - statsmodels
   - PySimpleGUI
+  - re
+  - seaborn
+  - signal
+  - sklearn  
+  - statsmodels
+  - subprocess
+  - tertools
 
 ENHSP-20 compiled from source is also needed to solve the domain-problem couple. By default the position of the planner executable
 is assumed at `/root/ENHSP-20`, to change it open `run.py` and modify the `engine_path` global variable.
-Notice that the off-the-shelf compiled version was discarded due to it not managing to set hw, gw appropriately (despite passing them from command line)
-
-
-
+Notice that the off-the-shelf ENHSP-20 compiled version was discarded due to it not managing to set hw, gw appropriately (despite passing them from command line)
