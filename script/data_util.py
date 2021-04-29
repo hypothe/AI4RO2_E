@@ -15,9 +15,10 @@ csv_name_full_ = "../lib/hg_val_20.csv" ## the data gathered using enhsp-20
 exp_name_full_ = "../lib/drinks_explored_20.pkl" ## the data gathered using enhsp-20
 regr_name_full_ = "../lib/regr_model.pkl"
 
+pars = ('waiter','tot', 'avg_x', 'avg_y', "eig_1", "eig_2", 'hot_tot', 'hot_avg_x', 'hot_avg_y', "hot_eig_1", "hot_eig_2") # input features
 output_keywords = ('Duration', 'Planning Time', 'Heuristic Time',
                     'Search Time', 'Expanded Nodes', 'States Evaluated')	# list of (str): keywords for relevant outputs
-duration_alias = "Elapsed Time"
+duration_alias = "Elapsed Time" # the parameter 'Duration' name changes with the enshp version
 
 hw_flag = "-wh"
 gw_flag = "-wg"

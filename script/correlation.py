@@ -84,7 +84,7 @@ def evaluate_corr(data_dict, h_val=None, g_val=None):
         
     """
     
-    pars = ['waiter','tot', 'avg_x', 'avg_y', 'hot_tot', 'hot_avg_x', 'hot_avg_y']
+    pars = data_util.pars
     
     des = data_util.regr_goals_ #'dur', 'search'  
     z = {}# each element is {key:list() for key in ('dur', 'pltime', 'heur', 'search', 'ex_nod', 'ev_stat')}
