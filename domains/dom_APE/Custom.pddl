@@ -50,21 +50,21 @@
 		
 
         ;Hot drink flag
-        (= (fl-hot drinkA) 0)
-		(= (fl-hot drinkB) 0)
-		(= (fl-hot drinkC) 1)
-		(= (fl-hot drinkD) 1)
-		(= (fl-hot drinkE) 1)
-		(= (fl-hot drinkF) 1)
-		(= (fl-hot drinkG) 0)
-		(= (fl-hot drinkH) 0)
+        (= (fl-hot drinkA) 1)
+		(= (fl-hot drinkB) 1)
+		(= (fl-hot drinkC) 0)
+		(= (fl-hot drinkD) 0)
+		(= (fl-hot drinkE) 0)
+		(= (fl-hot drinkF) 0)
+		(= (fl-hot drinkG) 1)
+		(= (fl-hot drinkH) 1)
 		
         
         ;Biscuit - Drink relation
-        (drink-for-biscuit drinkA biscuitA)
-		(drink-for-biscuit drinkB biscuitB)
-		(drink-for-biscuit drinkG biscuitC)
-		(drink-for-biscuit drinkH biscuitD)
+        (drink-for-biscuit drinkC biscuitA)
+		(drink-for-biscuit drinkD biscuitB)
+		(drink-for-biscuit drinkE biscuitC)
+		(drink-for-biscuit drinkF biscuitD)
 		
 
 		;Position of each waiter
@@ -81,10 +81,10 @@
 		(ordered drinkG table4 )
 		(ordered drinkH table4 )
 		
-        (ordered biscuitA table1 )
-		(ordered biscuitB table1 )
-		(ordered biscuitC table4 )
-		(ordered biscuitD table4 )
+        (ordered biscuitA table3 )
+		(ordered biscuitB table3 )
+		(ordered biscuitC table3 )
+		(ordered biscuitD table3 )
 		
         
 

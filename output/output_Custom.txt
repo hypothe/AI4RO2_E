@@ -1,12 +1,12 @@
 H_VALUE: 1.0
-G_VALUE: 7.333
+G_VALUE: 1.0
 SUCCESS: 1
-Duration: 73.0
-Planning Time:84495
-Heuristic Time:83323
-Search Time:83986
-Expanded Nodes:3106
-States Evaluated:14770
+Duration: 93.5
+Planning Time:562832
+Heuristic Time:556944
+Search Time:561905
+Expanded Nodes:12788
+States Evaluated:58208
 
 
 ### ------------------ ###

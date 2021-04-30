@@ -1,0 +1,114 @@
+[H:    1.0	G:    1.0]	->Q: [4.45238043]	{'dur': 38, 'search': 5364}
+[H:    1.0	G:  4.167]	->Q: [4.33014075]	{'dur': 36, 'search': 3282}
+[H:    1.0	G:  7.333]	->Q: [4.36168627]	{'dur': 34, 'search': 5309}
+[H:    1.0	G:   10.5]	->Q: [4.36173713]	{'dur': 33, 'search': 6075}
+[H:    1.0	G: 13.667]	->Q: [4.40859006]	{'dur': 32, 'search': 9057}
+Chosen [H: 1.0	G: 4.167]
+Running ../domains/dom_APE/Custom.pddl gw: 4.167 hw: 1.0
+Domain parsed
+Problem parsed
+Grounding..
+Grounding Time: 92
+(Pre Simplification) - |A|+|P|+|E|: 155
+AIBR :: Number of Supporters = 239
+(After Easy Simplification) - |A|+|P|+|E|: 139
+|F|:73
+|X|:17
+Grounding Time: 28
+Grounding and Simplification finished
+|A|:99
+|P|:21
+|E|:19
+Delta time heuristic model:1.0
+Delta time planning model:1.0
+Delta time search-execution model:0.5
+Delta time validation model:0.5
+ha:false htfalse
+AIBR selected
+w_h set to be 1.0
+g_h set to be 4.167
+Setting horizon to:NaN
+Helpful Action Pruning Activated
+Running WA-STAR
+h(n = s_0)=632.0
+f(n) = 632.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.04)
+Extracting plan with execution delta: 0.5
+Problem Solved
+0.0: (a-start-move bar table1 w1)
+0.0: (serve-table w1 table2)
+0.0: (serve-table w1 table1)
+0.0: (serve-table w1 table4)
+0.0: (serve-table w1 table3)
+0.0: -----waiting---- [1.0]
+1.0: (a-start-clean-table table1 w1)
+1.0: (a-order-start drinkD)
+1.0: -----waiting---- [4.0]
+4.0: (a-start-move table1 bar w1)
+4.0: -----waiting---- [5.0]
+5.0: (pick-up-order bar w1 drinkD)
+5.0: (a-start-move bar table2 w1)
+5.0: -----waiting---- [6.0]
+6.0: (a-order-start drinkB)
+6.0: (put-down-order table2 w1 drinkD)
+6.0: -----waiting---- [7.0]
+7.0: (a-start-move table2 bar w1)
+7.0: -----waiting---- [8.0]
+8.0: (pick-up-order bar w1 biscuitB)
+8.0: (a-start-move bar table2 w1)
+8.0: -----waiting---- [9.0]
+9.0: (put-down-order table2 w1 biscuitB)
+9.0: -----waiting---- [11.0]
+11.0: (a-start-move table2 bar w1)
+11.0: -----waiting---- [12.0]
+12.0: (a-order-start drinkA)
+12.0: (pick-up-order bar w1 drinkB)
+12.0: (a-start-move bar table2 w1)
+12.0: -----waiting---- [13.0]
+13.0: (put-down-order table2 w1 drinkB)
+13.0: (a-start-move table2 table4 w1)
+13.0: -----waiting---- [14.0]
+14.0: (a-start-clean-table table4 w1)
+14.0: -----waiting---- [16.0]
+16.0: (a-start-move table4 bar w1)
+16.0: -----waiting---- [18.0]
+18.0: (pick-up-order bar w1 drinkA)
+18.0: (a-order-start drinkC)
+18.0: (a-start-move bar table2 w1)
+18.0: -----waiting---- [19.0]
+19.0: (put-down-order table2 w1 drinkA)
+19.0: -----waiting---- [21.0]
+21.0: (a-start-move table2 bar w1)
+21.0: -----waiting---- [22.0]
+22.0: (pick-up-order bar w1 drinkC)
+22.0: (a-start-move bar table2 w1)
+22.0: -----waiting---- [23.0]
+23.0: (put-down-order table2 w1 drinkC)
+23.0: -----waiting---- [24.0]
+24.0: (a-start-move table2 bar w1)
+24.0: -----waiting---- [25.0]
+25.0: (pick-up-order bar w1 biscuitA)
+25.0: (a-start-move bar table2 w1)
+25.0: -----waiting---- [26.0]
+26.0: (put-down-order table2 w1 biscuitA)
+26.0: -----waiting---- [27.0]
+27.0: (a-start-clean-table table2 w1)
+27.0: -----waiting---- [29.0]
+29.0: (a-start-move table2 table3 w1)
+29.0: -----waiting---- [30.0]
+30.0: (a-start-clean-table table3 w1)
+30.0: -----waiting---- [34.0]
+34.0: (a-start-move table3 bar w1)
+34.0: -----waiting---- [35.5]
+Plan-Length:141
+Elapsed Time: 35.5
+Metric (Search):36.0
+Planning Time:5362
+Heuristic Time:4280
+Search Time:4607
+Expanded Nodes:565
+States Evaluated:1804
+Fixed constraint violations during search (zero-crossing):0
+Number of Dead-Ends detected:19
+Number of Duplicates detected:853
+
+Succesful run Custom with hw = 1.0 gw = 4.167

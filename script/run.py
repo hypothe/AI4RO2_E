@@ -172,10 +172,10 @@ def get_best_hg(regr_dict, problem_filename):
     ## Parse problem file
     n_waiters, drink4table, hot4table = parse.parse_problem(problem_filename)
     
-    tot, avg_x, avg_y, _, _ = data_util.avg_drink_pos(drink4table)
-    hot_tot, hot_avg_x, hot_avg_y, _, _ = data_util.avg_drink_pos(hot4table)
+    tot, avg_x, avg_y, eig_1, eig_2 = data_util.avg_drink_pos(drink4table)
+    hot_tot, hot_avg_x, hot_avg_y, hot_eig_1, hot_eig_2 = data_util.avg_drink_pos(hot4table)
     
-    params = [n_waiters, tot, avg_x, avg_y, hot_tot, hot_avg_x, hot_avg_y]
+    params = [n_waiters, tot, avg_x, avg_y, eig_1, eig_2, hot_tot, hot_avg_x, hot_avg_y, hot_eig_1, hot_eig_2]
     ## Apply linear regression coefficien to estimate the Y function for all (h,g) values
     
     ## load already explored drinks configurations
@@ -300,7 +300,6 @@ def main(argv):
             with open(regr_name_full_, 'rb') as f:
                 regr_dict = pickle.load(f)
                 h_values, g_values = get_best_hg(regr_dict, problem_string)
-                input("Press Enter to launch the solver with those values...")
                 
         except FileNotFoundError:
             #pass #in this case do nothing, explored_cases is already an empty list
