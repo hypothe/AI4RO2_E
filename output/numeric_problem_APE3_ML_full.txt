@@ -1,0 +1,113 @@
+[H:    1.0	G:    1.0]	->Q: [4.71078051]	{'dur': 46, 'search': 9310}
+[H:    1.0	G:  4.167]	->Q: [4.62827244]	{'dur': 44, 'search': 6992}
+[H:    1.0	G:  7.333]	->Q: [4.58064855]	{'dur': 41, 'search': 7468}
+[H:    1.0	G:   10.5]	->Q: [4.601294]	{'dur': 36, 'search': 15407}
+[H:    1.0	G: 13.667]	->Q: [4.67756036]	{'dur': 33, 'search': 37179}
+Chosen [H: 1.0	G: 7.333]
+Running ../domains/dom_APE/Custom.pddl gw: 7.333 hw: 1.0
+Domain parsed
+Problem parsed
+Grounding..
+Grounding Time: 274
+(Pre Simplification) - |A|+|P|+|E|: 119
+AIBR :: Number of Supporters = 179
+(After Easy Simplification) - |A|+|P|+|E|: 107
+|F|:63
+|X|:14
+Grounding Time: 46
+Grounding and Simplification finished
+|A|:69
+|P|:21
+|E|:17
+Delta time heuristic model:1.0
+Delta time planning model:1.0
+Delta time search-execution model:0.5
+Delta time validation model:0.5
+ha:false htfalse
+AIBR selected
+w_h set to be 1.0
+g_h set to be 7.333
+Setting horizon to:NaN
+Helpful Action Pruning Activated
+Running WA-STAR
+h(n = s_0)=444.0
+f(n) = 444.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.032)
+f(n) = 447.0 (Expanded Nodes: 358, Evaluated States: 1842, Time: 5.404)
+f(n) = 454.0 (Expanded Nodes: 479, Evaluated States: 2438, Time: 7.087)
+f(n) = 461.0 (Expanded Nodes: 553, Evaluated States: 2807, Time: 8.085)
+f(n) = 468.0 (Expanded Nodes: 575, Evaluated States: 2901, Time: 8.313)
+-------------Time: 10s ; Expanded Nodes: 770 (Avg-Speed 77.0 n/s); Evaluated States: 3705
+-------------Time: 20s ; Expanded Nodes: 1887 (Avg-Speed 94.0 n/s); Evaluated States: 8372
+-------------Time: 30s ; Expanded Nodes: 3154 (Avg-Speed 105.0 n/s); Evaluated States: 13244
+f(n) = 469.0 (Expanded Nodes: 3593, Evaluated States: 14666, Time: 32.992)
+f(n) = 476.0 (Expanded Nodes: 3597, Evaluated States: 14670, Time: 33.0)
+-------------Time: 40s ; Expanded Nodes: 4597 (Avg-Speed 114.0 n/s); Evaluated States: 17941
+Extracting plan with execution delta: 0.5
+Problem Solved
+0.0: (a-start-move bar table2 w1)
+0.0: (serve-table w1 table2)
+0.0: (serve-table w1 table1)
+0.0: (serve-table w1 table4)
+0.0: (serve-table w1 table3)
+0.0: -----waiting---- [1.0]
+1.0: (a-start-clean-table table2 w1)
+1.0: (a-order-start drinkA)
+1.0: -----waiting---- [5.0]
+5.0: (a-start-move table2 bar w1)
+5.0: -----waiting---- [6.0]
+6.0: (pick-up-order bar w1 drinkA)
+6.0: (a-start-move bar table1 w1)
+6.0: -----waiting---- [7.0]
+7.0: (put-down-order table1 w1 drinkA)
+7.0: (a-start-move table1 table3 w1)
+7.0: -----waiting---- [11.0]
+11.0: (a-start-clean-table table3 w1)
+11.0: (a-order-start drinkD)
+11.0: -----waiting---- [15.0]
+15.0: (a-start-move table3 table2 w1)
+15.0: -----waiting---- [16.0]
+16.0: (a-start-move table2 bar w1)
+16.0: -----waiting---- [17.0]
+17.0: (pick-up-order bar w1 drinkD)
+17.0: (a-start-move bar table4 w1)
+17.0: -----waiting---- [19.0]
+19.0: (put-down-order table4 w1 drinkD)
+19.0: (a-start-move table4 bar w1)
+19.0: (a-order-start drinkB)
+19.0: -----waiting---- [22.0]
+22.0: (a-start-move bar table2 w1)
+22.0: -----waiting---- [23.0]
+23.0: (a-start-move table2 bar w1)
+23.0: -----waiting---- [24.0]
+24.0: (pick-up-order bar w1 drinkB)
+24.0: (a-start-move bar table1 w1)
+24.0: -----waiting---- [25.0]
+25.0: (put-down-order table1 w1 drinkB)
+25.0: -----waiting---- [29.0]
+29.0: (a-start-clean-table table1 w1)
+29.0: (a-order-start drinkC)
+29.0: -----waiting---- [32.0]
+32.0: (a-start-move table1 bar w1)
+32.0: -----waiting---- [34.0]
+34.0: (pick-up-order bar w1 drinkC)
+34.0: (a-start-move bar table4 w1)
+34.0: -----waiting---- [36.0]
+36.0: (put-down-order table4 w1 drinkC)
+36.0: -----waiting---- [40.0]
+40.0: (a-start-clean-table table4 w1)
+40.0: -----waiting---- [42.0]
+42.0: (a-start-move table4 bar w1)
+42.0: -----waiting---- [43.5]
+Plan-Length:147
+Elapsed Time: 43.5
+Metric (Search):44.0
+Planning Time:50020
+Heuristic Time:46027
+Search Time:48423
+Expanded Nodes:6196
+States Evaluated:22615
+Fixed constraint violations during search (zero-crossing):0
+Number of Dead-Ends detected:313
+Number of Duplicates detected:7390
+
+Succesful run Custom with hw = 1.0 gw = 7.333

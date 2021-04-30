@@ -1,0 +1,198 @@
+[H:    1.0	G:    1.0]	->Q: [5.93864505]	{'dur': 91, 'search': 476531}
+[H:    1.0	G:  4.167]	->Q: [5.77711574]	{'dur': 88, 'search': 209059}
+[H:    1.0	G:  7.333]	->Q: [5.66508337]	{'dur': 82, 'search': 159769}
+[H:    1.0	G:   10.5]	->Q: [5.65831681]	{'dur': 79, 'search': 174898}
+[H:    1.0	G: 13.667]	->Q: [5.71931865]	{'dur': 76, 'search': 324416}
+Chosen [H: 1.0	G: 10.5]
+Running ../domains/dom_APE/Custom.pddl gw: 10.5 hw: 1.0
+Domain parsed
+Problem parsed
+Grounding..
+Grounding Time: 190
+(Pre Simplification) - |A|+|P|+|E|: 327
+AIBR :: Number of Supporters = 543
+(After Easy Simplification) - |A|+|P|+|E|: 303
+|F|:107
+|X|:31
+Grounding Time: 85
+Grounding and Simplification finished
+|A|:241
+|P|:33
+|E|:29
+Delta time heuristic model:1.0
+Delta time planning model:1.0
+Delta time search-execution model:0.5
+Delta time validation model:0.5
+ha:false htfalse
+AIBR selected
+w_h set to be 1.0
+g_h set to be 10.5
+Setting horizon to:NaN
+Helpful Action Pruning Activated
+Running WA-STAR
+h(n = s_0)=1157.0
+f(n) = 1157.0 (Expanded Nodes: 0, Evaluated States: 0, Time: 0.09)
+f(n) = 1177.0 (Expanded Nodes: 16, Evaluated States: 207, Time: 4.363)
+f(n) = 1180.0 (Expanded Nodes: 17, Evaluated States: 216, Time: 4.574)
+f(n) = 1182.0 (Expanded Nodes: 18, Evaluated States: 225, Time: 4.789)
+f(n) = 1185.0 (Expanded Nodes: 22, Evaluated States: 261, Time: 5.517)
+f(n) = 1187.0 (Expanded Nodes: 27, Evaluated States: 309, Time: 6.292)
+f(n) = 1190.0 (Expanded Nodes: 37, Evaluated States: 399, Time: 7.991)
+-------------Time: 10s ; Expanded Nodes: 48 (Avg-Speed 4.0 n/s); Evaluated States: 509
+f(n) = 1192.0 (Expanded Nodes: 48, Evaluated States: 509, Time: 10.129)
+f(n) = 1195.0 (Expanded Nodes: 68, Evaluated States: 689, Time: 14.71)
+f(n) = 1197.0 (Expanded Nodes: 84, Evaluated States: 846, Time: 17.72)
+-------------Time: 22s ; Expanded Nodes: 93 (Avg-Speed 4.0 n/s); Evaluated States: 927
+f(n) = 1200.0 (Expanded Nodes: 109, Evaluated States: 1071, Time: 29.159)
+-------------Time: 32s ; Expanded Nodes: 113 (Avg-Speed 3.0 n/s); Evaluated States: 1104
+f(n) = 1206.0 (Expanded Nodes: 161, Evaluated States: 1534, Time: 40.103)
+-------------Time: 42s ; Expanded Nodes: 192 (Avg-Speed 4.0 n/s); Evaluated States: 1668
+f(n) = 1212.0 (Expanded Nodes: 254, Evaluated States: 1987, Time: 47.818)
+-------------Time: 52s ; Expanded Nodes: 313 (Avg-Speed 6.0 n/s); Evaluated States: 2258
+-------------Time: 62s ; Expanded Nodes: 399 (Avg-Speed 6.0 n/s); Evaluated States: 2923
+-------------Time: 72s ; Expanded Nodes: 479 (Avg-Speed 6.0 n/s); Evaluated States: 3522
+-------------Time: 82s ; Expanded Nodes: 583 (Avg-Speed 7.0 n/s); Evaluated States: 4247
+-------------Time: 92s ; Expanded Nodes: 718 (Avg-Speed 7.0 n/s); Evaluated States: 5083
+-------------Time: 102s ; Expanded Nodes: 863 (Avg-Speed 8.0 n/s); Evaluated States: 5895
+-------------Time: 112s ; Expanded Nodes: 1014 (Avg-Speed 9.0 n/s); Evaluated States: 6683
+-------------Time: 122s ; Expanded Nodes: 1166 (Avg-Speed 9.0 n/s); Evaluated States: 7534
+-------------Time: 132s ; Expanded Nodes: 1331 (Avg-Speed 10.0 n/s); Evaluated States: 8382
+-------------Time: 142s ; Expanded Nodes: 1490 (Avg-Speed 10.0 n/s); Evaluated States: 9233
+-------------Time: 152s ; Expanded Nodes: 1649 (Avg-Speed 10.0 n/s); Evaluated States: 10077
+-------------Time: 162s ; Expanded Nodes: 1797 (Avg-Speed 11.0 n/s); Evaluated States: 10877
+-------------Time: 172s ; Expanded Nodes: 2369 (Avg-Speed 13.0 n/s); Evaluated States: 11951
+Extracting plan with execution delta: 0.5
+Problem Solved
+0.0: (serve-table w1 table2)
+0.0: (serve-table w1 table1)
+0.0: (serve-table w1 table4)
+0.0: (serve-table w1 table3)
+0.0: (a-start-move bar table4 w1)
+0.0: (a-order-start drinkB)
+0.0: -----waiting---- [2.0]
+2.0: (a-start-move table4 table1 w1)
+2.0: -----waiting---- [3.0]
+3.0: (a-start-move table1 bar w1)
+3.0: -----waiting---- [4.0]
+4.0: (pick-up-order bar w1 drinkB)
+4.0: (a-start-move bar table1 w1)
+4.0: -----waiting---- [5.0]
+5.0: (put-down-order table1 w1 drinkB)
+5.0: (a-start-move table1 bar w1)
+5.0: -----waiting---- [6.0]
+6.0: (pick-up-order bar w1 biscuitB)
+6.0: (a-start-move bar table1 w1)
+6.0: -----waiting---- [7.0]
+7.0: (put-down-order table1 w1 biscuitB)
+7.0: (a-start-move table1 bar w1)
+7.0: -----waiting---- [9.0]
+9.0: (a-start-move bar table4 w1)
+9.0: (a-order-start drinkG)
+9.0: -----waiting---- [11.0]
+11.0: (a-start-move table4 table1 w1)
+11.0: -----waiting---- [12.0]
+12.0: (a-start-move table1 bar w1)
+12.0: -----waiting---- [13.0]
+13.0: (pick-up-order bar w1 drinkG)
+13.0: (a-start-move bar table4 w1)
+13.0: -----waiting---- [15.0]
+15.0: (put-down-order table4 w1 drinkG)
+15.0: (a-start-move table4 table1 w1)
+15.0: -----waiting---- [16.0]
+16.0: (a-start-move table1 bar w1)
+16.0: -----waiting---- [17.0]
+17.0: (pick-up-order bar w1 biscuitC)
+17.0: (a-start-move bar table4 w1)
+17.0: -----waiting---- [19.0]
+19.0: (put-down-order table4 w1 biscuitC)
+19.0: (a-start-move table4 bar w1)
+19.0: (a-order-start drinkA)
+19.0: -----waiting---- [22.0]
+22.0: (pick-up-order bar w1 drinkA)
+22.0: (a-start-move bar table1 w1)
+22.0: -----waiting---- [23.0]
+23.0: (put-down-order table1 w1 drinkA)
+23.0: (a-start-move table1 bar w1)
+23.0: -----waiting---- [24.0]
+24.0: (pick-up-order bar w1 biscuitA)
+24.0: (a-start-move bar table1 w1)
+24.0: -----waiting---- [25.0]
+25.0: (put-down-order table1 w1 biscuitA)
+25.0: (a-start-move table1 table4 w1)
+25.0: -----waiting---- [26.0]
+26.0: (a-start-move table4 bar w1)
+26.0: (a-order-start drinkH)
+26.0: -----waiting---- [29.0]
+29.0: (pick-up-order bar w1 drinkH)
+29.0: (a-start-move bar table4 w1)
+29.0: -----waiting---- [31.0]
+31.0: (put-down-order table4 w1 drinkH)
+31.0: (a-start-move table4 table2 w1)
+31.0: -----waiting---- [32.0]
+32.0: (a-start-move table2 bar w1)
+32.0: -----waiting---- [33.0]
+33.0: (pick-up-order bar w1 biscuitD)
+33.0: (a-start-move bar table4 w1)
+33.0: -----waiting---- [35.0]
+35.0: (put-down-order table4 w1 biscuitD)
+35.0: (a-start-clean-table table4 w1)
+35.0: (a-order-start drinkD)
+35.0: -----waiting---- [37.0]
+37.0: (a-start-move table4 bar w1)
+37.0: -----waiting---- [40.0]
+40.0: (pick-up-order bar w1 drinkD)
+40.0: (a-start-move bar table3 w1)
+40.0: -----waiting---- [42.0]
+42.0: (put-down-order table3 w1 drinkD)
+42.0: (a-order-start drinkF)
+42.0: -----waiting---- [43.0]
+43.0: (a-start-move table3 table2 w1)
+43.0: -----waiting---- [44.0]
+44.0: (a-start-clean-table table2 w1)
+44.0: -----waiting---- [46.0]
+46.0: (a-start-move table2 bar w1)
+46.0: -----waiting---- [47.0]
+47.0: (pick-up-order bar w1 drinkF)
+47.0: (a-start-move bar table3 w1)
+47.0: -----waiting---- [48.0]
+48.0: (a-order-start drinkE)
+48.0: -----waiting---- [49.0]
+49.0: (put-down-order table3 w1 drinkF)
+49.0: (a-start-move table3 table1 w1)
+49.0: -----waiting---- [50.0]
+50.0: (a-start-clean-table table1 w1)
+50.0: -----waiting---- [52.0]
+52.0: (a-start-move table1 bar w1)
+52.0: -----waiting---- [53.0]
+53.0: (a-order-start drinkC)
+53.0: (pick-up-order bar w1 drinkE)
+53.0: (a-start-move bar table3 w1)
+53.0: -----waiting---- [55.0]
+55.0: (put-down-order table3 w1 drinkE)
+55.0: (a-start-move table3 bar w1)
+55.0: -----waiting---- [58.0]
+58.0: (pick-up-order bar w1 drinkC)
+58.0: (a-start-move bar table3 w1)
+58.0: -----waiting---- [60.0]
+60.0: (put-down-order table3 w1 drinkC)
+60.0: (a-start-move table3 bar w1)
+60.0: -----waiting---- [62.0]
+62.0: (a-start-move bar table3 w1)
+62.0: -----waiting---- [64.0]
+64.0: (a-start-clean-table table3 w1)
+64.0: -----waiting---- [68.0]
+68.0: (a-start-move table3 bar w1)
+68.0: -----waiting---- [69.5]
+Plan-Length:277
+Elapsed Time: 69.5
+Metric (Search):70.0
+Planning Time:182748
+Heuristic Time:178952
+Search Time:180943
+Expanded Nodes:2933
+States Evaluated:12932
+Fixed constraint violations during search (zero-crossing):0
+Number of Dead-Ends detected:59
+Number of Duplicates detected:3399
+
+Succesful run Custom with hw = 1.0 gw = 10.5
